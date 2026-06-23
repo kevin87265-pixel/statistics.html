@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
+<title>神奇學苑 · 月度獎金計算系統</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1f1d1a;--bg2:#272320;--panel:#2c2723;--line:#473f36;--gold:#c9a961;--gold2:#e0c585;--cream:#f4e9c8;--txt:#f0ece2;--mut:#9c9486;--green:#7fae6e;--amber:#e0a94a;--red:#d9776a;--fs:15px}
+.light{--bg:#f6f2ea;--bg2:#fbf8f1;--panel:#ffffff;--line:#e2d8c4;--gold:#9c7e3a;--gold2:#7a6228;--cream:#3a3024;--txt:#2e2820;--mut:#8a7e6a}
+.big{--fs:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Noto Sans TC',sans-serif;font-size:var(--fs);line-height:1.55;background-image:radial-gradient(circle at 15% 10%,rgba(201,169,97,.06),transparent 40%),radial-gradient(circle at 85% 90%,rgba(201,169,97,.05),transparent 45%);min-height:100vh}
+.wrap{max-width:1340px;margin:0 auto;padding:24px 18px 80px}
+.app{display:flex;min-height:100vh;align-items:stretch}
+.side{width:190px;flex:0 0 190px;background:var(--panel);border-right:1px solid var(--line);padding:18px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+.brand{font-family:'Noto Serif TC',serif;font-weight:900;color:var(--gold2);font-size:18px;line-height:1.2;padding:0 8px 14px;border-bottom:2px solid var(--gold);margin-bottom:8px}
+.brand small{display:block;font-size:11px;color:var(--mut);font-weight:400;letter-spacing:1px;margin-top:3px}
+.nav{display:flex;flex-direction:column;gap:4px;flex:1}
+.navbtn{text-align:left;background:transparent;border:none;border-radius:8px;padding:11px 13px;cursor:pointer;font-size:14px;color:var(--txt);font-family:inherit;transition:.15s}
+.navbtn:hover{background:var(--bg2)}
+.navbtn.active{background:var(--gold);color:#fff;font-weight:700}
+.navgroup{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px}
+.navhead{color:var(--mut);font-size:12.5px}
+.navbtn.sub{font-size:13px;padding-left:22px;opacity:.92}
+.main{flex:1;min-width:0;padding:20px 26px 80px;max-width:1150px}
+.toggles{display:flex;gap:4px;padding-top:10px;border-top:1px solid var(--line)}
+.toggles button{flex:1}
+@media(max-width:760px){.app{flex-direction:column}.side{width:auto;flex:none;height:auto;position:static;flex-direction:row;flex-wrap:wrap;overflow-x:auto}.nav{flex-direction:row;flex-wrap:wrap}.navbtn{padding:8px 10px;font-size:13px}.brand{width:100%;border-bottom:none}.main{padding:16px}}
+header.top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--gold);padding-bottom:14px;flex-wrap:wrap;gap:12px}
+h1{font-family:'Noto Serif TC',serif;font-weight:900;color:var(--gold2);font-size:1.7em;letter-spacing:1px}
+h1 small{display:block;font-size:.42em;color:var(--mut);letter-spacing:3px;font-weight:500;margin-top:4px}
+.toggles button{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:6px 11px;cursor:pointer;font-size:.85em;margin-left:6px;font-family:inherit}
+.toggles button:hover{border-color:var(--gold)}
+.ctrlbar{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:10px;padding:14px 18px;margin:18px 0}
+.ctrlbar label{color:var(--gold2);font-family:'Noto Serif TC',serif;font-weight:700;margin-right:8px}
+.ctrlbar input,.ctrlbar select{background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:7px 10px;font-family:inherit;font-size:1em}
+.ctrlbar .hint{color:var(--mut);font-size:.82em}
+section{background:var(--bg2);border:1px solid var(--line);border-radius:12px;margin:16px 0;overflow:hidden}
+.sec-h{display:flex;justify-content:space-between;align-items:center;padding:13px 18px;cursor:pointer;background:var(--panel);border-bottom:1px solid var(--line)}
+.sec-h h2{font-family:'Noto Serif TC',serif;font-size:1.12em;color:var(--cream);font-weight:700;display:flex;align-items:center;gap:9px}
+.sec-h .n{background:var(--gold);color:#1f1d1a;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:.8em}
+.sec-h .arr{color:var(--mut);transition:.2s}
+.sec.collapsed .sec-body{display:none}.sec.collapsed .arr{transform:rotate(-90deg)}
+.sec-body{padding:18px}
+.drop{border:2.5px dashed var(--line);border-radius:12px;padding:32px 20px;text-align:center;transition:.2s;cursor:pointer;background:var(--panel)}
+.drop.hot{border-color:var(--gold);background:rgba(201,169,97,.08)}
+.drop .ic{font-size:2.4em;margin-bottom:6px}.drop b{color:var(--gold2);font-size:1.1em}
+.drop p{color:var(--mut);font-size:.86em;margin-top:6px}
+.filelist{margin-top:14px;display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:4px 12px;font-size:.8em;display:flex;align-items:center;gap:6px}
+.chip.ok{border-color:var(--green)}.chip.warn{border-color:var(--amber)}
+table{width:100%;border-collapse:collapse;font-size:.84em}
+th,td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--gold2);font-weight:700;background:var(--panel);position:sticky;top:0;font-size:.9em}
+td:first-child,th:first-child{text-align:left;position:sticky;left:0;background:var(--bg2);z-index:2}
+th:first-child{z-index:3}
+tr:hover td{background:rgba(201,169,97,.04)}
+tfoot td{font-weight:700;color:var(--cream);border-top:2px solid var(--gold);background:var(--panel)}
+.tbl-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;max-height:560px;overflow-y:auto}
+input.cell{width:48px;background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:5px;padding:4px;text-align:right;font-family:inherit;font-size:1em}
+input.cell:focus{outline:none;border-color:var(--gold);background:var(--panel)}
+input.cell.g{width:54px;border-color:var(--amber);background:rgba(224,169,74,.08)}
+input.cell.dcount{border-color:#d8a23a;background:rgba(216,162,58,.16);color:#8a5a10;font-weight:700}
+td.calc{color:var(--gold2);font-weight:700;background:rgba(201,169,97,.05)}
+.hot{background:rgba(201,169,97,.22)!important;color:var(--gold2);font-weight:800;font-size:1.05em}
+.banner{border-radius:8px;padding:9px 12px;margin:6px 0;font-size:13.5px;line-height:1.5}
+.banner.ok{background:rgba(70,150,90,.14);border-left:3px solid #4a9b5f;color:#2e6b40}
+.banner.warn{background:rgba(200,140,40,.14);border-left:3px solid #c88c28;color:#8a5a10}
+.banner.info{background:rgba(90,120,180,.12);border-left:3px solid #5a78b4;color:#3a4f7a}
+th.hot{background:var(--gold)!important;color:#fff!important}
+td.warn{background:rgba(217,119,106,.12)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.8em;color:var(--mut);margin-bottom:10px}
+.legend span{display:flex;align-items:center;gap:5px}.dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+.btn{background:var(--gold);color:#1f1d1a;border:none;border-radius:8px;padding:12px 26px;font-size:1.05em;font-weight:700;cursor:pointer;font-family:'Noto Serif TC',serif;letter-spacing:1px}
+.btn:hover{background:var(--gold2)}.btn.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+.warnbox{border-radius:9px;padding:13px 16px;margin:10px 0;font-size:.9em;border-left:4px solid}
+.w-red{background:rgba(217,119,106,.1);border-color:var(--red)}.w-amber{background:rgba(224,169,74,.1);border-color:var(--amber)}.w-green{background:rgba(127,174,110,.1);border-color:var(--green)}
+.warnbox b{color:var(--cream)}
+.grand{font-family:'Noto Serif TC',serif;font-size:1.6em;color:var(--gold2);font-weight:900}
+.subnote{color:var(--mut);font-size:.82em;margin:4px 0 12px}
+.xbtn{background:transparent;border:none;color:#c0392b;cursor:pointer;font-size:14px;padding:2px 6px}
+.orgcard{background:var(--bg2);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:8px;padding:10px 14px;font-size:13px;line-height:1.7;margin-bottom:8px}
+ul.orgtree,ul.orgtree ul{list-style:none;margin:0;padding-left:22px}
+ul.orgtree li{position:relative;padding:5px 0;font-size:13px}
+ul.orgtree li::before{content:'';position:absolute;left:-12px;top:0;bottom:0;border-left:1px solid var(--line)}
+ul.orgtree li::after{content:'';position:absolute;left:-12px;top:18px;width:12px;border-top:1px solid var(--line)}
+ul.orgtree>li::before,ul.orgtree>li::after{border:none}
+.orgnode{display:inline-flex;flex-direction:column;background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:5px 11px;min-width:84px;line-height:1.3;vertical-align:middle;border-left-width:4px}
+.orgnode.tnode{border-color:var(--gold);background:var(--panel);border-left-color:var(--gold)}
+.orgnode.mnode{background:var(--gold);color:#fff;border-color:var(--gold2)}
+.orgnode.d1{border-left-color:#3fa86b}
+.orgnode.d2{border-left-color:#6f9fc4}
+.orgnode.d3{border-left-color:#9b7fc2}
+.orgnode.d4{border-left-color:#c98a3a}
+.orgnode.hit{outline:2px solid var(--gold);box-shadow:0 0 0 3px rgba(201,169,97,.3)}
+.otog{display:inline-block;width:18px;cursor:pointer;color:var(--gold2);font-size:12px;user-select:none;vertical-align:middle}
+.otog-sp{display:inline-block;width:18px}
+.ocnt{color:var(--gold2);font-size:10px;font-weight:700}
+.orgnode.mnode .ocnt{color:#fff}
+.orgtools{display:flex;gap:8px;margin-bottom:10px}
+.btn.sm{padding:5px 10px;font-size:12px}
+.onm{font-weight:700;font-size:13px}
+.orole{font-size:10px;color:var(--mut)}
+.orgnode.mnode .orole{color:rgba(255,255,255,.85)}
+.opv{font-size:10px;color:var(--gold2)}
+.orgnode.mnode .opv{color:#fff}
+.flexrow{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;margin:22px 0}
+.tag{font-size:.72em;padding:2px 7px;border-radius:4px;background:var(--panel);border:1px solid var(--line);color:var(--mut)}
+</style></head><body class="light">
+<div class="app">
+<aside class="side">
+  <div class="brand">神奇學苑<small>獎金計算系統</small></div>
+  <nav class="nav">
+    <button class="navbtn active" data-tab="course" onclick="showTab('course')">📚 課程分潤</button>
+    <button class="navbtn" data-tab="input" onclick="showTab('input')">📋 香量份數</button>
+    <button class="navbtn" data-tab="onepct" onclick="showTab('onepct')">💎 1%核心池</button>
+    <button class="navbtn" data-tab="burn" onclick="showTab('burn')">🔥 燒香清單</button>
+    <button class="navbtn" data-tab="settings" onclick="showTab('settings')">⚙ 業績調整區</button>
+    <button class="navbtn" data-tab="result" onclick="showTab('result')">💰 獎金結果</button>
+    <div class="navgroup">
+      <button class="navbtn navhead" onclick="toggleNavGroup()"><span id="navArrow">▸</span> 其他資訊</button>
+      <div id="navSub" style="display:none">
+        <button class="navbtn sub" data-tab="rank" onclick="showTab('rank')">📈 業績·聘階表</button>
+        <button class="navbtn sub" data-tab="org" onclick="showTab('org')">🌳 組織圖</button>
+        <button class="navbtn sub" data-tab="travel" onclick="showTab('travel')">✈ 旅遊點數</button>
+      </div>
+    </div>
+  </nav>
+  <div class="toggles"><button onclick="theme('light')">☀</button><button onclick="theme('dark')">☾</button><button onclick="bigfont()">A±</button></div>
+</aside>
+<main class="main">
+<div class="ctrlbar">
+  <div><label>結算月份</label><select id="month" onchange="onMonthChange()" style="background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:6px;padding:7px 10px;font-family:inherit;font-size:1em"></select></div>
+  <div><label>結算基準</label><select id="cutoff" onchange="onCutoffChange()"><option value="end">月底</option><option value="mid">月中(指定截止日)</option></select><span id="midDayWrap" style="display:none">　至 <input id="midDay" type="number" min="1" max="31" value="15" style="width:50px" onchange="renderWarns(lastR)"> 日</span></div>
+  <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="calc()">⚖ 計算</button><button class="btn ghost" onclick="genReport()">📋 報表</button><button class="btn ghost" onclick="genReportMobile()">📱 手機版</button><button class="btn ghost" onclick="exportCSV()">⬇ CSV</button></div>
+</div>
+<div id="warns"></div>
+
+<section class="sec" id="s1"><div class="sec-h" onclick="toggle('s1')"><h2><span class="n">1</span>上傳香量回傳檔</h2><span class="arr">▾</span></div>
+<div class="sec-body">
+  <div class="banner info">🌐 <b>線上香量（推薦）</b>：老師已用線上填單系統時，直接按下方按鈕帶入當月資料，免上傳 Excel。
+    <div style="margin-top:8px"><button class="btn" onclick="fetchOnline()">🌐 從線上香量帶入（依結算月份）</button>
+    <span id="onlineStatus" style="margin-left:10px;font-size:.85em;color:var(--mut)"></span></div>
+  </div>
+  <div style="text-align:center;color:var(--mut);font-size:.82em;margin:8px 0">— 或 沿用上傳 Excel —</div>
+  <div class="drop" id="drop" onclick="document.getElementById('fi').click()"><div class="ic">📜</div><b>拖放老師香量回傳檔到這裡</b><p>讀取每檔的「法會(指定月份)」分頁，自動帶入各項目份數(已扣上月補單)與天赦金</p></div>
+  <input type="file" id="fi" multiple accept=".xlsx,.xls" style="display:none">
+  <div class="filelist" id="filelist"></div>
+  <div id="parseNote"></div>
+</div></section>
+
+<section class="sec" id="s2"><div class="sec-h" onclick="toggle('s2')"><h2><span class="n">2</span>份數確認表 · 萬寶金各項目明細 <span class="tag">可編輯</span></h2><span class="arr">▾</span></div>
+<div class="sec-body">
+  <div class="legend"><span><i class="dot" style="background:var(--green)"></i>法會自動解析</span><span><i class="dot" style="background:var(--amber)"></i>斗燈/包年:請核對</span><span><i class="dot" style="background:var(--red)"></i>無淨額欄,保留預載值</span></div>
+  <p class="subnote">萬寶小計=11項加總(含包年);萬寶實收=小計−包年扣除G,實收才計入業績。橫向可捲動。</p>
+  <div class="tbl-scroll"><table id="partsTbl"></table></div>
+</div></section>
+
+<section class="sec" id="s2b"><div class="sec-h" onclick="toggle('s2b')"><h2><span class="n">🔥</span>要燒的香（燒化清單）<span class="tag">月中→月底自動扣除</span></h2><span class="arr">▾</span></div>
+<div class="sec-body">
+  <p class="subnote">各項目集中列出「本次要燒幾份」。月中產生並燒化後，按「📌 記為已燒」；月底再產生時會自動扣掉已燒的，只列還沒燒的份數。</p>
+  <div class="tbl-scroll" style="max-width:560px"><table id="burnTbl"></table></div>
+  <div class="flexrow" style="justify-content:flex-start;margin:14px 0 0">
+    <button class="btn ghost" onclick="markBurned()">📌 將本次份數記為已燒</button>
+    <button class="btn ghost" onclick="clearBurned()">🗑 清除已燒紀錄</button>
+    <button class="btn ghost" onclick="printBurn()">🖨 列印燒香清單</button>
+  </div>
+</div></section>
+
+<section class="sec collapsed" id="s3"><div class="sec-h" onclick="toggle('s3')"><h2><span class="n">⚙</span>業績調整區 <span class="tag">累積PV·聘階·上線·課程業績·推薦獎金</span></h2><span class="arr">▾</span></div>
+<div class="sec-body">
+  <p class="subnote">單價:萬寶金核心1050/一般1260、天赦580、還陰債/季斗2160、單購年斗5200、五行年斗5860、五行季斗2820、令牌660、化煞水200。業績達標獎金:10萬2%/20萬5%/30萬8%/40萬10%(核心改領1%池)。團隊抽成:10萬2%/20萬3%/30萬4%/40萬5%。聘階%:銀60/黃68/鑽75/晶82/翡90/總97。</p>
+  <p class="subnote">下列為非香量、每月輸入值(團隊下游業績、課程分潤、聘階、推薦樹),已帶入 2026.05 驗證資料,換月請更新。</p>
+  <div class="tbl-scroll"><table id="extraTbl"></table></div>
+</div></section>
+
+<section class="sec collapsed" id="sc"><div class="sec-h" onclick="toggle('sc')"><h2><span class="n">📚</span>課程分潤(每月另給)</h2><span class="arr">▾</span></div>
+<div class="sec-body">
+  <p class="subnote">行政另算好的課程名單貼進來(每行:推薦人 [Tab] 學員 [Tab] 課程 [Tab] 金額)。也可直接編輯下表。講師費/助教費在最下方填。</p>
+  <div class="drop" id="cdrop" onclick="document.getElementById('cfi').click()" style="margin-bottom:10px"><div class="ic">📚</div><b>上傳課程分潤表單(.xlsx / .csv)</b><p>欄位含 推薦人 / 學員 / 課程 / 金額(分潤),自動解析帶入</p></div>
+  <input type="file" id="cfi" accept=".xlsx,.xls,.csv" style="display:none">
+  <details style="margin-bottom:8px"><summary class="mut" style="cursor:pointer;font-size:13px">或貼上文字名單</summary>
+  <textarea id="coursePaste" placeholder="羅文勳	連之庭	八字進階	4878&#10;陳捷容	周沁	塔羅初階	1840" style="width:100%;min-height:64px;background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:8px;font-size:13px;margin-top:6px"></textarea>
+  <button class="btn ghost" onclick="importCourse()" style="margin-top:6px">⬆ 解析貼上的名單</button></details>
+  <div style="margin-bottom:6px"><button class="btn ghost" onclick="addCourseRow()">＋ 新增一列</button></div>
+  <div class="tbl-scroll"><table id="courseTbl"></table></div>
+  <h3 style="font-family:Noto Serif TC;color:var(--gold2);margin:16px 0 6px;font-size:15px">講師費 / 助教費</h3>
+  <div class="tbl-scroll" style="max-width:420px"><table id="feeTbl"></table></div>
+</div></section>
+
+<section class="sec collapsed" id="scum"><div class="sec-h" onclick="toggle('scum')"><h2><span class="n">📈</span>累積業績 / 聘階(每月自動累加)</h2><span class="arr">▾</span></div>
+<div class="sec-body">
+  <p class="subnote">聘階用「上月累積(不含本月)」自動判定。系統算出本月業績後可一鍵累加為新累積,作為下月基準。門檻:黃金63萬/鑽石126萬/晶鑽189萬/翡翠252萬/總裁315萬。</p>
+  <div id="cumChart" style="margin:6px 0 18px"></div>
+  <div class="tbl-scroll"><table id="cumTbl"></table></div>
+  <div class="flexrow" style="justify-content:flex-start;margin:14px 0 0;align-items:center"><button class="btn ghost" onclick="commitCum()">📌 月底結算:把本月業績累加進累積</button><button onclick="resetCum()" style="background:transparent;border:none;color:var(--mut);font-size:11px;cursor:pointer;text-decoration:underline">↺ 還原內建</button></div>
+</div></section>
+
+<section class="sec collapsed" id="sorg"><div class="sec-h" onclick="toggle('sorg')"><h2><span class="n">🌳</span>組織圖(可查詢)</h2><span class="arr">▾</span></div>
+<div class="sec-body">
+  <input id="orgSearch" placeholder="🔍 輸入姓名查詢上線/下線…" oninput="renderOrg()" style="width:100%;max-width:340px;background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:14px;margin-bottom:6px">
+  <div id="orgResult"></div>
+  <div id="orgTree" style="margin-top:10px"></div>
+</div></section>
+
+<section class="sec collapsed" id="s1pct"><div class="sec-h" onclick="toggle('s1pct')"><h2><span class="n">💎</span>1% 核心獎金池</h2><span class="arr">▾</span></div>
+<div class="sec-body">
+  <p class="subnote">核心四人(陳捷容/陳彩綺/羅文勳/蕭竣方)專屬。獎金池 = 全體老師全部總業績 × 1%(系統自動算)。達標條件:當月業績PV ≥ 門檻 且 課程推薦人數 ≥ 門檻;達標者按業績比例分配。</p>
+  <div id="poolFormula" class="orgcard" style="margin-bottom:10px"></div>
+  <div class="flexrow" style="justify-content:flex-start;gap:18px;margin-bottom:10px">
+    <div><label>業績門檻</label><input id="pvThInput" type="number" value="252000" style="width:100px" onchange="setPVth(this.value)"></div>
+    <div><label>推薦人數門檻</label><input id="refThInput" type="number" value="2" style="width:60px" onchange="setRefth(this.value)"></div>
+    <div><label>手動覆蓋池金額(留空=自動)</label><input id="poolInput" type="number" placeholder="自動" style="width:110px" onchange="setPool(this.value)"></div>
+  </div>
+  <div class="tbl-scroll"><table id="onepctTbl"></table></div>
+  <p class="subnote">※ 須先按上方「⚖ 計算」帶入當月業績與課程推薦人數。</p>
+</div></section>
+
+<section class="sec collapsed" id="strv"><div class="sec-h" onclick="toggle('strv')"><h2><span class="n">✈</span>旅遊點數</h2><span class="arr">▾</span></div>
+<div class="sec-body">
+  <p class="subnote">每 10,000 PV = 1 點(1點 = NT$100)。300點 → NT$5000旅遊金;400點 → 升級住宿+5000;500點 → 商務艙+升級+5000。期間:4–9月達150點 +2000、4–6月達75點 +1000。下表以「2026年度累積 + 本月業績」計點。</p>
+  <div class="tbl-scroll"><table id="travelTbl"></table></div>
+</div></section>
+
+<section class="sec" id="s4" style="display:none"><div class="sec-h" onclick="toggle('s4')"><h2><span class="n">4</span>聘階獎金主表(含萬寶金明細)</h2><span class="arr">▾</span></div><div class="sec-body"><div class="tbl-scroll"><table id="mainTbl"></table></div></div></section>
+<section class="sec" id="s5" style="display:none"><div class="sec-h" onclick="toggle('s5')"><h2><span class="n">5</span>各項獎金發放總表</h2><span class="arr">▾</span></div><div class="sec-body"><div class="tbl-scroll"><table id="payTbl"></table></div><div style="text-align:right;margin-top:14px">本月應發放合計　<span class="grand" id="grand">—</span></div><div id="sixtenWrap"></div></div></section>
+</main></div>
+
+<script>
+const CFG={"teachers":[{"name":"陳彩綺","rank":"總裁","sponsor":"陳捷容","teamPV":70360,"coursePV":9683,"rankPct":97,"teamPct":3},{"name":"陳捷容","rank":"總裁","sponsor":"","teamPV":1714952,"coursePV":5840,"rankPct":97,"teamPct":5},{"name":"湯雯莉","rank":"翡翠","sponsor":"陳捷容","teamPV":203709,"coursePV":0,"rankPct":90,"teamPct":3},{"name":"羅文勳","rank":"總裁","sponsor":"","teamPV":382609,"coursePV":39121,"rankPct":97,"teamPct":3},{"name":"沈佳琪","rank":"總裁","sponsor":"羅文勳","teamPV":0,"coursePV":4279,"rankPct":97,"teamPct":2},{"name":"熊卿妃","rank":"黃金","sponsor":"陳捷容","teamPV":0,"coursePV":0,"rankPct":68,"teamPct":0},{"name":"謝欣諭","rank":"銀階","sponsor":"湯雯莉","teamPV":0,"coursePV":2439,"rankPct":60,"teamPct":0},{"name":"賴素貞","rank":"銀階","sponsor":"湯雯莉","teamPV":40460,"coursePV":7410,"rankPct":60,"teamPct":2},{"name":"張簡玉靖","rank":"黃金","sponsor":"賴素貞","teamPV":0,"coursePV":0,"rankPct":68,"teamPct":0},{"name":"鄭聖勳","rank":"銀階","sponsor":"羅文勳","teamPV":0,"coursePV":2570,"rankPct":60,"teamPct":0},{"name":"梁凱妍","rank":"銀階","sponsor":"陳彩綺","teamPV":0,"coursePV":0,"rankPct":60,"teamPct":0},{"name":"王宥心","rank":"銀階","sponsor":"羅文勳","teamPV":0,"coursePV":0,"rankPct":60,"teamPct":0},{"name":"蕭鎧峻","rank":"鑽石","sponsor":"蕭鎧峻","teamPV":100200,"coursePV":0,"rankPct":75,"teamPct":0},{"name":"周冠榮","rank":"翡翠","sponsor":"羅文勳","teamPV":0,"coursePV":0,"rankPct":90,"teamPct":0},{"name":"鐘宥涵","rank":"黃金","sponsor":"陳捷容","teamPV":0,"coursePV":0,"rankPct":68,"teamPct":0},{"name":"謝承殷","rank":"","sponsor":"蕭鎧峻","teamPV":0,"coursePV":0,"rankPct":0,"teamPct":0},{"name":"陳昕昀","rank":"","sponsor":"蕭鎧峻","teamPV":0,"coursePV":0,"rankPct":0,"teamPct":0},{"name":"公司內部","rank":"","sponsor":"公司","teamPV":0,"coursePV":0,"rankPct":0,"teamPct":0},{"name":"靈應壇","rank":"","sponsor":"公司","teamPV":0,"coursePV":0,"rankPct":0,"teamPct":0},{"name":"蕭竣方","rank":"鑽石","sponsor":"","teamPV":0,"coursePV":0,"rankPct":75,"teamPct":0},{"name":"林雅涵","rank":"","sponsor":"蕭鎧峻","teamPV":0,"coursePV":0,"rankPct":0,"teamPct":0}],"parts":{"羅文勳":{"price":1050,"wanbao":113,"yinzhai":0,"tianshe":37,"nian":5,"ji":12,"lingpai":10,"huasha":0},"陳彩綺":{"price":1050,"wanbao":198,"yinzhai":0,"tianshe":9,"nian":0,"ji":17,"lingpai":9,"huasha":0},"沈佳琪":{"price":1260,"wanbao":92,"yinzhai":0,"tianshe":12,"nian":5,"ji":0,"lingpai":3,"huasha":0},"湯雯莉":{"price":1260,"wanbao":182,"yinzhai":0,"tianshe":67,"nian":1,"ji":3,"lingpai":2,"huasha":3},"陳捷容":{"price":1050,"wanbao":380,"yinzhai":0,"tianshe":142,"nian":3,"ji":0,"lingpai":0,"huasha":0},"熊卿妃":{"price":1260,"wanbao":3,"yinzhai":0,"tianshe":1,"nian":1,"ji":0,"lingpai":0,"huasha":0},"謝欣諭":{"price":1260,"wanbao":12,"yinzhai":0,"tianshe":4,"nian":0,"ji":0,"lingpai":0,"huasha":0},"周冠榮":{"price":1260,"wanbao":56,"yinzhai":0,"tianshe":21,"nian":0,"ji":0,"lingpai":0,"huasha":0},"謝承殷":{"price":1260,"wanbao":8,"yinzhai":0,"tianshe":0,"nian":0,"ji":0,"lingpai":0,"huasha":0},"蕭鎧峻":{"price":1260,"wanbao":46,"yinzhai":0,"tianshe":12,"nian":0,"ji":0,"lingpai":0,"huasha":0},"陳昕昀":{"price":1260,"wanbao":15,"yinzhai":0,"tianshe":0,"nian":0,"ji":0,"lingpai":0,"huasha":0},"林雅涵":{"price":1260,"wanbao":5,"yinzhai":0,"tianshe":0,"nian":0,"ji":0,"lingpai":0,"huasha":0},"蕭竣方":{"price":1050,"wanbao":8,"yinzhai":0,"tianshe":5,"nian":0,"ji":0,"lingpai":0,"huasha":0},"鐘宥涵":{"price":1260,"wanbao":0,"yinzhai":0,"tianshe":0,"nian":0,"ji":0,"lingpai":0,"huasha":0},"鄭聖勳":{"price":1260,"wanbao":37,"yinzhai":0,"tianshe":7,"nian":1,"ji":5,"lingpai":0,"huasha":0},"梁凱妍":{"price":1260,"wanbao":43,"yinzhai":0,"tianshe":1,"nian":3,"ji":0,"lingpai":0,"huasha":0},"王宥心":{"price":1260,"wanbao":7,"yinzhai":0,"tianshe":3,"nian":0,"ji":0,"lingpai":0,"huasha":0},"賴素貞":{"price":1260,"wanbao":70,"yinzhai":0,"tianshe":35,"nian":1,"ji":10,"lingpai":1,"huasha":0},"張簡玉靖":{"price":1260,"wanbao":16,"yinzhai":0,"tianshe":35,"nian":0,"ji":0,"lingpai":0,"huasha":0},"公司內部":{"price":1260,"wanbao":5,"yinzhai":0,"tianshe":4,"nian":0,"ji":1,"lingpai":0,"huasha":0},"靈應壇":{"price":1260,"wanbao":0,"yinzhai":0,"tianshe":0,"nian":0,"ji":0,"lingpai":0,"huasha":0}},"courseShares":[{"sponsor":"羅文勳","student":"連之庭","course":"八字進階","amt":4878},{"sponsor":"羅文勳","student":"温青欣","course":"八字進階","amt":4878},{"sponsor":"羅文勳","student":"江姵靚(合報)","course":"塔羅進階","amt":3564},{"sponsor":"羅文勳","student":"吳懿庭(合報)","course":"塔羅進階","amt":3564},{"sponsor":"羅文勳","student":"康瑋齊","course":"八字進階","amt":4878},{"sponsor":"羅文勳","student":"郭嘉欣","course":"八字進階推薦人未到","amt":2439},{"sponsor":"羅文勳","student":"康瑋齊","course":"塔羅初進+八字初","amt":14000},{"sponsor":"羅文勳","student":"吳宸安","course":"塔羅初階推薦人未到","amt":920},{"sponsor":"康瑋齊","student":"吳宸安","course":"塔羅初階協助收單","amt":920},{"sponsor":"康瑋齊","student":"陳博隆(合報初階未上)","course":"塔羅進階","amt":3564},{"sponsor":"連之庭","student":"莊宇筠","course":"八字進階","amt":4878},{"sponsor":"鄭聖勳","student":"黃崇吉","course":"八字初階","amt":2570},{"sponsor":"賴素貞","student":"徐佳倫","course":"塔羅初階","amt":1840},{"sponsor":"賴素貞","student":"劉學銘","course":"八字初階","amt":5570},{"sponsor":"何丞基","student":"周僑美(合報)","course":"塔羅進階","amt":3564},{"sponsor":"陳彩綺","student":"郭嘉欣","course":"八字進階協助收單","amt":2439},{"sponsor":"陳彩綺","student":"劉育均(合報)","course":"塔羅兩階","amt":5404},{"sponsor":"陳彩綺","student":"黃渝珊","course":"塔羅初階","amt":1840},{"sponsor":"陳捷容","student":"周沁","course":"塔羅初階","amt":1840},{"sponsor":"陳捷容","student":"林君庭","course":"塔羅進階","amt":4000},{"sponsor":"謝欣諭","student":"陳琬渝","course":"八字進階協助收單","amt":2439},{"sponsor":"沈佳琪","student":"陳琬渝","course":"八字進階推薦人未到","amt":2439},{"sponsor":"沈佳琪","student":"葉芷薇","course":"塔羅初階","amt":1840}],"core":[{"name":"陳捷容","pv":502800,"refCount":2,"qualified":true},{"name":"蕭竣方","pv":11300,"refCount":0,"qualified":false},{"name":"陳彩綺","pv":265463,"refCount":2,"qualified":true},{"name":"羅文勳","pv":237751,"refCount":2,"qualified":false}],"onePctPool":20114,"payoutFees":{"陳彩綺":{"teacherFee":19420,"assistFee":0},"沈佳琪":{"teacherFee":0,"assistFee":0},"羅文勳":{"teacherFee":0,"assistFee":0},"陳捷容":{"teacherFee":0,"assistFee":0},"蕭鎧峻":{"teacherFee":3888,"assistFee":250},"湯雯莉":{"teacherFee":0,"assistFee":0},"鄭聖勳":{"teacherFee":0,"assistFee":0},"彭康華":{"teacherFee":0,"assistFee":0},"連之庭":{"teacherFee":0,"assistFee":0},"謝欣諭":{"teacherFee":0,"assistFee":0},"何丞基":{"teacherFee":0,"assistFee":0},"康瑋齊":{"teacherFee":0,"assistFee":0},"賴素貞":{"teacherFee":500,"assistFee":0}},"baonianG":{"陳捷容":26,"羅文勳":11,"湯雯莉":2,"張簡玉靖":2},"fileKeyMap":{"王宥心":"王宥心","沈佳琪":"沈佳琪","周冠榮":"周冠榮","林雅涵":"林雅涵","張簡玉靖":"張簡玉靖","梁凱妍":"梁凱妍","陳昕昀":"陳昕昀","陳彩綺":"陳彩綺","湯雯莉":"湯雯莉","熊卿妃":"熊卿妃","鄭聖勳":"鄭聖勳","蕭竣方":"蕭竣方","蕭鎧峻":"蕭鎧峻","賴素貞":"賴素貞","謝承殷":"謝承殷","謝欣諭":"謝欣諭","羅文勳":"羅文勳","神奇海螺":"陳捷容","靈應壇":"靈應壇+外部"},"noNetColumn":["羅文勳","熊卿妃"],"itemList":["補財","補庫","補運(消災解厄)","夫妻(金姻緣)","貴人(木姻緣)","單身(水姻緣)","和合(火姻緣)","同性(土姻緣)","冤親(解冤釋結)","化小人","招貴人"],"partsItems":{"陳捷容":{"補財":26,"補庫":31,"補運(消災解厄)":70,"夫妻(金姻緣)":8,"貴人(木姻緣)":35,"單身(水姻緣)":39,"和合(火姻緣)":26,"同性(土姻緣)":3,"冤親(解冤釋結)":88,"化小人":42,"招貴人":38},"蕭竣方":{"補財":1,"補庫":1,"補運(消災解厄)":2,"夫妻(金姻緣)":0,"貴人(木姻緣)":1,"單身(水姻緣)":0,"和合(火姻緣)":0,"同性(土姻緣)":0,"冤親(解冤釋結)":3,"化小人":0,"招貴人":0},"陳彩綺":{"補財":20,"補庫":8,"補運(消災解厄)":21,"夫妻(金姻緣)":10,"貴人(木姻緣)":11,"單身(水姻緣)":18,"和合(火姻緣)":47,"同性(土姻緣)":0,"冤親(解冤釋結)":35,"化小人":15,"招貴人":13},"周冠榮":{"補財":15,"補庫":5,"補運(消災解厄)":10,"夫妻(金姻緣)":0,"貴人(木姻緣)":2,"單身(水姻緣)":6,"和合(火姻緣)":0,"同性(土姻緣)":0,"冤親(解冤釋結)":10,"化小人":6,"招貴人":2},"沈佳琪":{"補財":8,"補庫":12,"補運(消災解厄)":7,"夫妻(金姻緣)":2,"貴人(木姻緣)":4,"單身(水姻緣)":9,"和合(火姻緣)":10,"同性(土姻緣)":1,"冤親(解冤釋結)":21,"化小人":6,"招貴人":12},"羅文勳":{"補財":32,"補庫":14,"補運(消災解厄)":12,"夫妻(金姻緣)":5,"貴人(木姻緣)":7,"單身(水姻緣)":5,"和合(火姻緣)":5,"同性(土姻緣)":2,"冤親(解冤釋結)":17,"化小人":10,"招貴人":15},"蕭鎧峻":{"補財":11,"補庫":5,"補運(消災解厄)":7,"夫妻(金姻緣)":2,"貴人(木姻緣)":4,"單身(水姻緣)":0,"和合(火姻緣)":3,"同性(土姻緣)":0,"冤親(解冤釋結)":7,"化小人":5,"招貴人":2},"鐘宥涵":{"補財":0,"補庫":0,"補運(消災解厄)":0,"夫妻(金姻緣)":0,"貴人(木姻緣)":0,"單身(水姻緣)":0,"和合(火姻緣)":0,"同性(土姻緣)":0,"冤親(解冤釋結)":0,"化小人":0,"招貴人":0},"湯雯莉":{"補財":28,"補庫":20,"補運(消災解厄)":18,"夫妻(金姻緣)":6,"貴人(木姻緣)":15,"單身(水姻緣)":25,"和合(火姻緣)":23,"同性(土姻緣)":1,"冤親(解冤釋結)":37,"化小人":7,"招貴人":4},"謝承殷":{"補財":1,"補庫":1,"補運(消災解厄)":1,"夫妻(金姻緣)":0,"貴人(木姻緣)":3,"單身(水姻緣)":0,"和合(火姻緣)":0,"同性(土姻緣)":0,"冤親(解冤釋結)":2,"化小人":0,"招貴人":0},"林雅涵":{"補財":3,"補庫":0,"補運(消災解厄)":1,"夫妻(金姻緣)":0,"貴人(木姻緣)":0,"單身(水姻緣)":1,"和合(火姻緣)":0,"同性(土姻緣)":0,"冤親(解冤釋結)":0,"化小人":0,"招貴人":0},"陳昕昀":{"補財":7,"補庫":0,"補運(消災解厄)":1,"夫妻(金姻緣)":0,"貴人(木姻緣)":2,"單身(水姻緣)":0,"和合(火姻緣)":0,"同性(土姻緣)":0,"冤親(解冤釋結)":4,"化小人":1,"招貴人":0},"熊卿妃":{"補財":0,"補庫":0,"補運(消災解厄)":1,"夫妻(金姻緣)":0,"貴人(木姻緣)":1,"單身(水姻緣)":1,"和合(火姻緣)":0,"同性(土姻緣)":0,"冤親(解冤釋結)":0,"化小人":0,"招貴人":0},"公司內部":{"補財":0,"補庫":0,"補運(消災解厄)":2,"夫妻(金姻緣)":0,"貴人(木姻緣)":0,"單身(水姻緣)":1,"和合(火姻緣)":0,"同性(土姻緣)":0,"冤親(解冤釋結)":1,"化小人":0,"招貴人":1},"賴素貞":{"補財":16,"補庫":10,"補運(消災解厄)":1,"夫妻(金姻緣)":0,"貴人(木姻緣)":0,"單身(水姻緣)":1,"和合(火姻緣)":0,"同性(土姻緣)":0,"冤親(解冤釋結)":1,"化小人":23,"招貴人":18},"張簡玉靖":{"補財":6,"補庫":2,"補運(消災解厄)":5,"夫妻(金姻緣)":0,"貴人(木姻緣)":1,"單身(水姻緣)":1,"和合(火姻緣)":0,"同性(土姻緣)":0,"冤親(解冤釋結)":2,"化小人":1,"招貴人":0},"梁凱妍":{"補財":12,"補庫":5,"補運(消災解厄)":1,"夫妻(金姻緣)":0,"貴人(木姻緣)":2,"單身(水姻緣)":0,"和合(火姻緣)":2,"同性(土姻緣)":0,"冤親(解冤釋結)":13,"化小人":0,"招貴人":8},"謝欣諭":{"補財":1,"補庫":2,"補運(消災解厄)":5,"夫妻(金姻緣)":0,"貴人(木姻緣)":0,"單身(水姻緣)":0,"和合(火姻緣)":0,"同性(土姻緣)":0,"冤親(解冤釋結)":1,"化小人":2,"招貴人":1},"鄭聖勳":{"補財":5,"補庫":1,"補運(消災解厄)":5,"夫妻(金姻緣)":2,"貴人(木姻緣)":2,"單身(水姻緣)":3,"和合(火姻緣)":5,"同性(土姻緣)":1,"冤親(解冤釋結)":8,"化小人":2,"招貴人":3},"王宥心":{"補財":2,"補庫":1,"補運(消災解厄)":1,"夫妻(金姻緣)":0,"貴人(木姻緣)":1,"單身(水姻緣)":0,"和合(火姻緣)":0,"同性(土姻緣)":0,"冤親(解冤釋結)":2,"化小人":0,"招貴人":0},"靈應壇":{"補財":0,"補庫":0,"補運(消災解厄)":0,"夫妻(金姻緣)":0,"貴人(木姻緣)":0,"單身(水姻緣)":0,"和合(火姻緣)":0,"同性(土姻緣)":0,"冤親(解冤釋結)":0,"化小人":0,"招貴人":0}}};
+CFG.referralBonus=CFG.referralBonus||{'賴素貞':8000};
+CFG.referralNote=CFG.referralNote||{'賴素貞':'6/10另期發放'};
+CFG.tree=CFG.tree||{'蕭鎧峻':'羅文勳','沈佳琪':'羅文勳','周冠榮':'羅文勳','鄭聖勳':'羅文勳','王宥心':'羅文勳','陳成哲':'鄭聖勳','程章晏':'羅文勳','洪釧益':'羅文勳','李佳怡':'羅文勳','林旂彰':'羅文勳','游仁樺':'羅文勳','李仲媛':'羅文勳','康瑋齊':'羅文勳','陳昕昀':'蕭鎧峻','謝承殷':'蕭鎧峻','林雅涵':'蕭鎧峻','張心柔':'沈佳琪','張碩原':'沈佳琪','蔡含疄':'沈佳琪','劉玥希':'王宥心','熊卿妃':'陳捷容','鐘宥涵':'陳捷容','湯雯莉':'陳捷容','陳彩綺':'陳捷容','方育翔':'陳捷容','曾星蓓':'陳捷容','朱沛語':'熊卿妃','黃沛菁':'熊卿妃','楊茜茹':'陳彩綺','梁凱妍':'陳彩綺','蔡豐州':'陳彩綺','張晏蓉':'陳彩綺','賴素貞':'湯雯莉','謝欣諭':'湯雯莉','張簡玉靖':'賴素貞','徐佳倫':'賴素貞','呂沛珣':'蕭竣方','李惠菁':'蕭竣方','黃素玫':'蕭竣方','林姵礽':'黃素玫','羅文勳':'','陳捷容':'','蕭竣方':''};
+CFG.treeNote=CFG.treeNote||{'蕭鎧峻':'簽約老師','沈佳琪':'簽約老師','周冠榮':'簽約老師','鄭聖勳':'簽約老師','王宥心':'簽約老師','陳成哲':'簽約學員','洪釧益':'簽約學員','李佳怡':'簽約學員','林旂彰':'簽約學員','游仁樺':'簽約學員','李仲媛':'簽約學員','康瑋齊':'簽約學員','陳昕昀':'經紀代理約','謝承殷':'經紀代理約','林雅涵':'經紀代理約','張心柔':'簽約老師','張碩原':'簽約老師','蔡含疄':'簽約學員','劉玥希':'簽約學員','熊卿妃':'簽約老師','鐘宥涵':'簽約老師','湯雯莉':'簽約老師','陳彩綺':'簽約老師','方育翔':'簽約老師','曾星蓓':'簽約老師','朱沛語':'簽約老師','黃沛菁':'簽約學員','楊茜茹':'簽約學員','梁凱妍':'簽約老師','蔡豐州':'簽約學員','張晏蓉':'簽約學員','賴素貞':'簽約老師','謝欣諭':'簽約學員','張簡玉靖':'簽約老師','徐佳倫':'簽約學員','呂沛珣':'簽約學員','李惠菁':'簽約老師','黃素玫':'簽約老師','林姵礽':'簽約老師','羅文勳':'主線','陳捷容':'主線','蕭竣方':'主線'};
+const CORE=['陳捷容','陳彩綺','羅文勳','蕭竣方'];
+const ITEMS=CFG.itemList;
+const CFGMONTH='2026.05';
+const PRICE={tianshe:580,yinzhai:2160,nian:5200,ji:2160,wnian:5860,wji:2820,lingpai:660,huasha:200};
+const API_URL='https://script.google.com/macros/s/AKfycbwSM81dVKy_ZkFdQneulQKv7m13rfYe8xonhBFPI6T1sASw3A2Q3rBNjJ1oY3MsOPIYZw/exec';
+let MONTH=CFGMONTH, STORE=[], PARSED={}, PARTS={}, lastR=null, PARSEFLAG=[];
+CFG.parseReview=CFG.parseReview||['熊卿妃','靈應壇+外部'];
+
+function theme(m){document.body.classList.remove('light');if(m==='light')document.body.classList.add('light');try{localStorage.mtheme=m}catch(e){}}
+function bigfont(){document.body.classList.toggle('big');try{localStorage.mbig=document.body.classList.contains('big')?1:''}catch(e){}}
+try{if(localStorage.mtheme==='dark')document.body.classList.remove('light');if(localStorage.mbig)document.body.classList.add('big')}catch(e){}
+function toggle(id){document.getElementById(id).classList.toggle('collapsed')}
+function fmt(n){return Math.round(n||0).toLocaleString('en-US')}
+function wbPrice(n){return CORE.includes(n)?1050:1260}
+function tierAward(pv){return pv>=400000?10:pv>=300000?8:pv>=200000?5:pv>=100000?2:0}
+function tierTeam(pv){return pv>=400000?5:pv>=300000?4:pv>=200000?3:pv>=100000?2:0}
+const RANKPCT={'銀階':60,'黃金':68,'鑽石':75,'晶鑽':82,'翡翠':90,'總裁':97,'':0};
+CFG.cumPV=CFG.cumPV||{'陳捷容':7675370,'陳彩綺':6183009,'沈佳琪':5748632,'羅文勳':4976038,'湯雯莉':3349723,'周冠榮':2890153,'謝承殷':1508000,'蕭竣方':1432177,'蕭鎧峻':1397538,'熊卿妃':1038470,'賴素貞':812250,'鐘宥涵':632120,'陳昕昀':535540,'鄭聖勳':441023,'張簡玉靖':276020,'梁凱妍':292780,'林雅涵':224440,'王宥心':0};
+function rankFromPV(c){c=+c||0;return c>=3150000?'總裁':c>=2520000?'翡翠':c>=1890000?'晶鑽':c>=1260000?'鑽石':c>=630000?'黃金':'銀階';}
+CFG.cum2026=CFG.cum2026||{'陳捷容':1596774,'陳彩綺':1397558,'沈佳琪':761615,'羅文勳':1274390,'湯雯莉':1175734,'周冠榮':269460,'謝承殷':100120,'蕭竣方':37630,'蕭鎧峻':200975,'熊卿妃':248950,'賴素貞':595520,'鐘宥涵':38340,'陳昕昀':90720,'鄭聖勳':299063,'張簡玉靖':276020,'梁凱妍':292780,'林雅涵':36700,'王宥心':20700};
+function rankOf(n){let c=(CFG.cumPV||{})[n];if(c===undefined||c===null||c===''){const t=CFG.teachers.find(x=>x.name===n);return (t&&t.rank)?t.rank:'銀階';}
+  return rankFromPV(c);}
+
+function zeroItems(){const o={};ITEMS.forEach(i=>o[i]=0);return o}
+function initParts(){
+  PARTS={};
+  CFG.teachers.forEach(t=>{
+    const n=t.name, useCfg=(MONTH===CFGMONTH);
+    const items = useCfg&&CFG.partsItems[n]?Object.assign({},CFG.partsItems[n]):zeroItems();
+    const p = useCfg?(CFG.parts[n]||{}):{};
+    PARTS[n]={items, tianshe:p.tianshe||0, yinzhai:p.yinzhai||0, nian:p.nian||0, ji:p.ji||0, wnian:p.wnian||0, wji:p.wji||0, lingpai:p.lingpai||0, huasha:p.huasha||0};
+  });
+}
+function wanbaoSub(n){return ITEMS.reduce((s,i)=>s+(PARTS[n].items[i]||0),0)}  // 含包年小計
+function wanbaoNet(n){return Math.max(0, wanbaoSub(n)-((CFG.baonianG||{})[n]||0))}  // 實收
+
+// ---- 解析 ----
+function toNum(v){if(v==null)return null;let s=(''+v).trim().replace(/[０-９]/g,d=>'０１２３４５６７８９'.indexOf(d)).replace(/,/g,'');const f=parseFloat(s);return isNaN(f)?null:f}
+function teacherFromFile(f){for(const k in CFG.fileKeyMap)if(f.includes(k))return CFG.fileKeyMap[k];return null}
+function parseFahui(rows){
+  let rt=-1,ct=-1;
+  for(let r=0;r<Math.min(rows.length,26);r++){const row=rows[r]||[];for(let c=0;c<row.length;c++){if((''+row[c]).trim()==='總份數'){rt=r;ct=c;}}}
+  if(rt<0)return null;
+  let netCol=-1;for(let c=ct+1;c<=ct+5;c++){const v=rows[rt][c];if(v&&(''+v).includes('業績')){netCol=c+1;break;}}
+  const hasNet=netCol>=0;const items=zeroItems();let ts=0;
+  for(let r=0;r<rt;r++){const lab=(''+((rows[r]||[])[ct]||'')).trim();
+    if(ITEMS.includes(lab)||lab==='天赦金'){const raw=toNum((rows[r]||[])[ct+1])||0;
+      let adj=0;for(const cc of [ct-1,ct-2]){if(cc>=0){const n=toNum((rows[r]||[])[cc]);if(n!=null&&n<0)adj=n;}}
+      const v=hasNet?(toNum((rows[r]||[])[netCol])||0):(raw+adj);
+      if(lab==='天赦金')ts+=v;else items[lab]+=v;}}
+  return {items,tianshe:ts,hasNet};
+}
+function parseDoudeng(rows){
+  let hr=-1;for(let r=0;r<Math.min(rows.length,14);r++){const row=rows[r]||[];if(row.some(v=>(''+v).trim()==='項目')&&row.some(v=>(''+v).trim()==='份數')){hr=r;break;}}
+  if(hr<0)return null;
+  const KW=['單筆加購','五行年斗','五行季斗','季斗加購','令牌加購'];
+  let nian=0,ji=0,wnian=0,wji=0,lingpai=0;
+  for(let r=hr+1;r<rows.length;r++){const row=rows[r]||[];if(toNum(row[0])==null)continue;
+    let typ='';for(const v of row){const s=(''+v).trim();if(KW.includes(s)){typ=s;break;}}
+    if(!typ)continue;
+    if(typ==='令牌加購')lingpai++;else if(typ==='五行年斗')wnian++;else if(typ==='五行季斗')wji++;else if(typ==='季斗加購')ji++;else nian++;}
+  return {nian,ji,wnian,wji,lingpai};
+}
+function parseYinzhai(rows){
+  let hr=-1;for(let r=0;r<Math.min(rows.length,14);r++){const row=rows[r]||[];if(row.some(v=>(''+v).trim()==='姓名')){hr=r;break;}}
+  if(hr<0)return 0;let c=0;for(let r=hr+1;r<rows.length;r++){if(toNum((rows[r]||[])[0])!=null)c++;}return c;
+}
+function fetchOnline(){
+  if(!API_URL){alert('尚未設定 API_URL');return;}
+  const m=document.getElementById('month').value.trim();
+  const st=document.getElementById('onlineStatus');
+  if(st){st.style.color='var(--mut)';st.textContent='讀取中…（跨各老師試算表彙整，約需數十秒，請稍候）';}
+  fetch(`${API_URL}?action=summary&month=${encodeURIComponent(m)}`).then(r=>r.json()).then(d=>{
+    if(!d.ok||!d.summary){if(st){st.style.color='var(--red)';st.textContent='讀取失敗，請確認月份與後端部署。';}return;}
+    let cnt=0;
+    Object.keys(d.summary).forEach(name=>{
+      if(!PARTS[name])return; const s=d.summary[name];
+      ITEMS.forEach(i=>{PARTS[name].items[i]=+s[i]||0;});
+      PARTS[name].tianshe=+s['天赦金']||0;
+      PARTS[name].yinzhai=+s['還陰債']||0;
+      PARTS[name].nian=+s['年斗']||0;
+      PARTS[name].ji=+s['季斗']||0;
+      PARTS[name].wnian=+s['五行年斗']||0;
+      PARTS[name].wji=+s['五行季斗']||0;
+      PARTS[name].lingpai=+s['令牌']||0;
+      cnt++; // 化煞水維持手動，不覆蓋
+    });
+    renderParts();
+    if(st){st.style.color='var(--green)';st.textContent='✓ 已帶入 '+cnt+' 位老師（'+m+'）。化煞水請於份數表手動補，再按「⚖ 計算」。';}
+  }).catch(e=>{if(st){st.style.color='var(--red)';st.textContent='連線失敗：'+e;}});
+}
+function reparseAll(){
+  PARSED={};const list=document.getElementById('filelist');list.innerHTML='';
+  STORE.forEach(s=>parseOne(s.name,s.data,list));
+  applyParsed();
+}
+function parseOne(name,data,list){
+  const t=teacherFromFile(name);let info='';
+  try{
+    const wb=XLSX.read(data,{type:'array'});
+    const sn=wb.SheetNames.find(s=>s.trim()==='法會('+MONTH+')');
+    if(t&&sn){
+      const rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:true});
+      const r=parseFahui(rows);
+      if(r){const d=PARSED[t]||(PARSED[t]={items:zeroItems(),tianshe:0,hasNet:true});
+        ITEMS.forEach(i=>d.items[i]+=r.items[i]);d.tianshe+=r.tianshe;d.hasNet=d.hasNet&&r.hasNet;
+        const sub=ITEMS.reduce((s,i)=>s+r.items[i],0);info=`萬寶${sub}/天赦${r.tianshe}`+(r.hasNet?'':' ⚠無淨額欄');}
+    } else if(t){info='查無 法會('+MONTH+')';}
+    // 斗燈(年/季/令)明細計數
+    const sd=wb.SheetNames.find(s=>s.trim()==='斗燈('+MONTH+')');
+    if(t&&sd){const dr=XLSX.utils.sheet_to_json(wb.Sheets[sd],{header:1,raw:true});const dd=parseDoudeng(dr);
+      if(dd){const d=PARSED[t]||(PARSED[t]={items:zeroItems(),tianshe:0,hasNet:true});d.nian=(d.nian||0)+dd.nian;d.ji=(d.ji||0)+dd.ji;d.wnian=(d.wnian||0)+dd.wnian;d.wji=(d.wji||0)+dd.wji;d.lingpai=(d.lingpai||0)+dd.lingpai;d.hasDou=true;
+        if(dd.nian+dd.ji+dd.lingpai)info+=` ｜斗:年${dd.nian}/季${dd.ji}/令${dd.lingpai}`;}}
+    // 還陰債明細計數
+    const sy=wb.SheetNames.find(s=>s.trim()==='還陰債('+MONTH+')');
+    if(t&&sy){const yr=XLSX.utils.sheet_to_json(wb.Sheets[sy],{header:1,raw:true});const yc=parseYinzhai(yr);
+      if(yc){const d=PARSED[t]||(PARSED[t]={items:zeroItems(),tianshe:0,hasNet:true});d.yinzhai=(d.yinzhai||0)+yc;info+=` ｜還陰債${yc}`;}}
+    const cls=t&&sn?'ok':'warn';const chip=document.createElement('div');chip.className='chip '+cls;
+    chip.innerHTML=(t?'✔ '+t:'? '+name)+(info?` <span style="color:var(--mut)">${info}</span>`:'');list.appendChild(chip);
+  }catch(e){const chip=document.createElement('div');chip.className='chip warn';chip.textContent='✖ '+name;list.appendChild(chip);}
+}
+function handleFiles(files){const list=document.getElementById('filelist');
+  [...files].forEach(file=>{const reader=new FileReader();reader.onload=e=>{STORE.push({name:file.name,data:e.target.result});parseOne(file.name,e.target.result,list);applyParsed();};reader.readAsArrayBuffer(file);});}
+function applyParsed(){
+  PARSEFLAG=[];
+  for(const t in PARSED){if(PARTS[t]){const d=PARSED[t];ITEMS.forEach(i=>PARTS[t].items[i]=d.items[i]);PARTS[t].tianshe=d.tianshe;
+    if(d.hasDou){PARTS[t].nian=d.nian||0;PARTS[t].ji=d.ji||0;PARTS[t].wnian=d.wnian||0;PARTS[t].wji=d.wji||0;PARTS[t].lingpai=d.lingpai||0;}
+    if(d.yinzhai!=null)PARTS[t].yinzhai=d.yinzhai;
+    if((CFG.parseReview||[]).includes(t))PARSEFLAG.push(t);}}
+  renderParts();
+}
+function onMonthChange(){MONTH=document.getElementById('month').value.trim();loadPrevBurn();initParts();reparseAll();}
+
+// ---- 份數表 ----
+function renderParts(){
+  const tb=document.getElementById('partsTbl');
+  let h='<thead><tr><th>老師</th>';ITEMS.forEach(i=>h+=`<th>${i.replace(/\(.*\)/,'')}</th>`);
+  h+='<th>萬寶小計</th><th>包年G</th><th>萬寶實收</th><th>天赦</th><th>還陰債</th><th>年斗</th><th>季斗</th><th>五行年斗</th><th>五行季斗</th><th>令牌</th><th>化煞水</th></tr></thead><tbody>';
+  CFG.teachers.forEach(t=>{const n=t.name,p=PARTS[n];const skip=(CFG.noNetColumn||[]).includes(n)&&PARSED[n];
+    h+=`<tr><td>${n}${CORE.includes(n)?' <span class="tag">核</span>':''}</td>`;
+    ITEMS.forEach(i=>{h+=`<td><input class="cell" type="number" value="${p.items[i]||0}" onchange="setItem('${n}','${i}',this.value)"></td>`;});
+    const sub=wanbaoSub(n),g=(CFG.baonianG||{})[n]||0,net=wanbaoNet(n);
+    h+=`<td class="calc${skip?' warn':''}">${sub}</td>`;
+    h+=`<td><input class="cell g" type="number" value="${g}" onchange="setG('${n}',this.value)"></td>`;
+    h+=`<td class="calc">${net}</td>`;
+    h+=`<td><input class="cell" type="number" value="${p.tianshe||0}" onchange="setF('${n}','tianshe',this.value)"></td>`;
+    const dc=(PARSED[n]&&PARSED[n].hasDou)?' dcount':'';
+    h+=`<td><input class="cell" type="number" value="${p.yinzhai||0}" onchange="setF('${n}','yinzhai',this.value)"></td>`;
+    h+=`<td><input class="cell${dc}" type="number" value="${p.nian||0}" onchange="setF('${n}','nian',this.value)"></td>`;
+    h+=`<td><input class="cell${dc}" type="number" value="${p.ji||0}" onchange="setF('${n}','ji',this.value)"></td>`;
+    h+=`<td><input class="cell${dc}" type="number" value="${p.wnian||0}" onchange="setF('${n}','wnian',this.value)"></td>`;
+    h+=`<td><input class="cell${dc}" type="number" value="${p.wji||0}" onchange="setF('${n}','wji',this.value)"></td>`;
+    h+=`<td><input class="cell${dc}" type="number" value="${p.lingpai||0}" onchange="setF('${n}','lingpai',this.value)"></td>`;
+    h+=`<td><input class="cell" type="number" value="${p.huasha||0}" onchange="setF('${n}','huasha',this.value)"></td></tr>`;});
+  h+='</tbody>';tb.innerHTML=h;
+  const pn=document.getElementById('parseNote');
+  if(pn){let msg='';
+    if(STORE.length){const flagged=PARSEFLAG.filter(t=>PARSED[t]);
+      msg='<div class="banner ok">✅ 已自動帶入 '+Object.keys(PARSED).length+' 位老師的「萬寶金11項 + 天赦金」(已扣上月補單)。</div>';
+      if(flagged.length)msg+='<div class="banner warn">⚠ 下列需人工確認:'+flagged.join('、')+'。熊卿妃為行政統計表格式(常有手動調整)、靈應壇為公司內部,請核對份數。</div>';
+      msg+='<div class="banner info">ℹ <b>斗燈為明細自動計數</b>(琥珀色欄)。<b>年斗=單筆加購、季斗=季斗加購、五行年斗、五行季斗各自分開計價</b>(年斗5200/季斗2160/五行年斗5860/五行季斗2820)。<b>令牌</b>各檔記錄方式不一(有的寫加購類型、有的寫在備註的「令牌字」),只抓「令牌加購」當基準,<b>務必核對令牌</b>。還陰債:該月有分頁才計數;化煞水不在回傳檔,請手動填。</div>';
+    }
+    pn.innerHTML=msg;}
+  renderBurn();
+}
+// ===== 燒香清單 =====
+const BURNROWS=ITEMS.concat(['__sub','__tianshe']);
+function burnLabel(k){return k==='__sub'?'萬寶金小計':k==='__tianshe'?'天赦金':k.replace(/\(.*\)/,'');}
+function burnTotals(){
+  const o={};ITEMS.forEach(i=>o[i]=0);o.__sub=0;o.__tianshe=0;
+  CFG.teachers.forEach(t=>{const p=PARTS[t.name];if(!p)return;ITEMS.forEach(i=>{o[i]+=p.items[i]||0;});o.__sub+=ITEMS.reduce((s,i)=>s+(p.items[i]||0),0);o.__tianshe+=p.tianshe||0;});
+  return o;
+}
+function burnKey(){return 'burn_'+MONTH;}
+let PREVBURN={};
+function loadPrevBurn(){PREVBURN={};try{const s=localStorage.getItem(burnKey());if(s)PREVBURN=JSON.parse(s);}catch(e){}}
+function renderBurn(){
+  const tot=burnTotals();
+  const tb=document.getElementById('burnTbl');if(!tb)return;
+  let h='<thead><tr><th>項目</th><th>本月累計</th><th>上次已燒</th><th>本次要燒</th></tr></thead><tbody>';
+  BURNROWS.forEach(k=>{const cur=tot[k]||0;const prev=PREVBURN[k]||0;const need=Math.max(0,cur-prev);
+    const cls=k==='__sub'||k==='__tianshe'?' class="calc"':'';
+    h+=`<tr${cls}><td>${burnLabel(k)}</td><td>${cur}</td><td><input class="cell" type="number" value="${prev}" onchange="setPrevBurn('${k}',this.value)"></td><td class="calc"><b>${need}</b></td></tr>`;});
+  h+='</tbody>';tb.innerHTML=h;
+}
+function setPrevBurn(k,v){PREVBURN[k]=parseFloat(v)||0;try{localStorage.setItem(burnKey(),JSON.stringify(PREVBURN));}catch(e){}renderBurn();}
+function markBurned(){const tot=burnTotals();PREVBURN={};BURNROWS.forEach(k=>PREVBURN[k]=tot[k]||0);try{localStorage.setItem(burnKey(),JSON.stringify(PREVBURN));}catch(e){}renderBurn();alert('已將本次份數記為已燒，月底再產生時會自動扣除。');}
+function clearBurned(){PREVBURN={};try{localStorage.removeItem(burnKey());}catch(e){}renderBurn();}
+function printBurn(){
+  const tot=burnTotals();const today=new Date().toLocaleDateString('zh-TW');
+  let rows='';BURNROWS.forEach(k=>{const cur=tot[k]||0;const prev=PREVBURN[k]||0;const need=Math.max(0,cur-prev);
+    const big=(k==='__sub'||k==='__tianshe');
+    rows+=`<tr class="${big?'sub':''}"><td class="l">${burnLabel(k)}</td><td>${cur}</td><td>${prev}</td><td class="need">${need}</td></tr>`;});
+  const doc=`<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><title>燒香清單 ${MONTH}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+  <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans TC',sans-serif;background:#ece7dc;padding:24px;color:#2a2520}
+  .paper{background:#fff;max-width:480px;margin:0 auto;padding:34px 38px;box-shadow:0 4px 20px rgba(0,0,0,.12);border-top:5px solid #b5462f}
+  h1{font-family:'Noto Serif TC',serif;font-size:21px;color:#8a2f1c;text-align:center;letter-spacing:2px}
+  .meta{text-align:center;color:#8a7c60;font-size:12px;margin:6px 0 16px}
+  table{width:100%;border-collapse:collapse;font-size:15px}
+  th,td{border:1px solid #d8ccb4;padding:8px 10px;text-align:right}
+  th{background:#f4e3dd;color:#8a2f1c}
+  td.l,th:first-child{text-align:left}
+  td.need{font-weight:900;color:#8a2f1c;font-size:17px;background:#fcf2ee}
+  tr.sub td{background:#f7f1e3;font-weight:700}
+  .toolbar{max-width:480px;margin:0 auto 12px;text-align:right}.toolbar button{background:#b5462f;color:#fff;border:none;border-radius:7px;padding:9px 18px;font-size:14px;cursor:pointer;font-family:'Noto Serif TC',serif}
+  .foot{margin-top:22px;color:#8a7c60;font-size:11px;text-align:center}
+  @media print{body{background:#fff;padding:0}.paper{box-shadow:none}.toolbar{display:none}@page{size:A5 portrait;margin:12mm}}</style></head><body>
+  <div class="toolbar"><button onclick="window.print()">🖨 列印</button></div>
+  <div class="paper"><h1>要燒的香 · 燒化清單</h1><div class="meta">結算月份 ${MONTH}　製表 ${today}</div>
+  <table><thead><tr><th>項目</th><th>本月累計</th><th>上次已燒</th><th>本次要燒</th></tr></thead><tbody>${rows}</tbody></table>
+  <p class="foot">※「本次要燒」= 本月累計 − 上次已燒。月中燒完後於系統按「記為已燒」，月底即自動扣除。</p></div>
+</body></html>`;
+  const w=window.open('','_burn');if(!w){alert('請允許彈出視窗');return;}w.document.open();w.document.write(doc);w.document.close();
+}
+function setG(n,v){CFG.baonianG=CFG.baonianG||{};CFG.baonianG[n]=parseFloat(v)||0;renderParts();}
+function setF(n,k,v){PARTS[n][k]=parseFloat(v)||0;}
+
+function computeTotals(){const m={};CFG.teachers.forEach(t=>{const n=t.name,p=PARTS[n];if(!p){m[n]=0;return;}const jin=wanbaoNet(n)*wbPrice(n)+(p.yinzhai||0)*PRICE.yinzhai+(p.tianshe||0)*PRICE.tianshe;const dou=(p.nian||0)*PRICE.nian+(p.ji||0)*PRICE.ji+(p.wnian||0)*PRICE.wnian+(p.wji||0)*PRICE.wji+(p.lingpai||0)*PRICE.lingpai;const goods=(p.huasha||0)*PRICE.huasha;m[n]=jin+dou+goods+(t.coursePV||0);});return m;}
+function teamPVMap(){const tot=computeTotals();const ch={};Object.keys(CFG.tree||{}).forEach(c=>{const up=CFG.tree[c];if(up)(ch[up]=ch[up]||[]).push(c);});const ag=n=>(CFG.treeNote||{})[n]==='經紀代理約';function sp(n,s){s=s||{};let v=0;(ch[n]||[]).forEach(c=>{if(s[c]||ag(c))return;s[c]=1;v+=(tot[c]||0)+sp(c,s);});return v;}const m={};CFG.teachers.forEach(t=>m[t.name]=sp(t.name));return m;}
+function renderSettings(){
+  const et=document.getElementById('extraTbl');
+  const tpv=teamPVMap();
+  let h='<thead><tr><th>老師</th><th>累積PV(不含本月)</th><th>聘階<span class="tag">自動</span></th><th>上線(推薦人)</th><th>傘下PV<span class="tag">自動</span></th><th>課程分潤業績</th><th>法會推薦人獎金</th></tr></thead><tbody>';
+  CFG.teachers.forEach(t=>{const n=t.name;h+=`<tr><td>${n}</td>
+    <td><input class="cell" style="width:100px" type="number" value="${(CFG.cumPV||{})[n]||0}" onchange="setCum('${n}',this.value)"></td>
+    <td class="calc" style="text-align:left"><b>${rankOf(n)}</b> <span class="mut">${RANKPCT[rankOf(n)]||0}%</span></td>
+    <td><input class="cell" style="width:90px;text-align:left" value="${(CFG.tree||{})[n]||''}" onchange="setUpline('${n}',this.value)"></td>
+    <td class="calc" style="text-align:right"><b>${fmt(tpv[n]||0)}</b></td>
+    <td><input class="cell" style="width:80px" type="number" value="${t.coursePV||0}" onchange="setT('${n}','coursePV',this.value)"></td>
+    <td><input class="cell" style="width:80px" type="number" value="${(CFG.referralBonus||{})[n]||0}" onchange="setRef('${n}',this.value)"></td></tr>`;});
+  h+='</tbody>';et.innerHTML=h;
+}
+function setUpline(n,v){CFG.tree=CFG.tree||{};CFG.tree[n]=(v||'').trim();renderSettings();}
+function setCum(n,v){CFG.cumPV=CFG.cumPV||{};CFG.cumPV[n]=parseFloat(v)||0;renderSettings();}
+function setT(n,k,v){const t=CFG.teachers.find(x=>x.name===n);if(t)t[k]=parseFloat(v)||0}
+function setRef(n,v){CFG.referralBonus=CFG.referralBonus||{};CFG.referralBonus[n]=parseFloat(v)||0}
+
+// ---- 引擎 ----
+function calc(){
+  const R={};const totalMap={};
+  const isMid=(document.getElementById('cutoff')||{}).value==='mid';
+  // 第一階:各人全部總業績
+  CFG.teachers.forEach(t=>{const n=t.name,p=PARTS[n];
+    const jin=wanbaoNet(n)*wbPrice(n)+(p.yinzhai||0)*PRICE.yinzhai+(p.tianshe||0)*PRICE.tianshe;
+    const dou=(p.nian||0)*PRICE.nian+(p.ji||0)*PRICE.ji+(p.wnian||0)*PRICE.wnian+(p.wji||0)*PRICE.wji+(p.lingpai||0)*PRICE.lingpai;
+    const goods=(p.huasha||0)*PRICE.huasha;const course=isMid?0:(t.coursePV||0);const total=jin+dou+goods+course;
+    R[n]={jin,dou,goods,course,total,sub:wanbaoSub(n),net:wanbaoNet(n),items:p.items,tianshe:p.tianshe};
+    totalMap[n]=total;});
+  // 依組織樹遞迴加總傘下(全層級,不含自己;經紀代理約不往上滾)
+  const children={};Object.keys(CFG.tree||{}).forEach(c=>{const up=CFG.tree[c];if(up)(children[up]=children[up]||[]).push(c);});
+  const isAgent=n=>(CFG.treeNote||{})[n]==='經紀代理約';
+  function subPV(n,seen){seen=seen||{};let s=0;(children[n]||[]).forEach(c=>{if(seen[c]||isAgent(c))return;seen[c]=1;s+=(totalMap[c]||0)+subPV(c,seen);});return s;}
+  function agentPV(n){let s=0;(children[n]||[]).forEach(c=>{if(isAgent(c))s+=(totalMap[c]||0)+agentSubAll(c);});return s;}
+  function agentSubAll(n){let s=0;(children[n]||[]).forEach(c=>{s+=(totalMap[c]||0)+agentSubAll(c);});return s;}
+  // 第二階:獎金(團隊PV系統算)
+  CFG.teachers.forEach(t=>{const n=t.name;const total=R[n].total;const teamPV=subPV(n);const aPV=agentPV(n);
+    const isCore=CORE.includes(n);const awardBase=total+aPV;const award=isCore?0:Math.round(awardBase*tierAward(awardBase)/100);
+    const teampct=total<100000?0:tierTeam(total);
+    const teambonus=Math.round(teamPV*(RANKPCT[rankOf(n)]||0)/100*teampct/100);
+    R[n].teamPV=teamPV;R[n].agentPV=aPV;R[n].awardBase=awardBase;R[n].award=award;R[n].teambonus=teambonus;});
+  // 1% 核心池(達標:當月業績PV ≥ 門檻 且 課程推薦人數 ≥ 門檻)
+  const PV_TH=CFG.onePctPVth||252000, REF_TH=CFG.onePctRefth||2;
+  const refCount={};(CFG.courseShares||[]).forEach(c=>refCount[c.sponsor]=(refCount[c.sponsor]||0)+1);
+  const core1=CORE.map(n=>{const pv=(R[n]||{}).total||0;const ref=refCount[n]||0;return{name:n,pv,ref,qualified:pv>=PV_TH&&ref>=REF_TH};});
+  const allPV=CFG.teachers.reduce((s,t)=>s+((R[t.name]||{}).total||0),0);
+  const rate=CFG.onePctRate||0.01;
+  const manual=CFG.onePctPoolManual;
+  const pool=(manual!==undefined&&manual!==null&&manual!=='')?(+manual):Math.round(allPV*rate);
+  const qsum=core1.filter(c=>c.qualified).reduce((s,c)=>s+c.pv,0)||1;
+  const onepct={};core1.forEach(c=>onepct[c.name]=c.qualified?Math.round(c.pv/qsum*pool):0);
+  const cshare={};if(!isMid)CFG.courseShares.forEach(cs=>cshare[cs.sponsor]=(cshare[cs.sponsor]||0)+cs.amt);
+  const fees=CFG.payoutFees||{};
+  const names=new Set([...Object.keys(R),...Object.keys(cshare),...Object.keys(onepct),...Object.keys(fees),...Object.keys(CFG.referralBonus||{})]);
+  const pay={};let grand=0;const sixten={};
+  names.forEach(n=>{const ref=(CFG.referralBonus||{})[n]||0;
+    const o={course:cshare[n]||0,tf:(fees[n]||{}).teacherFee||0,af:(fees[n]||{}).assistFee||0,onepct:onepct[n]||0,award:(R[n]||{}).award||0,team:(R[n]||{}).teambonus||0,referral:0};
+    o.total=o.course+o.tf+o.af+o.onepct+o.award+o.team;
+    if(o.total>0){pay[n]=o;grand+=o.total;}
+    if(ref>0){sixten[n]={course:o.course,award:o.award,team:o.team,referral:ref,total:o.course+o.award+o.team+ref};}});
+  lastR={R,pay,grand,sixten,core1,pool,allPV,rate,isMid};
+  renderMain(R);renderPay(pay,grand,sixten);renderWarns(lastR);renderCum();render1pct();renderTravel();showTab('result');
+  document.getElementById('s4').style.display='';document.getElementById('s5').style.display='';document.getElementById('s4').scrollIntoView({behavior:'smooth'});
+}
+function renderMain(R){
+  let h='<thead><tr><th>老師</th>';ITEMS.forEach(i=>h+=`<th>${i.replace(/\(.*\)/,'')}</th>`);
+  h+='<th>萬寶實收</th><th>天赦</th><th>金紙類</th><th>斗燈類</th><th>商品</th><th>課程</th><th class="hot">全部業績</th><th>達標%</th><th>業績獎金</th><th>傘下業績</th><th>團體獎金</th></tr></thead><tbody>';
+  let tot={};ITEMS.forEach(i=>tot[i]=0);tot.net=0;tot.ts=0;tot.jin=0;tot.dou=0;tot.goods=0;tot.course=0;tot.total=0;tot.award=0;tot.team=0;tot.teamPV=0;
+  CFG.teachers.slice().filter(t=>R[t.name]).sort((a,b)=>(R[b.name].total)-(R[a.name].total)).forEach(t=>{const n=t.name,d=R[n];if(!d)return;h+=`<tr><td>${n}</td>`;
+    ITEMS.forEach(i=>{h+=`<td>${d.items[i]||0}</td>`;tot[i]+=d.items[i]||0;});
+    const pct=CORE.includes(n)?'×':(((d.awardBase||d.total)>=400000?10:(d.awardBase||d.total)>=300000?8:(d.awardBase||d.total)>=200000?5:(d.awardBase||d.total)>=100000?2:0)+'%');
+    h+=`<td class="calc">${fmt(d.net)}</td><td>${d.tianshe||0}</td><td>${fmt(d.jin)}</td><td>${fmt(d.dou)}</td><td>${fmt(d.goods)}</td><td>${fmt(d.course)}</td><td class="hot"><b>${fmt(d.total)}</b></td><td>${pct}</td><td>${fmt(d.award)}</td><td>${fmt(d.teamPV||0)}</td><td>${fmt(d.teambonus)}</td></tr>`;
+    tot.net+=d.net;tot.ts+=d.tianshe||0;tot.jin+=d.jin;tot.dou+=d.dou;tot.goods+=d.goods;tot.course+=d.course;tot.total+=d.total;tot.award+=d.award;tot.team+=d.teambonus;tot.teamPV+=(d.teamPV||0);});
+  h+='</tbody><tfoot><tr><td>總計</td>';ITEMS.forEach(i=>h+=`<td>${tot[i]}</td>`);
+  h+=`<td>${fmt(tot.net)}</td><td>${tot.ts}</td><td>${fmt(tot.jin)}</td><td>${fmt(tot.dou)}</td><td>${fmt(tot.goods)}</td><td>${fmt(tot.course)}</td><td class="hot">${fmt(tot.total)}</td><td></td><td>${fmt(tot.award)}</td><td>${fmt(tot.teamPV)}</td><td>${fmt(tot.team)}</td></tr></tfoot>`;
+  document.getElementById('mainTbl').innerHTML=h;
+}
+function renderPay(pay,grand,sixten){
+  let h='<thead><tr><th>老師</th><th>課程分潤</th><th>講師費</th><th>助教費</th><th>1%核心</th><th>業績獎金</th><th>團體獎金</th><th>法會推薦人</th><th>總金額</th></tr></thead><tbody>';
+  let T={course:0,tf:0,af:0,onepct:0,award:0,team:0,referral:0};
+  Object.keys(pay).sort((a,b)=>pay[b].total-pay[a].total).forEach(n=>{const o=pay[n];
+    h+=`<tr><td>${n}</td><td>${fmt(o.course)}</td><td>${fmt(o.tf)}</td><td>${fmt(o.af)}</td><td>${fmt(o.onepct)}</td><td>${fmt(o.award)}</td><td>${fmt(o.team)}</td><td>${fmt(o.referral)}</td><td><b>${fmt(o.total)}</b></td></tr>`;
+    Object.keys(T).forEach(k=>T[k]+=o[k]||0);});
+  h+=`</tbody><tfoot><tr><td>合計</td><td>${fmt(T.course)}</td><td>${fmt(T.tf)}</td><td>${fmt(T.af)}</td><td>${fmt(T.onepct)}</td><td>${fmt(T.award)}</td><td>${fmt(T.team)}</td><td>${fmt(T.referral)}</td><td>${fmt(grand)}</td></tr></tfoot>`;
+  document.getElementById('payTbl').innerHTML=h;document.getElementById('grand').textContent='NT$ '+fmt(grand);
+  // 6/10 另期發放
+  const sx=document.getElementById('sixtenWrap');
+  if(sixten&&Object.keys(sixten).length){let s='<h3 style="color:var(--gold2);font-family:Noto Serif TC;margin:16px 0 8px">另期發放（法會推薦人獎金，'+(Object.values(CFG.referralNote||{})[0]||'另期')+'）</h3><div class="tbl-scroll"><table><thead><tr><th>老師</th><th>課程分潤</th><th>業績獎金</th><th>團體獎金</th><th>法會推薦人</th><th>總金額</th></tr></thead><tbody>';
+    Object.keys(sixten).forEach(n=>{const o=sixten[n];s+=`<tr><td>${n}</td><td>${fmt(o.course)}</td><td>${fmt(o.award)}</td><td>${fmt(o.team)}</td><td>${fmt(o.referral)}</td><td><b>${fmt(o.total)}</b></td></tr>`;});
+    s+='</tbody></table></div>';sx.innerHTML=s;}else sx.innerHTML='';
+}
+function onCutoffChange(){document.getElementById('midDayWrap').style.display=document.getElementById('cutoff').value==='mid'?'inline':'none';renderWarns(lastR);}
+function renderWarns(L){let w='';const cutoff=document.getElementById('cutoff').value;
+  if(cutoff==='mid'){const d=document.getElementById('midDay').value||'?';w+=`<div class="warnbox w-amber"><b>⚠ 月中結算(截至 ${MONTH} 月 ${d} 日):</b> 目前讀的是回傳檔「業績」淨額(全月)。月中那天的數字來源請確認(回傳檔是否已切到該日、或要依疏文日期過濾),再啟用。</div>`;}
+  const missing=Object.keys(PARSED).filter(n=>!PARSED[n].hasNet);
+  if(missing.length)w+=`<div class="warnbox w-amber"><b>⚠ 回傳檔無「業績」淨額欄:</b> ${missing.join('、')} — 萬寶金可能含上月補單,已保留預載驗證值,請對照統計總表核對。</div>`;
+  const gs=Object.entries(CFG.baonianG||{}).filter(([k,v])=>v>0);
+  if(gs.length)w+=`<div class="warnbox w-amber"><b>包年扣除(上場包年需燒化):</b> ${gs.map(([k,v])=>k+' −'+v).join('、')} — 已從萬寶小計扣除得實收。</div>`;
+  document.getElementById('warns').innerHTML=w;
+}
+function genReport(){
+  if(!lastR){calc();}
+  if(!lastR)return;
+  const R=lastR.R, pay=lastR.pay, grand=lastR.grand;
+  const today=new Date().toLocaleDateString('zh-TW');
+  const F=fmt;
+  const _cut=document.getElementById('cutoff').value;
+  const _cutLabel=_cut==='mid'?`結算基準：月中 ${MONTH} 月 ${document.getElementById('midDay').value} 日`:'結算基準：月底';
+  // 一、香量統計總表
+  let stat='<table><thead><tr><th>老師</th>';ITEMS.forEach(i=>stat+=`<th>${i.replace(/\(.*\)/,'')}</th>`);
+  stat+='<th>萬寶實收</th><th>天赦</th><th>還陰債</th><th>年斗</th><th>季斗</th><th>五行年斗</th><th>五行季斗</th><th>令牌</th><th>化煞水</th></tr></thead><tbody>';
+  let st={};ITEMS.forEach(i=>st[i]=0);['net','ts','yz','ni','ji','wni','wji','lp','hs'].forEach(k=>st[k]=0);
+  CFG.teachers.forEach(t=>{const n=t.name,d=R[n],p=PARTS[n];if(!d)return;
+    stat+=`<tr><td class="l">${n}</td>`;ITEMS.forEach(i=>{stat+=`<td>${d.items[i]||0}</td>`;st[i]+=d.items[i]||0;});
+    stat+=`<td><b>${d.net}</b></td><td>${d.tianshe||0}</td><td>${p.yinzhai||0}</td><td>${p.nian||0}</td><td>${p.ji||0}</td><td>${p.wnian||0}</td><td>${p.wji||0}</td><td>${p.lingpai||0}</td><td>${p.huasha||0}</td></tr>`;
+    st.net+=d.net;st.ts+=d.tianshe||0;st.yz+=p.yinzhai||0;st.ni+=p.nian||0;st.ji+=p.ji||0;st.wni+=p.wnian||0;st.wji+=p.wji||0;st.lp+=p.lingpai||0;st.hs+=p.huasha||0;});
+  stat+='</tbody><tfoot><tr><td class="l">總計</td>';ITEMS.forEach(i=>stat+=`<td>${st[i]}</td>`);
+  stat+=`<td>${st.net}</td><td>${st.ts}</td><td>${st.yz}</td><td>${st.ni}</td><td>${st.ji}</td><td>${st.wni}</td><td>${st.wji}</td><td>${st.lp}</td><td>${st.hs}</td></tr></tfoot></table>`;
+  // 香量業績明細(份數×單價)
+  let xl='<table><thead><tr><th>姓名</th><th>金紙單價</th><th>金紙份數</th><th>金紙業績</th><th>還陰債份數</th><th>還陰債業績</th><th>天赦份數</th><th>天赦業績</th><th>金紙類總業績</th><th>單購年斗</th><th>年斗業績</th><th>季斗</th><th>季斗業績</th><th>五行年斗</th><th>五行年斗業績</th><th>五行季斗</th><th>五行季斗業績</th><th>令牌</th><th>令牌業績</th><th>斗燈總業績</th><th>化煞水</th><th>化煞業績</th></tr></thead><tbody>';
+  let xt={jf:0,jb:0,yf:0,yb:0,tf:0,tb:0,jin:0,nf:0,nb:0,jif:0,jib:0,wnf:0,wnb:0,wjf:0,wjb:0,lf:0,lb:0,dou:0,hf:0,hb:0};
+  CFG.teachers.forEach(t=>{const n=t.name,d=R[n],p=PARTS[n];if(!d)return;const price=CORE.includes(n)?1050:1260;
+    const jf=d.net,jb=jf*price,yf=p.yinzhai||0,yb=yf*2160,tf=p.tianshe||0,tb=tf*580,jin=jb+yb+tb;
+    const nf=p.nian||0,nb=nf*5200,jif=p.ji||0,jib=jif*2160,wnf=p.wnian||0,wnb=wnf*5860,wjf=p.wji||0,wjb=wjf*2820,lf=p.lingpai||0,lb=lf*660,dou=nb+jib+wnb+wjb+lb,hf=p.huasha||0,hb=hf*200;
+    xl+=`<tr><td class="l">${n}</td><td>${F(price)}</td><td>${jf}</td><td>${F(jb)}</td><td>${yf||0}</td><td>${F(yb)}</td><td>${tf}</td><td>${F(tb)}</td><td><b>${F(jin)}</b></td><td>${nf||0}</td><td>${F(nb)}</td><td>${jif||0}</td><td>${F(jib)}</td><td>${wnf||0}</td><td>${F(wnb)}</td><td>${wjf||0}</td><td>${F(wjb)}</td><td>${lf||0}</td><td>${F(lb)}</td><td><b>${F(dou)}</b></td><td>${hf||0}</td><td>${F(hb)}</td></tr>`;
+    xt.jf+=jf;xt.jb+=jb;xt.yf+=yf;xt.yb+=yb;xt.tf+=tf;xt.tb+=tb;xt.jin+=jin;xt.nf+=nf;xt.nb+=nb;xt.jif+=jif;xt.jib+=jib;xt.wnf+=wnf;xt.wnb+=wnb;xt.wjf+=wjf;xt.wjb+=wjb;xt.lf+=lf;xt.lb+=lb;xt.dou+=dou;xt.hf+=hf;xt.hb+=hb;});
+  xl+=`</tbody><tfoot><tr><td class="l">總計</td><td></td><td>${xt.jf}</td><td>${F(xt.jb)}</td><td>${xt.yf}</td><td>${F(xt.yb)}</td><td>${xt.tf}</td><td>${F(xt.tb)}</td><td>${F(xt.jin)}</td><td>${xt.nf}</td><td>${F(xt.nb)}</td><td>${xt.jif}</td><td>${F(xt.jib)}</td><td>${xt.wnf}</td><td>${F(xt.wnb)}</td><td>${xt.wjf}</td><td>${F(xt.wjb)}</td><td>${xt.lf}</td><td>${F(xt.lb)}</td><td>${F(xt.dou)}</td><td>${xt.hf}</td><td>${F(xt.hb)}</td></tr></tfoot></table>`;
+  // 二、聘階獎金主表
+  let main='<table><thead><tr><th>老師</th><th>聘階</th><th>上線</th><th>金紙類</th><th>斗燈類</th><th>商品</th><th>課程分潤</th><th class="hot">全部總業績</th><th>達標%</th><th>傘下PV</th><th>業績獎金</th><th>團體獎金</th></tr></thead><tbody>';
+  let mt={jin:0,dou:0,goods:0,course:0,total:0,award:0,team:0};
+  CFG.teachers.slice().filter(t=>R[t.name]).sort((a,b)=>R[b.name].total-R[a.name].total).forEach(t=>{const n=t.name,d=R[n];if(!d)return;
+    main+=`<tr><td class="l">${n}</td><td class="l">${rankOf(n)}</td><td class="l">${(CFG.tree||{})[n]||'-'}</td><td>${F(d.jin)}</td><td>${F(d.dou)}</td><td>${F(d.goods)}</td><td>${F(d.course)}</td><td class="hot"><b>${F(d.total)}</b></td><td>${CORE.includes(n)?'×':(((d.awardBase||d.total)>=400000?10:(d.awardBase||d.total)>=300000?8:(d.awardBase||d.total)>=200000?5:(d.awardBase||d.total)>=100000?2:0)+'%')}</td><td>${F(d.teamPV||0)}</td><td>${F(d.award)}</td><td>${F(d.teambonus)}</td></tr>`;
+    mt.jin+=d.jin;mt.dou+=d.dou;mt.goods+=d.goods;mt.course+=d.course;mt.total+=d.total;mt.award+=d.award;mt.team+=d.teambonus;});
+  main+=`</tbody><tfoot><tr><td class="l">總計</td><td colspan="2"></td><td>${F(mt.jin)}</td><td>${F(mt.dou)}</td><td>${F(mt.goods)}</td><td>${F(mt.course)}</td><td class="hot">${F(mt.total)}</td><td></td><td></td><td>${F(mt.award)}</td><td>${F(mt.team)}</td></tr></tfoot></table>`;
+  // 三、發放總表
+  let pp='<table><thead><tr><th>老師</th><th>課程分潤</th><th>講師費</th><th>助教費</th><th>1%核心</th><th>業績獎金</th><th>團體獎金</th><th>法會推薦人</th><th>總金額</th></tr></thead><tbody>';
+  let pt={course:0,tf:0,af:0,onepct:0,award:0,team:0,referral:0};
+  const ord=Object.keys(pay).sort((a,b)=>pay[b].total-pay[a].total);
+  let notes=[];
+  ord.forEach(n=>{const o=pay[n];const nt=(CFG.referralNote||{})[n];if(nt&&o.referral)notes.push(`${n}：${nt} (法會推薦人獎金 ${F(o.referral)})`);
+    pp+=`<tr><td class="l">${n}</td><td>${F(o.course)}</td><td>${F(o.tf)}</td><td>${F(o.af)}</td><td>${F(o.onepct)}</td><td>${F(o.award)}</td><td>${F(o.team)}</td><td>${F(o.referral)}</td><td><b>${F(o.total)}</b></td></tr>`;
+    Object.keys(pt).forEach(k=>pt[k]+=o[k]||0);});
+  pp+=`</tbody><tfoot><tr><td class="l">合計</td><td>${F(pt.course)}</td><td>${F(pt.tf)}</td><td>${F(pt.af)}</td><td>${F(pt.onepct)}</td><td>${F(pt.award)}</td><td>${F(pt.team)}</td><td>${F(pt.referral)}</td><td>${F(grand)}</td></tr></tfoot></table>`;
+  // 四、1%核心獎金明細(自動判定)
+  const cinfo=lastR.core1||[];const poolR=lastR.pool||CFG.onePctPool||0;const qsumR=cinfo.filter(c=>c.qualified).reduce((s,c)=>s+c.pv,0)||1;
+  const coreTotal=cinfo.reduce((s,c)=>s+c.pv,0);
+  let allPV=0;CFG.teachers.forEach(t=>{if(R[t.name])allPV+=R[t.name].total;});
+  let core1='<table><thead><tr><th>核心老師</th><th>全部業績PV</th><th>課程推薦人數</th><th>是否達標</th><th>分潤比例</th><th>1%分潤獎金</th></tr></thead><tbody>';
+  cinfo.forEach(c=>{const ratio=c.qualified?(c.pv/qsumR):0;const share=c.qualified?Math.round(c.pv/qsumR*poolR):0;
+    core1+=`<tr><td class="l">${c.name}</td><td>${F(c.pv)}</td><td>${c.ref}</td><td>${c.qualified?'✅ 已達標':'✕ 未達標'}</td><td>${(ratio*100).toFixed(0)}%</td><td><b>${F(share)}</b></td></tr>`;});
+  core1+=`</tbody><tfoot><tr><td class="l">核心總業績 ${F(coreTotal)}　全體總業績 ${F(allPV)}</td><td colspan="4" class="l">1%核心獎金池</td><td>${F(poolR)}</td></tr></tfoot></table>
+  <p class="note">※ 獎金池 = 全體總業績 ${F(lastR.allPV||0)} × ${((lastR.rate||0.01)*100)}% = ${F(poolR)};達標條件:當月業績 ≥ ${F(CFG.onePctPVth||252000)} 且 課程推薦人數 ≥ ${CFG.onePctRefth||2};達標核心按業績比例分配。</p>`;
+  // 五、課程分潤明細
+  let courseT='<table><thead><tr><th>推薦人</th><th>推薦學員</th><th>上課課程</th><th>課程獎金分潤</th></tr></thead><tbody>';
+  let csum=0;CFG.courseShares.forEach(c=>{csum+=c.amt;courseT+=`<tr><td class="l">${c.sponsor}</td><td class="l">${c.student}</td><td class="l">${c.course}</td><td>${F(c.amt)}</td></tr>`;});
+  courseT+=`</tbody><tfoot><tr><td class="l" colspan="3">總計</td><td>${F(csum)}</td></tr></tfoot></table>`;
+  const noteHtml = notes.length?`<p class="note">※ 另期發放：${notes.join('；')}</p>`:'';
+  let agNote='';CFG.teachers.forEach(t=>{const d=R[t.name];if(d&&d.agentPV>0)agNote+=`${t.name}:個人 ${F(d.total)} + 經紀代理約下線 ${F(d.agentPV)} = 達標基數 ${F(d.awardBase)} → 業績達標 ${F(d.award)};`;});
+  const agHtml=agNote?`<p class="note">※ 經紀代理約特別計算:${agNote}(代理下線業績併入上線「業績達標」基數,不另計入團隊傘下)</p>`:'';
+  // 6/10 另期發放
+  let sixT='';const sx=lastR.sixten||{};
+  if(Object.keys(sx).length){sixT='<h2>七、另期發放（法會推薦人獎金）</h2><table><thead><tr><th>老師</th><th>課程分潤</th><th>業績獎金</th><th>團體獎金</th><th>法會推薦人</th><th>總金額</th></tr></thead><tbody>';
+    Object.keys(sx).forEach(n=>{const o=sx[n];const nt=(CFG.referralNote||{})[n]||'';sixT+=`<tr><td class="l">${n}${nt?'（'+nt+'）':''}</td><td>${F(o.course)}</td><td>${F(o.award)}</td><td>${F(o.team)}</td><td>${F(o.referral)}</td><td><b>${F(o.total)}</b></td></tr>`;});
+    sixT+='</tbody></table>';}
+  const doc=`<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><title>月度結算報表 ${MONTH}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans TC',sans-serif;color:#2a2520;background:#ece7dc;padding:26px;font-size:13px}
+  .paper{background:#fff;max-width:1080px;margin:0 auto;padding:40px 44px;box-shadow:0 4px 24px rgba(0,0,0,.12);border-top:5px solid #9c7e3a}
+  .rh{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #9c7e3a;padding-bottom:12px;margin-bottom:6px}
+  h1{font-family:'Noto Serif TC',serif;font-size:22px;color:#6b531f;letter-spacing:1px}
+  h1 small{display:block;font-size:12px;color:#a08e6a;font-weight:400;letter-spacing:3px;margin-top:3px}
+  .meta{text-align:right;color:#8a7c60;font-size:12px;line-height:1.7}
+  h2{font-family:'Noto Serif TC',serif;font-size:15px;color:#6b531f;margin:24px 0 8px;padding-left:9px;border-left:4px solid #c9a961}
+  table{width:100%;border-collapse:collapse;font-size:11.5px;margin-bottom:4px}
+  th,td{border:1px solid #d8ccb4;padding:4px 6px;text-align:right;white-space:nowrap}
+  th{background:#f1e9d6;color:#6b531f;font-weight:700}
+  td.l,th:first-child{text-align:left}
+  tfoot td{background:#f7f1e3;font-weight:700;color:#5a4518}
+  tbody tr:nth-child(even) td{background:#faf7ef}
+  .grand{text-align:right;font-family:'Noto Serif TC',serif;font-size:18px;color:#6b531f;font-weight:900;margin-top:8px}
+  .note{color:#8a7c60;font-size:12px;margin-top:8px}
+  .foot{margin-top:30px;border-top:1px dashed #c9b98f;padding-top:10px;color:#8a7c60;font-size:11px;display:flex;justify-content:space-between}
+  .sign{margin-top:26px;display:flex;gap:50px;color:#5a4518;font-size:12px}
+  .sign span{border-top:1px solid #5a4518;padding-top:5px;min-width:130px;text-align:center}
+  .toolbar{max-width:1080px;margin:0 auto 14px;text-align:right}
+  .toolbar button{background:#9c7e3a;color:#fff;border:none;border-radius:7px;padding:9px 20px;font-size:14px;cursor:pointer;font-family:'Noto Serif TC',serif}
+  @media print{body{background:#fff;padding:0}.paper{box-shadow:none;max-width:100%}.toolbar{display:none}@page{size:A4 landscape;margin:12mm}}
+  </style></head><body>
+  <div class="toolbar"><button onclick="window.print()">🖨 列印 / 存成 PDF</button></div>
+  <div class="paper">
+    <div class="rh"><h1>神奇身心靈學苑 × 靈應壇<small>MIIRAGIC ACADEMY　月度結算報表</small></h1>
+      <div class="meta">結算月份：${MONTH}<br>${_cutLabel}<br>製表日期：${today}<br>應發放總額：NT$ ${F(grand)}</div></div>
+    <h2>一、香量統計總表(萬寶金各項目明細)</h2>${stat}
+    <h2>二、香量業績明細(份數 × 單價)</h2>${xl}
+    <h2>三、聘階獎金主表</h2>${main}${agHtml}
+    <h2>四、1%核心獎金明細</h2>${core1}
+    <h2>五、課程分潤明細</h2>${courseT}
+    <h2>六、各項獎金發放總表</h2>${pp}
+    ${sixT}
+    <div class="grand">本月應發放合計　NT$ ${F(grand)}</div>${noteHtml}
+    <div class="sign"><span>製表(行政)</span><span>審核</span><span>核准</span></div>
+    <div class="foot"><span>神奇身心靈學苑 × 靈應壇　內部結算文件</span><span>由月度獎金計算系統產生</span></div>
+  </div></body></html>`;
+  const w=window.open('','_report');
+  if(!w){alert('請允許彈出視窗以開啟報表');return;}
+  w.document.open();w.document.write(doc);w.document.close();
+}
+function genReportMobile(){
+  if(!lastR){calc();}if(!lastR)return;
+  const R=lastR.R,pay=lastR.pay,grand=lastR.grand,F=fmt;
+  const today=new Date().toLocaleDateString('zh-TW');
+  const cut=(document.getElementById('cutoff')||{}).value;
+  const cutLabel=cut==='mid'?`月中 ${MONTH} 月 ${(document.getElementById('midDay')||{}).value} 日`:'月底';
+  // 發放總表 (每人一卡可展開)
+  const ord=Object.keys(pay).sort((a,b)=>pay[b].total-pay[a].total);
+  let payCards='';ord.forEach(n=>{const o=pay[n];
+    let lines=[['課程分潤',o.course],['講師費',o.tf],['助教費',o.af],['1%核心',o.onepct],['業績獎金',o.award],['團體獎金',o.team],['法會推薦人',o.referral]].filter(x=>x[1]).map(x=>`<div class="kv"><span>${x[0]}</span><b>${F(x[1])}</b></div>`).join('');
+    payCards+=`<details class="card"><summary><span class="nm">${n}</span><span class="big">${F(o.total)}</span></summary><div class="cardbody">${lines}</div></details>`;});
+  // 聘階主表
+  const mord=CFG.teachers.slice().filter(t=>R[t.name]).sort((a,b)=>R[b.name].total-R[a.name].total);
+  let mainCards='';mord.forEach(t=>{const n=t.name,d=R[n];const pct=CORE.includes(n)?'×':(((d.awardBase||d.total)>=400000?10:(d.awardBase||d.total)>=300000?8:(d.awardBase||d.total)>=200000?5:(d.awardBase||d.total)>=100000?2:0)+'%');
+    let lines=[['聘階',rankOf(n)],['金紙類',F(d.jin)],['斗燈類',F(d.dou)],['商品',F(d.goods)],['課程分潤',F(d.course)],['傘下業績',F(d.teamPV||0)],['達標%',pct],['業績獎金',F(d.award)],['團體獎金',F(d.teambonus)]].map(x=>`<div class="kv"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');
+    mainCards+=`<details class="card"><summary><span class="nm">${n}</span><span class="big">${F(d.total)}</span></summary><div class="cardbody">${lines}</div></details>`;});
+  // 1%核心
+  const ci=lastR.core1||[],pool=lastR.pool||0,qsum=ci.filter(c=>c.qualified).reduce((s,c)=>s+c.pv,0)||1;
+  let coreCards='';ci.forEach(c=>{const share=c.qualified?Math.round(c.pv/qsum*pool):0;
+    coreCards+=`<div class="card2"><span class="nm">${c.name} ${c.qualified?'<span class=ok>✅達標</span>':'<span class=no>✕未達標</span>'}</span><span class="big">${F(share)}</span><div class="sub">業績 ${F(c.pv)}｜推薦 ${c.ref}人</div></div>`;});
+  // 香量統計(11項)
+  let statCards='';CFG.teachers.slice().filter(t=>R[t.name]).sort((a,b)=>R[b.name].net-R[a.name].net).forEach(t=>{const n=t.name,d=R[n];
+    let items=ITEMS.map(i=>`<div class="kv"><span>${i.replace(/\(.*\)/,'')}</span><b>${d.items[i]||0}</b></div>`).join('');
+    statCards+=`<details class="card"><summary><span class="nm">${n}</span><span class="big">實收 ${d.net}｜天赦 ${d.tianshe||0}</span></summary><div class="cardbody">${items}</div></details>`;});
+  // 課程分潤
+  let csum=0;let courseList=(CFG.courseShares||[]).map(c=>{csum+=c.amt;return `<div class="kv"><span>${c.sponsor} → ${c.student}<br><small>${c.course}</small></span><b>${F(c.amt)}</b></div>`;}).join('');
+  // 燒香清單
+  const bt=burnTotals();let burnList=BURNROWS.map(k=>{const cur=bt[k]||0;const prev=PREVBURN[k]||0;const need=Math.max(0,cur-prev);return `<div class="kv"><span>${burnLabel(k)}</span><b>${need}</b></div>`;}).join('');
+  // 另期
+  let sixHtml='';const sx=lastR.sixten||{};if(Object.keys(sx).length){sixHtml=Object.keys(sx).map(n=>`<div class="card2"><span class="nm">${n} <span class="tag2">${(CFG.referralNote||{})[n]||'另期'}</span></span><span class="big">${F(sx[n].total)}</span><div class="sub">含法會推薦人 ${F(sx[n].referral)}</div></div>`).join('');}
+
+  const sec=(icon,title,sub,body,open)=>`<details class="sec"${open?' open':''}><summary><span class="st">${icon} ${title}</span><span class="ssum">${sub}</span></summary><div class="secbody">${body}</div></details>`;
+  const doc=`<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>手機報表 ${MONTH}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{font-family:'Noto Sans TC',sans-serif;background:#efe9dd;color:#2e2820;padding:12px;max-width:560px;margin:0 auto;font-size:15px}
+  .top{background:linear-gradient(135deg,#9c7e3a,#7a6228);color:#fff;border-radius:16px;padding:18px 18px 16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+  .top h1{font-size:18px;font-weight:900;letter-spacing:1px}
+  .top .meta{font-size:12px;opacity:.9;margin-top:4px}
+  .top .total{font-size:30px;font-weight:900;margin-top:10px}
+  .top .total small{font-size:13px;font-weight:400;opacity:.85}
+  details.sec{background:#fff;border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  details.sec>summary{list-style:none;cursor:pointer;padding:15px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:700;border-left:4px solid #9c7e3a}
+  details.sec>summary::-webkit-details-marker{display:none}
+  details.sec>summary::after{content:'▾';color:#9c7e3a;margin-left:8px;transition:.2s}
+  details.sec[open]>summary::after{transform:rotate(180deg)}
+  .st{font-size:15.5px;color:#6b531f}
+  .ssum{font-size:13px;color:#8a7c60;font-weight:700;margin-left:auto;margin-right:6px;text-align:right}
+  .secbody{padding:6px 12px 14px}
+  details.card{border:1px solid #e6ddc9;border-radius:10px;margin:8px 0;overflow:hidden}
+  details.card>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;background:#faf6ec}
+  details.card>summary::-webkit-details-marker{display:none}
+  details.card>summary::after{content:'＋';color:#9c7e3a;font-weight:700;margin-left:10px}
+  details.card[open]>summary::after{content:'－'}
+  .nm{font-weight:700;font-size:16px}
+  .big{font-weight:900;color:#6b531f;font-size:18px}
+  .cardbody{padding:6px 14px 12px;background:#fff}
+  .kv{display:flex;justify-content:space-between;padding:7px 2px;border-bottom:1px dashed #eee3cc;font-size:14.5px}
+  .kv:last-child{border:none}.kv span{color:#6f6552}.kv small{color:#a99}
+  .card2{border:1px solid #e6ddc9;border-radius:10px;margin:8px 0;padding:12px 14px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;background:#faf6ec}
+  .card2 .sub{width:100%;font-size:12.5px;color:#8a7c60;margin-top:4px}
+  .ok{color:#2e8b57;font-size:12px}.no{color:#b08;font-size:12px}
+  .tag2{background:#9c7e3a;color:#fff;border-radius:5px;padding:1px 6px;font-size:11px}
+  .foot{text-align:center;color:#8a7c60;font-size:11px;margin:16px 0 8px}
+  </style></head><body>
+  <div class="top"><h1>神奇學苑 · 月度結算</h1><div class="meta">${MONTH}　結算基準:${cutLabel}　製表 ${today}</div><div class="total">NT$ ${F(grand)} <small>應發放</small></div></div>
+  ${sec('💰','各項獎金發放總表','合計 '+F(grand),payCards,true)}
+  ${sec('🏅','聘階獎金主表','全體業績 '+F(lastR.allPV||0),mainCards)}
+  ${sec('💎','1%核心池','池 '+F(pool),coreCards)}
+  ${sec('📋','香量統計總表','點開看各項',statCards)}
+  ${sec('📚','課程分潤','合計 '+F(csum),courseList||'<p class="kv">無</p>')}
+  ${sec('🔥','要燒的香','本次要燒',burnList)}
+  ${sixHtml?sec('🗓','另期發放(法會推薦人)','',sixHtml):''}
+  <div class="foot">神奇身心靈學苑 × 靈應壇　內部結算文件<br>由月度獎金計算系統產生</div>
+  </body></html>`;
+  const w=window.open('','_reportm');if(!w){alert('請允許彈出視窗');return;}w.document.open();w.document.write(doc);w.document.close();
+}
+function exportCSV(){if(!lastR){alert('請先計算');return;}
+  let rows=[['各項獎金發放總表 '+MONTH],['姓名','課程分潤','講師費','助教費','1%核心','業績獎金','團體獎金','法會推薦人','總金額']];
+  Object.keys(lastR.pay).sort((a,b)=>lastR.pay[b].total-lastR.pay[a].total).forEach(n=>{const o=lastR.pay[n];rows.push([n,o.course,o.tf,o.af,o.onepct,o.award,o.team,o.referral||0,o.total]);});
+  rows.push(['合計','','','','','','','',lastR.grand]);
+  rows.push([]);rows.push(['萬寶金各項目明細']);rows.push(['老師',...ITEMS,'萬寶實收','天赦']);
+  CFG.teachers.forEach(t=>{const d=lastR.R[t.name];if(!d)return;rows.push([t.name,...ITEMS.map(i=>d.items[i]||0),d.net,d.tianshe||0]);});
+  const csv='\ufeff'+rows.map(r=>r.join(',')).join('\n');const b=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='獎金發放總表_'+MONTH.replace('.','')+'.csv';a.click();
+}
+const drop=document.getElementById('drop');
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('hot')});
+drop.addEventListener('dragleave',()=>drop.classList.remove('hot'));
+drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('hot');handleFiles(e.dataTransfer.files)});
+document.getElementById('fi').addEventListener('change',e=>handleFiles(e.target.files));
+document.getElementById('cfi').addEventListener('change',e=>{const f=e.target.files[0];if(f)parseCourseFile(f);});
+function parseCourseFile(file){const r=new FileReader();r.onload=ev=>{try{
+  const wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array'});
+  const ws=wb.Sheets[wb.SheetNames[0]];const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  // 找標題列(含 推薦/學員/課程/金額 或 分潤)
+  let hi=-1,col={};
+  for(let i=0;i<Math.min(rows.length,8);i++){const r2=rows[i].map(x=>(''+x));
+    const find=k=>r2.findIndex(c=>c.includes(k));
+    const cs=find('推薦'),st=find('學員'),co=find('課程'),am=r2.findIndex(c=>c.includes('金額')||c.includes('分潤'));
+    if(cs>=0&&am>=0){hi=i;col={sponsor:cs,student:st<0?cs+1:st,course:co<0?st+1:co,amt:am};break;}}
+  let data;
+  if(hi>=0){data=rows.slice(hi+1).filter(r2=>(''+r2[col.sponsor]).trim()).map(r2=>({sponsor:(''+r2[col.sponsor]).trim(),student:(''+r2[col.student]).trim(),course:(''+r2[col.course]).trim(),amt:parseFloat((''+r2[col.amt]).replace(/[,\s]/g,''))||0}));}
+  else{data=rows.filter(r2=>(''+r2[0]).trim()&&!isNaN(parseFloat(r2[3]))).map(r2=>({sponsor:(''+r2[0]).trim(),student:(''+r2[1]).trim(),course:(''+r2[2]).trim(),amt:parseFloat((''+r2[3]).toString().replace(/[,\s]/g,''))||0}));}
+  if(!data.length){alert('沒解析到資料,請確認欄位含 推薦人/學員/課程/金額');return;}
+  CFG.courseShares=data;syncCoursePV();renderCourse();renderSettings();alert('已從檔案解析 '+data.length+' 筆課程分潤。');
+}catch(err){alert('解析失敗:'+err.message);}};r.readAsArrayBuffer(file);}
+// ===== 課程分潤 =====
+function syncCoursePV(){const m={};(CFG.courseShares||[]).forEach(c=>m[c.sponsor]=(m[c.sponsor]||0)+(+c.amt||0));CFG.teachers.forEach(t=>{t.coursePV=m[t.name]||0;});}
+function renderCourse(){const tb=document.getElementById('courseTbl');if(!tb)return;
+  let h='<thead><tr><th>推薦人</th><th>學員</th><th>課程</th><th>金額</th><th></th></tr></thead><tbody>';
+  (CFG.courseShares||[]).forEach((c,i)=>{h+=`<tr>
+    <td><input class="cell" style="width:80px;text-align:left" value="${c.sponsor||''}" onchange="setCourse(${i},'sponsor',this.value)"></td>
+    <td><input class="cell" style="width:90px;text-align:left" value="${c.student||''}" onchange="setCourse(${i},'student',this.value)"></td>
+    <td><input class="cell" style="width:150px;text-align:left" value="${c.course||''}" onchange="setCourse(${i},'course',this.value)"></td>
+    <td><input class="cell" style="width:72px" type="number" value="${c.amt||0}" onchange="setCourse(${i},'amt',this.value)"></td>
+    <td><button class="xbtn" onclick="delCourse(${i})">✕</button></td></tr>`;});
+  const tot=(CFG.courseShares||[]).reduce((s,c)=>s+(+c.amt||0),0);
+  h+=`</tbody><tfoot><tr><td colspan="3">合計</td><td>${fmt(tot)}</td><td></td></tr></tfoot>`;tb.innerHTML=h;}
+function setCourse(i,k,v){CFG.courseShares[i][k]=k==='amt'?(parseFloat(v)||0):(v||'').trim();syncCoursePV();renderCourse();}
+function delCourse(i){CFG.courseShares.splice(i,1);syncCoursePV();renderCourse();renderSettings();}
+function addCourseRow(){CFG.courseShares=CFG.courseShares||[];CFG.courseShares.push({sponsor:'',student:'',course:'',amt:0});renderCourse();}
+function importCourse(){const t=document.getElementById('coursePaste').value.trim();if(!t){alert('請先貼上名單');return;}
+  const rows=t.split(/\n/).map(l=>l.split(/\t/)).filter(r=>r.length>=4&&r[0].trim());
+  if(!rows.length){alert('格式需為:推薦人[Tab]學員[Tab]課程[Tab]金額');return;}
+  CFG.courseShares=rows.map(r=>({sponsor:(r[0]||'').trim(),student:(r[1]||'').trim(),course:(r[2]||'').trim(),amt:parseFloat((r[3]||'0').replace(/[,\s]/g,''))||0}));
+  syncCoursePV();renderCourse();renderSettings();alert('已解析 '+CFG.courseShares.length+' 筆課程分潤。');}
+function renderFee(){const tb=document.getElementById('feeTbl');if(!tb)return;
+  let h='<thead><tr><th>老師</th><th>講師費</th><th>助教費</th></tr></thead><tbody>';
+  CFG.teachers.forEach(t=>{const f=(CFG.payoutFees||{})[t.name]||{};h+=`<tr><td>${t.name}</td>
+    <td><input class="cell" style="width:80px" type="number" value="${f.teacherFee||0}" onchange="setFee('${t.name}','teacherFee',this.value)"></td>
+    <td><input class="cell" style="width:80px" type="number" value="${f.assistFee||0}" onchange="setFee('${t.name}','assistFee',this.value)"></td></tr>`;});
+  h+='</tbody>';tb.innerHTML=h;}
+function setFee(n,k,v){CFG.payoutFees=CFG.payoutFees||{};CFG.payoutFees[n]=CFG.payoutFees[n]||{teacherFee:0,assistFee:0};CFG.payoutFees[n][k]=parseFloat(v)||0;}
+// ===== 累積業績/聘階 =====
+function curPV(n){const o=(CFG.pvMonth||{})[n];if(o!==undefined&&o!==null&&o!=='')return +o;return computeTotals()[n]||0;}
+function setMonthPV(n,v){CFG.pvMonth=CFG.pvMonth||{};if(v===''||v===null){delete CFG.pvMonth[n];}else CFG.pvMonth[n]=parseFloat(v)||0;renderCum();}
+function renderCum(){const tb=document.getElementById('cumTbl');if(!tb)return;
+  const data=CFG.teachers.map(t=>{const n=t.name;const base=(CFG.cumPV||{})[n]||0;const cur=curPV(n);return{n,base,cur,nw:base+cur,r0:rankOf(n),r1:rankFromPV(base+cur)};}).filter(d=>d.nw>0).sort((a,b)=>b.nw-a.nw);
+  // 圖表
+  const cc=document.getElementById('cumChart');
+  if(cc){const W=860,rowH=30,padL=64,padR=8,padT=30,padB=8;const H=padT+data.length*rowH+padB;
+    const max=Math.max(3150000,...data.map(d=>d.nw))*1.02;const X=v=>padL+(W-padL-padR)*v/max;
+    const thr=[[630000,'黃金'],[1260000,'鑽石'],[1890000,'晶鑽'],[2520000,'翡翠'],[3150000,'總裁']];
+    const col={'銀階':'#b08d57','黃金':'#d4a017','鑽石':'#6f9fc4','晶鑽':'#9b7fc2','翡翠':'#3fa86b','總裁':'#c9962b'};
+    let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;font-family:Noto Sans TC">`;
+    thr.forEach(([v,lb])=>{const xx=X(v);s+=`<line x1="${xx}" y1="${padT-4}" x2="${xx}" y2="${H-padB}" stroke="var(--line)" stroke-dasharray="3 3"/><text x="${xx}" y="${padT-9}" font-size="9.5" fill="var(--mut)" text-anchor="middle">${lb}${v/10000}萬</text>`;});
+    data.forEach((d,i)=>{const y=padT+i*rowH+5,bh=17,wide=X(d.nw)>W*0.72;
+      s+=`<text x="${padL-6}" y="${y+13}" font-size="11" fill="var(--txt)" text-anchor="end">${d.n}</text>`;
+      s+=`<rect x="${padL}" y="${y}" width="${Math.max(0,X(d.base)-padL)}" height="${bh}" rx="3" fill="${col[d.r1]||'#b08d57'}" opacity=".9"/>`;
+      if(d.cur>0)s+=`<rect x="${X(d.base)}" y="${y}" width="${Math.max(0,X(d.nw)-X(d.base))}" height="${bh}" rx="3" fill="${col[d.r1]||'#b08d57'}" opacity=".42"/>`;
+      const lbl=`${fmt(d.nw)} ${d.r1}${d.r1!==d.r0?'↑':''}`;
+      s+= wide?`<text x="${X(d.nw)-5}" y="${y+13}" font-size="10" fill="#fff" text-anchor="end">${lbl}</text>`
+              :`<text x="${X(d.nw)+5}" y="${y+13}" font-size="10" fill="var(--mut)">${lbl}</text>`;});
+    s+='</svg>';cc.innerHTML='<div style="overflow-x:auto">'+s+'</div><p class="subnote">深色=上月累積，淺色=本月新增；虛線為聘階門檻。↑表示本月累加後升階。</p>';}
+  // 表(本月業績、上月累積皆可修正)
+  let h='<thead><tr><th>老師</th><th>上月累積(不含本月)</th><th>本月業績<span class="tag">可修正</span></th><th>更新後累積</th><th>聘階(現)</th><th>更新後聘階</th></tr></thead><tbody>';
+  data.forEach(d=>{const up=d.r1!==d.r0?' <span class="tag">↑升階</span>':'';const edited=(CFG.pvMonth||{})[d.n]!==undefined;
+    h+=`<tr><td>${d.n}</td>
+    <td><input class="cell" style="width:100px" type="number" value="${d.base}" onchange="setCum('${d.n}',this.value)"></td>
+    <td><input class="cell" style="width:96px${edited?';border-color:var(--gold)':''}" type="number" value="${d.cur}" onchange="setMonthPV('${d.n}',this.value)">${edited?' <span class="mut" style="font-size:10px;cursor:pointer" onclick="setMonthPV(\''+d.n+'\',\'\')">↺</span>':''}</td>
+    <td class="calc"><b>${fmt(d.nw)}</b></td><td>${d.r0}</td><td class="calc">${d.r1}${up}</td></tr>`;});
+  h+='</tbody>';tb.innerHTML=h;}
+function commitCum(){if(!confirm('確定把「本月業績」累加進每位老師的累積?(月底結算後才按)'))return;CFG.cumPV=CFG.cumPV||{};CFG.teachers.forEach(t=>{CFG.cumPV[t.name]=(CFG.cumPV[t.name]||0)+curPV(t.name);});CFG.pvMonth={};try{localStorage.setItem('cumPV_committed',JSON.stringify(CFG.cumPV));}catch(e){}renderCum();renderSettings();alert('已累加並更新聘階,作為下月基準。');}
+function resetCum(){if(!confirm('還原成內建累積(清除已累加紀錄)?'))return;try{localStorage.removeItem('cumPV_committed');}catch(e){}location.reload();}
+// ===== 組織圖 =====
+function renderOrg(){const tree=CFG.tree||{},note=CFG.treeNote||{};
+  const children={};Object.keys(tree).forEach(c=>{const u=tree[c];if(u)(children[u]=children[u]||[]).push(c);});
+  const roots=Object.keys(tree).filter(n=>!tree[n]);
+  const tpv=teamPVMap(),tot=computeTotals();const isT=n=>CFG.teachers.some(t=>t.name===n);
+  const q=(document.getElementById('orgSearch')?document.getElementById('orgSearch').value:'').trim();
+  const res=document.getElementById('orgResult');
+  if(q){const hit=Object.keys(tree).find(n=>n===q)||Object.keys(tree).find(n=>n.includes(q));
+    if(hit){let chain=[],p=tree[hit];while(p){chain.unshift(p);p=tree[p];}
+      function desc(n){let a=[];(children[n]||[]).forEach(c=>{a.push(c);a=a.concat(desc(c));});return a;}
+      const ds=desc(hit);
+      res.innerHTML=`<div class="orgcard"><b style="font-size:16px">${hit}</b> <span class="mut">${note[hit]||''}</span>${isT(hit)?`<br>個人業績 ${fmt(tot[hit]||0)}　傘下PV ${fmt(tpv[hit]||0)}　聘階 ${rankOf(hit)}`:'　(非老師,無PV)'}<br>上線:${chain.length?chain.join(' › '):'(主線根)'}<br>下線共 ${ds.length} 人:${ds.join('、')||'無'}</div>`;
+    }else res.innerHTML=`<div class="orgcard mut">查無「${q}」</div>`;}
+  else res.innerHTML='';
+  function node(n,depth){const t=isT(n);const role=note[n]||'';const isMain=role==='主線';
+    const ch=children[n]||[];const has=ch.length>0;const collapsed=ORGCOLLAPSE[n]&&!q;
+    const cls='orgnode d'+Math.min(depth,4)+(t?' tnode':'')+(isMain?' mnode':'')+(q&&n.includes(q)?' hit':'');
+    const tg=has?`<span class="otog" onclick="toggleOrg('${n}')">${collapsed?'▸':'▾'}</span>`:'<span class="otog-sp"></span>';
+    const pv=t?`<span class="opv">業績 ${fmt(tot[n]||0)}｜傘下 ${fmt(tpv[n]||0)}｜${rankOf(n)}</span>`:'';
+    const cnt=has?`　<span class="ocnt">${ch.length}人${collapsed?' ▸':''}</span>`:'';
+    let h=`<li>${tg}<div class="${cls}"><span class="onm">${n}</span><span class="orole">${role}${cnt}</span>${pv}</div>`;
+    if(has&&!collapsed)h+='<ul>'+ch.map(c=>node(c,depth+1)).join('')+'</ul>';return h+'</li>';}
+  if(document.getElementById('orgTree'))document.getElementById('orgTree').innerHTML='<div class="orgtools"><button class="btn ghost sm" onclick="orgExpandAll(true)">▸ 全部收合</button><button class="btn ghost sm" onclick="orgExpandAll(false)">▾ 全部展開</button></div><ul class="orgtree">'+roots.map(r=>node(r,0)).join('')+'</ul>';}
+let ORGCOLLAPSE={};
+function toggleOrg(n){ORGCOLLAPSE[n]=!ORGCOLLAPSE[n];renderOrg();}
+// ===== 1% 核心池 =====
+function setPool(v){CFG.onePctPoolManual=(v===''||v===null)?null:(parseFloat(v)||0);if(lastR)calc();else render1pct();}
+function setPVth(v){CFG.onePctPVth=parseFloat(v)||0;if(lastR)calc();else render1pct();}
+function setRefth(v){CFG.onePctRefth=parseFloat(v)||0;if(lastR)calc();else render1pct();}
+function render1pct(){const tb=document.getElementById('onepctTbl');if(!tb)return;
+  const PV_TH=CFG.onePctPVth||252000,REF_TH=CFG.onePctRefth||2,rate=CFG.onePctRate||0.01;
+  const refCount={};(CFG.courseShares||[]).forEach(c=>refCount[c.sponsor]=(refCount[c.sponsor]||0)+1);
+  const tot=computeTotals();
+  const allPV=CFG.teachers.reduce((s,t)=>s+(tot[t.name]||0),0);
+  const manual=CFG.onePctPoolManual;
+  const auto=Math.round(allPV*rate);
+  const pool=(manual!==undefined&&manual!==null&&manual!=='')?(+manual):auto;
+  const fEl=document.getElementById('poolFormula');
+  if(fEl)fEl.innerHTML=`<b>獎金池算式:</b> 全體總業績 ${fmt(allPV)} × ${(rate*100)}% = <b style="color:var(--gold2);font-size:16px">${fmt(auto)}</b>${(manual!==undefined&&manual!==null&&manual!=='')?`　<span class="tag">已手動覆蓋為 ${fmt(pool)}</span>`:'　<span class="tag">自動</span>'}`;
+  const info=CORE.map(n=>{const pv=tot[n]||0;const ref=refCount[n]||0;return{n,pv,ref,q:pv>=PV_TH&&ref>=REF_TH};});
+  const qsum=info.filter(c=>c.q).reduce((s,c)=>s+c.pv,0)||1;
+  let h='<thead><tr><th>核心老師</th><th>當月業績PV</th><th>課程推薦人數</th><th>達標(PV≥'+fmt(PV_TH)+'且推薦≥'+REF_TH+')</th><th>分潤比例</th><th>1%分潤獎金</th></tr></thead><tbody>';
+  info.forEach(c=>{const share=c.q?Math.round(c.pv/qsum*pool):0;const ratio=c.q?(c.pv/qsum*100).toFixed(0)+'%':'-';
+    h+=`<tr><td>${c.n}</td><td class="calc">${fmt(c.pv)}</td><td>${c.ref}</td><td>${c.q?'<b style="color:var(--green)">✅ 已達標</b>':'<span class="mut">✕ 未達標</span>'}</td><td>${ratio}</td><td class="hot"><b>${fmt(share)}</b></td></tr>`;});
+  const paid=info.reduce((s,c)=>s+(c.q?Math.round(c.pv/qsum*pool):0),0);
+  h+=`</tbody><tfoot><tr><td colspan="5">獎金池 ${fmt(pool)}　已分配</td><td>${fmt(paid)}</td></tr></tfoot>`;tb.innerHTML=h;}
+// ===== 旅遊點數 =====
+function renderTravel(){const tb=document.getElementById('travelTbl');if(!tb)return;const tot=computeTotals();
+  const data=CFG.teachers.map(t=>{const n=t.name;const yr=(CFG.cum2026||{})[n]||0;const cur=curPV(n);const pv=yr+cur;const pts=Math.floor(pv/10000);
+    let reward=[];if(pts>=500)reward.push('商務艙+升級住宿+5000旅遊金');else if(pts>=400)reward.push('升級住宿+5000旅遊金');else if(pts>=300)reward.push('5000旅遊金');
+    if(pts>=150)reward.push('4-9月達150點 +2000');else if(pts>=75)reward.push('4-6月達75點 +1000');
+    return{n,yr,cur,pv,pts,reward:reward.join('、')||'-'};}).filter(d=>d.pv>0).sort((a,b)=>b.pts-a.pts);
+  let h='<thead><tr><th>老師</th><th>2026年度累積</th><th>本月業績</th><th>合計PV</th><th>旅遊點數</th><th>達到獎勵</th></tr></thead><tbody>';
+  data.forEach(d=>{h+=`<tr><td>${d.n}</td><td>${fmt(d.yr)}</td><td>${fmt(d.cur)}</td><td class="calc">${fmt(d.pv)}</td><td class="hot"><b>${d.pts} 點</b></td><td style="text-align:left">${d.reward}</td></tr>`;});
+  h+='</tbody>';tb.innerHTML=h;}
+function orgExpandAll(collapse){ORGCOLLAPSE={};if(collapse){const ch={};Object.keys(CFG.tree||{}).forEach(c=>{const u=CFG.tree[c];if(u)(ch[u]=ch[u]||[]).push(c);});Object.keys(ch).forEach(p=>{if((CFG.treeNote||{})[p]!=='主線')ORGCOLLAPSE[p]=true;});}renderOrg();}
+const TABMAP={course:['sc'],input:['s1','s2'],burn:['s2b'],rank:['scum'],org:['sorg'],onepct:['s1pct'],travel:['strv'],settings:['s3'],result:['s4','s5']};
+function toggleNavGroup(force){const sub=document.getElementById('navSub');const ar=document.getElementById('navArrow');if(!sub)return;const open=force!==undefined?force:sub.style.display==='none';sub.style.display=open?'block':'none';if(ar)ar.textContent=open?'▾':'▸';}
+function showTab(t){
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  ['sc','s1','s2','s2b','scum','sorg','s1pct','strv','s3','s4','s5'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  (TABMAP[t]||[]).forEach(id=>{const el=document.getElementById(id);if(el){el.style.display='block';el.classList.remove('collapsed');}});
+  if(['rank','org','travel'].includes(t))toggleNavGroup(true);
+  if(t==='rank')renderCum();if(t==='org')renderOrg();if(t==='onepct')render1pct();if(t==='travel')renderTravel();
+}
+try{const s=localStorage.getItem('cumPV_committed');if(s)CFG.cumPV=JSON.parse(s);}catch(e){}
+syncCoursePV();
+loadPrevBurn();initParts();renderParts();renderSettings();renderCourse();renderFee();renderCum();renderOrg();render1pct();renderTravel();
+showTab('course');
+</script>
+<script>(function(){var sel=document.getElementById("month");if(!sel||sel.tagName!=="SELECT")return;var d=new Date();var def=(typeof CFGMONTH!=="undefined"&&CFGMONTH)?CFGMONTH:(d.getFullYear()+"."+String(d.getMonth()+1).padStart(2,"0"));var h="";for(var i=2;i>=-17;i--){var dt=new Date(d.getFullYear(),d.getMonth()+i,1);var v=dt.getFullYear()+"."+String(dt.getMonth()+1).padStart(2,"0");h+="<option"+(v===def?" selected":"")+">"+v+"</option>";}sel.innerHTML=h;})();</script>
+</body></html>

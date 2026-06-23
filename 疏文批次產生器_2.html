@@ -1,0 +1,3106 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>疏文批次產生器 v5・神奇身心靈學苑</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root {
+  --bg: #f4ede0;
+  --bg-paper: #faf5e8;
+  --ink: #2c1810;
+  --ink-soft: #4a3829;
+  --vermilion: #c8392a;
+  --vermilion-dark: #a02818;
+  --gold: #b8893a;
+  --line: #d6c9a8;
+  --shadow: rgba(44, 24, 16, 0.08);
+  --highlight: #fff8e5;
+  --success: #4a7c3a;
+  --error: #b8392a;
+}
+
+[data-theme="dark"] {
+  --bg: #1f1812;
+  --bg-paper: #2a2018;
+  --ink: #f0e6d2;
+  --ink-soft: #c5b89c;
+  --vermilion: #e25a4a;
+  --vermilion-dark: #c84838;
+  --gold: #d4a85a;
+  --line: #4a3a28;
+  --shadow: rgba(0, 0, 0, 0.4);
+  --highlight: #3a2e1f;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Serif TC', serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 20px 14px;
+  line-height: 1.7;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(184, 137, 58, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(200, 57, 42, 0.03) 0%, transparent 40%);
+  transition: background 0.3s, color 0.3s;
+}
+
+.container { max-width: 1200px; margin: 0 auto; }
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.icon-btn {
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+.icon-btn:hover { background: var(--highlight); color: var(--ink); }
+
+header { text-align: center; margin-bottom: 24px; }
+
+.seal {
+  display: inline-block;
+  padding: 4px 14px;
+  background: var(--vermilion);
+  color: var(--bg-paper);
+  font-size: 12px;
+  letter-spacing: 4px;
+  margin-bottom: 12px;
+}
+
+h1 {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 32px;
+  letter-spacing: 4px;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+.subtitle { color: var(--ink-soft); font-size: 14px; letter-spacing: 2px; }
+
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 14px 0 24px;
+  color: var(--gold);
+  font-size: 12px;
+}
+
+.divider::before, .divider::after {
+  content: '';
+  flex: 0 0 50px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.5;
+}
+
+.step-card {
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+
+.step-card.collapsible .step-header { cursor: pointer; user-select: none; }
+.step-card.collapsible .step-header:hover { opacity: 0.8; }
+.step-card .card-arrow {
+  font-size: 14px;
+  color: var(--ink-soft);
+  transition: transform 0.2s;
+  margin-left: 8px;
+}
+.step-card.collapsed .card-arrow { transform: rotate(-90deg); }
+.step-card.collapsed .step-header { margin-bottom: 0; }
+.step-card.collapsed .step-card-body { display: none; }
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.step-num-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--vermilion);
+  color: var(--bg-paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.step-card.completed .step-num-badge { background: var(--success); }
+
+.step-title { font-size: 18px; letter-spacing: 2px; font-weight: 700; }
+.step-subtitle { font-size: 12px; color: var(--ink-soft); margin-top: 2px; letter-spacing: 1px; }
+
+/* 上傳區 */
+.upload-zone {
+  border: 2px dashed var(--line);
+  border-radius: 6px;
+  padding: 22px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upload-zone:hover {
+  border-color: var(--vermilion);
+  background: var(--highlight);
+}
+
+.upload-zone.has-files {
+  border-style: solid;
+  border-color: var(--success);
+  background: rgba(74, 124, 58, 0.05);
+}
+
+.upload-zone.has-files.warn {
+  border-color: var(--gold);
+  background: rgba(184, 137, 58, 0.05);
+}
+
+.upload-icon { font-size: 32px; margin-bottom: 6px; opacity: 0.7; }
+.upload-text { font-size: 14px; color: var(--ink); font-weight: 700; }
+.upload-hint { font-size: 12px; color: var(--ink-soft); margin-top: 4px; }
+
+.template-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 6px;
+  margin-top: 12px;
+  text-align: left;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.template-item {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink);
+}
+
+.template-item.missing {
+  border-color: var(--gold);
+  background: rgba(184, 137, 58, 0.08);
+  color: var(--ink-soft);
+  opacity: 0.7;
+}
+
+.template-item .ico { font-weight: 700; }
+.template-item.found .ico { color: var(--success); }
+.template-item.missing .ico { color: var(--gold); }
+
+/* 對照表唯讀展示 */
+.mapping-display {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 6px;
+}
+
+.mapping-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--bg);
+  border-radius: 4px;
+  border-left: 3px solid var(--vermilion);
+  font-size: 13px;
+}
+
+.mapping-item .item-name { font-weight: 700; min-width: 80px; }
+.mapping-item .arrow { color: var(--gold); }
+.mapping-item .tpl-name { color: var(--ink-soft); font-size: 12px; flex: 1; }
+
+/* 設定區 */
+.admin-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+@media (max-width: 700px) { .admin-row { grid-template-columns: 1fr 1fr; } }
+
+label {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+
+input, select {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--vermilion);
+  box-shadow: 0 0 0 3px rgba(200, 57, 42, 0.1);
+}
+
+.batch-tip {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: 8px;
+  background: var(--bg);
+  padding: 10px 14px;
+  border-radius: 4px;
+  border-left: 3px solid var(--gold);
+  line-height: 1.7;
+}
+
+.batch-tip strong { color: var(--vermilion); }
+
+/* 工作表選擇 */
+.sheet-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 10px;
+  background: var(--bg);
+  border-radius: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.sheet-chip {
+  padding: 5px 12px;
+  background: var(--bg-paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.sheet-chip:hover { border-color: var(--vermilion); }
+
+.sheet-chip.selected {
+  background: var(--vermilion);
+  color: var(--bg-paper);
+  border-color: var(--vermilion);
+  font-weight: 700;
+}
+
+.sheet-chip .count { font-size: 11px; opacity: 0.7; margin-left: 4px; }
+
+/* 預覽 */
+.preview-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 8px;
+  font-size: 13px;
+}
+.preview-summary .ok { color: var(--success); font-weight: 700; }
+.preview-summary .err { color: var(--error); font-weight: 700; }
+.preview-summary .skip { color: var(--gold); font-weight: 700; }
+
+.preview-table-wrap {
+  margin-top: 10px;
+  max-height: 360px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.preview-table th {
+  background: var(--bg);
+  padding: 8px 6px;
+  text-align: left;
+  border-bottom: 2px solid var(--vermilion);
+  position: sticky;
+  top: 0;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+
+.preview-table td {
+  padding: 6px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.preview-table tr:hover { background: var(--highlight); }
+.preview-table .row-num { color: var(--vermilion); font-weight: 700; width: 36px; }
+.preview-table .row-error { background: rgba(184, 57, 42, 0.08); }
+.preview-table .row-skip { background: rgba(184, 137, 58, 0.06); opacity: 0.7; }
+.preview-table .row-dup { background: rgba(184, 137, 58, 0.12); opacity: 0.6; }
+.preview-table .row-dup:hover { opacity: 0.85; background: rgba(184, 137, 58, 0.22); }
+.preview-table .row-force { background: rgba(184, 57, 42, 0.18); opacity: 1; }
+.preview-table .row-force:hover { background: rgba(184, 57, 42, 0.28); }
+.preview-table .item-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  background: var(--vermilion);
+  color: var(--bg-paper);
+  border-radius: 3px;
+  font-size: 11px;
+}
+.preview-table .item-tag.unknown { background: var(--gold); }
+.error-msg { color: var(--error); font-size: 11px; }
+
+.generate-btn {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 6px;
+  background: var(--vermilion);
+  color: var(--bg-paper);
+  font-family: inherit;
+  font-size: 17px;
+  letter-spacing: 4px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s;
+  margin-top: 10px;
+}
+
+.generate-btn:hover:not(:disabled) {
+  background: var(--vermilion-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(200, 57, 42, 0.3);
+}
+
+.generate-btn:disabled {
+  background: var(--line);
+  cursor: not-allowed;
+  color: var(--ink-soft);
+}
+
+.progress-area { margin-top: 12px; display: none; }
+.progress-area.show { display: block; }
+
+.progress-bar-bg {
+  height: 22px;
+  background: var(--bg);
+  border-radius: 11px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--vermilion), var(--gold));
+  width: 0%;
+  transition: width 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bg-paper);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.progress-text { text-align: center; margin-top: 6px; font-size: 13px; color: var(--ink-soft); }
+
+.success-banner {
+  display: none;
+  margin-top: 14px;
+  padding: 14px;
+  background: rgba(74, 124, 58, 0.1);
+  border: 1px solid var(--success);
+  border-radius: 6px;
+  color: var(--success);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+}
+.success-banner.show { display: block; }
+
+footer {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--ink);
+  color: var(--bg-paper);
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 13px;
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 100;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.collapse-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 6px 0;
+  user-select: none;
+  color: var(--gold);
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.collapse-content { display: none; padding-top: 8px; }
+.collapse-open { display: block; }
+
+[data-fontsize="large"] body { font-size: 16px; }
+[data-fontsize="large"] input, [data-fontsize="large"] select { font-size: 15px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="toolbar">
+    <div style="font-size:12px;color:var(--ink-soft);letter-spacing:1px;">v5.0 ・ 對照內建 ・ Excel 直接上傳</div>
+    <div style="display:flex;gap:6px;">
+      <button class="icon-btn" onclick="toggleTheme()">🌓</button>
+      <button class="icon-btn" onclick="toggleFontSize()">🔍</button>
+    </div>
+  </div>
+
+  <header>
+    <span class="seal">神奇身心靈學苑・靈應壇</span>
+    <h1>法會疏文批次產生器</h1>
+    <p class="subtitle">21 種疏文模板 ・ Excel 上傳 ・ 一鍵產出 ZIP</p>
+    <div class="divider">✦ Magic Halo Batch Generator v5 ✦</div>
+  </header>
+
+  <!-- 步驟一：上傳模板 -->
+  <div class="step-card collapsible" id="card-1">
+    <div class="step-header" onclick="toggleCard('card-1')">
+      <div class="step-num-badge">壹</div>
+      <div style="flex:1;">
+        <div class="step-title">上傳 21 個疏文模板</div>
+        <div class="step-subtitle">第一次需上傳，會永久記住，下次免上傳</div>
+      </div>
+      <div class="card-arrow">▼</div>
+    </div>
+    <div class="step-card-body">
+      <input type="file" id="template-input" accept=".docx" multiple style="display:none" onchange="loadTemplates(event)">
+      <div class="upload-zone" id="template-zone" onclick="event.stopPropagation();document.getElementById('template-input').click()">
+        <div class="upload-icon">📚</div>
+        <div class="upload-text" id="template-zone-text">點此上傳 21 個 .docx 模板（按 Ctrl 多選）</div>
+        <div class="upload-hint" id="template-zone-hint">所有模板會儲存在你的瀏覽器，下次開不用再上傳</div>
+        <div class="template-list" id="template-list"></div>
+      </div>
+      <div style="margin-top:8px;text-align:right;">
+        <button class="icon-btn" onclick="event.stopPropagation();clearAllTemplates()" id="clear-tpl-btn" style="display:none;">🗑 清除全部模板</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 步驟二：對照表（唯讀展示） -->
+  <div class="step-card collapsible" id="card-2">
+    <div class="step-header" onclick="toggleCard('card-2')">
+      <div class="step-num-badge">貳</div>
+      <div style="flex:1;">
+        <div class="step-title">項目 → 模板 對照表（已內建）</div>
+        <div class="step-subtitle">系統自動配對，不用手動設定</div>
+      </div>
+      <div class="card-arrow">▼</div>
+    </div>
+    <div class="step-card-body">
+      <div class="mapping-display" id="mapping-display"></div>
+    </div>
+  </div>
+
+  <!-- 步驟三：法會固定設定 -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num-badge">參</div>
+      <div>
+        <div class="step-title">法會固定設定</div>
+        <div class="step-subtitle">立疏日期等，整場法會通用</div>
+      </div>
+    </div>
+    <div class="admin-row">
+      <div><label>立疏天運歲次</label><input type="text" id="ritual_year" value="丙午"></div>
+      <div><label>立疏農曆月</label><input type="text" id="ritual_month" value="肆"></div>
+      <div><label>立疏農曆日</label><input type="text" id="ritual_day" value="參拾"></div>
+    </div>
+    <div class="collapse-toggle" onclick="this.nextElementSibling.classList.toggle('collapse-open')">
+      <span>⚙️ 進階：件數 / 封數</span><span>▼</span>
+    </div>
+    <div class="collapse-content">
+      <div class="admin-row">
+        <div><label>件數（註一）</label><input type="text" id="count" value="一"></div>
+        <div><label>立疏封數（註六）</label><input type="text" id="seal_count" value="一"></div>
+        <div><label>庫財封數（註七）</label><input type="text" id="silver_count" value="一"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 步驟四：上傳 Excel -->
+  <div class="step-card" id="card-4">
+    <div class="step-header">
+      <div class="step-num-badge">肆</div>
+      <div>
+        <div class="step-title">上傳 Excel 名單</div>
+        <div class="step-subtitle">選擇要產出的工作表（可多選跨月份）</div>
+      </div>
+    </div>
+    <input type="file" id="excel-input" accept=".xlsx,.xls" style="display:none" onchange="loadExcel(event)">
+    <div class="upload-zone" id="excel-zone" onclick="document.getElementById('excel-input').click()">
+      <div class="upload-icon">📊</div>
+      <div class="upload-text" id="excel-zone-text">點此上傳 .xlsx 檔案</div>
+      <div class="upload-hint">系統會自動讀出所有工作表（法會、斗燈、還陰債、祭改、普桌等），讓你選要哪些</div>
+    </div>
+
+    <div style="margin:12px 0;padding:12px 14px;border:1px dashed #b8893a;border-radius:8px;background:rgba(184,137,58,.06)">
+      🌐 <strong>線上香量帶入</strong>（免上傳 Excel，直接抓老師線上填單的當月資料）
+      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span>月份</span>
+        <input id="shu-online-month" size="8" placeholder="2026.06" style="padding:6px 8px;border:1px solid #ccc;border-radius:6px;width:90px">
+        <span>老師</span>
+        <select id="shu-pick-teacher" style="padding:6px 10px;border:1px solid #ccc;border-radius:6px;max-width:220px"><option value="__ALL__">全部老師（總冊用）</option></select>
+        <button type="button" onclick="loadOnlineShu()" style="padding:7px 14px;border:none;border-radius:6px;background:#9c7e3a;color:#fff;cursor:pointer;font-family:inherit">🌐 載入</button>
+        <span id="shu-online-status" style="font-size:13px;color:var(--ink-soft)"></span>
+      </div>
+      <div id="shu-online-teacher-wrap" style="display:none;margin-top:10px">
+        <span>步驟肆要處理哪位老師：</span>
+        <select id="shu-online-teacher" onchange="pickOnlineTeacher()" style="padding:6px 10px;border:1px solid #ccc;border-radius:6px"></select>
+        <span style="font-size:12px;color:var(--ink-soft)">（已產過的會自動標示並跳過，避免兩人重複）</span>
+      </div>
+    </div>
+    
+    <div id="sheet-selector-area" style="display:none;">
+      <div style="margin-top:14px;font-size:13px;letter-spacing:1px;color:var(--ink);font-weight:700;">📑 選擇工作表（點擊切換，可多選）：</div>
+      <div class="sheet-selector" id="sheet-selector"></div>
+    </div>
+
+    <div id="preview-area" style="display:none;margin-top:14px;">
+      <div class="preview-summary">
+        <span>📋 解析：<span class="ok" id="ok-count">0</span> 筆可產出</span>
+        <span id="err-info" style="display:none;">⚠ <span class="err" id="err-count">0</span> 筆缺資料</span>
+        <span id="skip-info" style="display:none;">⊘ <span class="skip" id="skip-count">0</span> 筆未對照模板</span>
+        <span id="dup-info" style="display:none;">↻ <span style="color:var(--gold);font-weight:700;" id="dup-count">0</span> 筆已產過</span>
+        <button class="icon-btn" id="skip-dup-btn" onclick="toggleSkipDup()" style="font-size:12px;padding:4px 10px;margin-left:auto;">
+          ✓ 跳過已產過的
+        </button>
+        <button class="icon-btn" onclick="confirmClearHistory()" style="font-size:12px;padding:4px 10px;" title="清除「已產過」記錄,讓所有資料重新可產">
+          🗑 清除產出記錄
+        </button>
+      </div>
+      <div class="preview-table-wrap">
+        <table class="preview-table">
+          <thead>
+            <tr>
+              <th>#</th><th>工作表</th><th>姓名</th><th>項目</th><th>模板</th><th>生辰</th><th>地址</th><th>份數</th><th>狀態</th>
+            </tr>
+          </thead>
+          <tbody id="preview-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 步驟五：產生 -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num-badge">伍</div>
+      <div>
+        <div class="step-title">產生疏文 ZIP</div>
+        <div class="step-subtitle">自動分配模板填字 → 打包下載 → 用 Word 巨集批次轉 PDF</div>
+      </div>
+    </div>
+    
+    <!-- 項目分組勾選 -->
+    <div style="margin-bottom:14px;padding:14px;background:var(--bg-paper);border:2px solid var(--ink-soft);border-radius:8px;">
+      <div style="font-size:13px;letter-spacing:1px;color:var(--ink);font-weight:700;margin-bottom:10px;">
+        🎯 選擇要產出的項目類別（預設只勾「法會」+「斗燈」）：
+      </div>
+      <div id="group-selector" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+      <div style="margin-top:10px;font-size:12px;color:var(--ink-soft);line-height:1.6;">
+        💡 <strong>還陰債、祭改、普桌</strong>需要時再勾選 — Excel 中不勾選的工作表也不會處理。<br>
+        💡 同一個 Excel 含多個月、多種類別時，**只有勾選的類別**會產出疏文。
+      </div>
+    </div>
+    
+    <div class="batch-tip" style="margin-top:0;margin-bottom:12px;">
+      📦 <strong>ZIP 內含 3 種檔案：</strong><br>
+      ・<strong>每個項目一個 docx</strong>（如「補財.docx」「補運(消災解厄).docx」），內含該項目所有客戶疏文（每人一頁）<br>
+      ・<strong>批次轉PDF.bas</strong>（Word 巨集，第一次使用請按說明匯入）<br>
+      ・<strong>使用說明.txt</strong>（如何用巨集批次把 docx 轉成 PDF）
+    </div>
+    <button class="generate-btn" id="gen-btn" onclick="generateAll()" disabled>
+      🎯 產生全部疏文 docx 並下載 ZIP
+    </button>
+    <div class="progress-area" id="progress-area">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill">0%</div></div>
+      <div class="progress-text" id="progress-text">準備中...</div>
+    </div>
+    <div class="success-banner" id="success-banner"></div>
+  </div>
+
+  <!-- 步驟六：產生總表 -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num-badge">陸</div>
+      <div>
+        <div class="step-title">產生月底總冊（人名清冊）</div>
+        <div class="step-subtitle">每個項目一個 docx,含封面 + 25人/頁的清冊</div>
+      </div>
+    </div>
+    <div class="batch-tip" style="margin-top:0;margin-bottom:12px;">
+      📊 <strong>用途：</strong>把所有老師的 Excel 名單合併成「人名清冊」(每月底交給道長念誦用)<br>
+      📦 <strong>ZIP 內含：</strong>每項目一個 docx,首頁是封面,後面是 25 人/頁的清冊
+    </div>
+    
+    <!-- 自訂模板上傳 -->
+    <div style="margin-bottom:14px;padding:12px;background:#fff8e1;border:2px solid var(--gold);border-radius:6px;">
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:8px;letter-spacing:1px;">
+        📋 自訂總表/封面模板（選用）
+      </div>
+      <div style="font-size:12px;color:var(--ink-soft);margin-bottom:10px;line-height:1.5;">
+        ・若不上傳,會用內建空白模板(4列x26欄,A3直書)<br>
+        ・上傳「總表模板.docx」(內含 4列x26欄表格)後,所有清冊用該模板的格式<br>
+        ・上傳「封面模板.docx」(每段含一個項目封面)後,首頁會用對應封面
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <input type="file" id="custom-summary-tpl-input" accept=".docx" style="display:none" onchange="loadCustomTpl(event,'summary')">
+        <input type="file" id="custom-cover-tpl-input" accept=".docx" style="display:none" onchange="loadCustomTpl(event,'cover')">
+        <button class="icon-btn" onclick="document.getElementById('custom-summary-tpl-input').click()" style="font-size:13px;padding:6px 12px;">
+          📄 上傳總表模板
+        </button>
+        <span id="custom-summary-tpl-info" style="font-size:12px;color:var(--ink-soft);align-self:center;">未上傳(用內建)</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+        <button class="icon-btn" onclick="document.getElementById('custom-cover-tpl-input').click()" style="font-size:13px;padding:6px 12px;">
+          📄 上傳封面模板
+        </button>
+        <span id="custom-cover-tpl-info" style="font-size:12px;color:var(--ink-soft);align-self:center;">未上傳(用內建)</span>
+      </div>
+    </div>
+    
+    <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+      <input type="file" id="multi-excel-input" accept=".xlsx,.xls" multiple style="display:none" onchange="loadMultipleExcels(event)">
+      <button class="icon-btn" onclick="document.getElementById('multi-excel-input').click()" style="font-size:13px;padding:8px 14px;">
+        ➕ 加入更多老師的 Excel
+      </button>
+      <span style="font-size:13px;color:var(--ink-soft);align-self:center;" id="loaded-excels-info">
+        目前已載入: 1 份 Excel
+      </span>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+      <button class="icon-btn" onclick="previewSummary()" style="font-size:13px;padding:8px 14px;">
+        👁 預覽要寫入的資料
+      </button>
+      <button class="icon-btn" onclick="clearSummaryHistory()" style="font-size:13px;padding:8px 14px;" title="清除已產過記錄，本次全部重新產出">
+        🗑 清除已產記錄（全部重產）
+      </button>
+      <span style="font-size:12px;color:var(--ink-soft);align-self:center;">
+        看哪些人會進總冊；已寫過的會反黑,點一下可加回
+      </span>
+    </div>
+    <div id="summary-preview-area" style="display:none;margin-bottom:12px;padding:10px;background:var(--bg-soft);border:1px solid var(--rule);border-radius:4px;max-height:400px;overflow-y:auto;font-size:12px;">
+      <div id="summary-preview-content"></div>
+    </div>
+    <button class="generate-btn" id="summary-btn" onclick="generateSummary()" style="background:var(--gold);">
+      📋 產生月底總冊 ZIP（含封面）
+    </button>
+    <div class="progress-area" id="summary-progress-area">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="summary-progress-fill">0%</div></div>
+      <div class="progress-text" id="summary-progress-text">準備中...</div>
+    </div>
+    <div class="success-banner" id="summary-success-banner"></div>
+  </div>
+  
+  <footer>神奇身心靈學苑・靈應壇 ・ v5.0 ・ 客戶資料純本地處理</footer>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+
+//============== 總表 / 封面模板 (內嵌) ==============
+const SUMMARY_TEMPLATE_B64 = "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";
+const COVER_TEMPLATE_B64 = "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";
+
+// 多 Excel 暫存
+let allWorkbooks = [];  // [{ fileName, sheets: { sheetName: rows[] } }, ...]
+
+// 自訂總表/封面模板(若使用者上傳則用,否則用內建)
+let customSummaryTplBuf = null;  // ArrayBuffer
+let customCoverTplBuf = null;    // ArrayBuffer
+
+//============== VBA 巨集 / 使用說明 (內嵌) ==============
+const VBA_MACRO_BASE64 = "//4nACAAPQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AA0ACgAnACAAXnlHWauOw19Il3hb0YIgAC4AIACPdYdleWIha0mPIABQAEQARgAgACgAAE51k0hyKQANAAoAJwAgAH9PKHW5ZdVsOgDZlspkLGeUakhoMVx9WQ0ACgAnACAAPQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AA0ACgANAAoATwBwAHQAaQBvAG4AIABFAHgAcABsAGkAYwBpAHQADQAKAA0ACgBEAGkAbQAgAHMAaABlAGwAbAAsACAAZgBzAG8ALAAgAGYAbwBsAGQAZQByACwAIABmAG8AbABkAGUAcgBQAGEAdABoACwAIABvAHUAdABwAHUAdABGAG8AbABkAGUAcgANAAoARABpAG0AIAB3AG8AcgBkAEEAcABwACwAIABkAG8AYwAsACAAZgBpAGwAZQANAAoARABpAG0AIAB0AG8AdABhAGwAQwBvAHUAbgB0ACwAIABjAG8AbgB2AGUAcgB0AEMAbwB1AG4AdAAsACAAZQByAHIAbwByAEMAbwB1AG4AdAANAAoARABpAG0AIABzAHQAYQByAHQAVABpAG0AZQAsACAAZQBsAGEAcABzAGUAZAANAAoARABpAG0AIABtAHMAZwANAAoADQAKAFMAZQB0ACAAcwBoAGUAbABsACAAPQAgAEMAcgBlAGEAdABlAE8AYgBqAGUAYwB0ACgAIgBTAGgAZQBsAGwALgBBAHAAcABsAGkAYwBhAHQAaQBvAG4AIgApAA0ACgBTAGUAdAAgAGYAcwBvACAAPQAgAEMAcgBlAGEAdABlAE8AYgBqAGUAYwB0ACgAIgBTAGMAcgBpAHAAdABpAG4AZwAuAEYAaQBsAGUAUwB5AHMAdABlAG0ATwBiAGoAZQBjAHQAIgApAA0ACgANAAoAJwAgAD0APQA9ACAAMQAuACAA8436UceMmWU+WXiQx2SWiZd6IAA9AD0APQANAAoAUwBlAHQAIABmAG8AbABkAGUAcgAgAD0AIABzAGgAZQBsAGwALgBCAHIAbwB3AHMAZQBGAG8AcgBGAG8AbABkAGUAcgAoADAALAAgACIAy4p4kMdkK1QgAGQAbwBjAHgAIACEdseMmWU+WSIALAAgADAALAAgACIAIgApAA0ACgBJAGYAIABmAG8AbABkAGUAcgAgAEkAcwAgAE4AbwB0AGgAaQBuAGcAIABUAGgAZQBuAA0ACgAgACAAIAAgAFcAUwBjAHIAaQBwAHQALgBRAHUAaQB0AA0ACgBFAG4AZAAgAEkAZgANAAoADQAKAGYAbwBsAGQAZQByAFAAYQB0AGgAIAA9ACAAZgBvAGwAZABlAHIALgBTAGUAbABmAC4AUABhAHQAaAANAAoASQBmACAAUgBpAGcAaAB0ACgAZgBvAGwAZABlAHIAUABhAHQAaAAsACAAMQApACAAPAA+ACAAIgBcACIAIABUAGgAZQBuACAAZgBvAGwAZABlAHIAUABhAHQAaAAgAD0AIABmAG8AbABkAGUAcgBQAGEAdABoACAAJgAgACIAXAAiAA0ACgANAAoAJwAgAD0APQA9ACAAMgAuACAA+l7LeiAAUABEAEYAIABQW8eMmWU+WSAAPQA9AD0ADQAKAG8AdQB0AHAAdQB0AEYAbwBsAGQAZQByACAAPQAgAGYAbwBsAGQAZQByAFAAYQB0AGgAIAAmACAAIgBQAEQARgBcACIADQAKAEkAZgAgAE4AbwB0ACAAZgBzAG8ALgBGAG8AbABkAGUAcgBFAHgAaQBzAHQAcwAoAG8AdQB0AHAAdQB0AEYAbwBsAGQAZQByACkAIABUAGgAZQBuAA0ACgAgACAAIAAgAGYAcwBvAC4AQwByAGUAYQB0AGUARgBvAGwAZABlAHIAIABvAHUAdABwAHUAdABGAG8AbABkAGUAcgANAAoARQBuAGQAIABJAGYADQAKAA0ACgAnACAAPQA9AD0AIAAzAC4AIAAIipd7IABkAG8AYwB4ACAAeGXPkSAAPQA9AD0ADQAKAHQAbwB0AGEAbABDAG8AdQBuAHQAIAA9ACAAMAANAAoARgBvAHIAIABFAGEAYwBoACAAZgBpAGwAZQAgAEkAbgAgAGYAcwBvAC4ARwBlAHQARgBvAGwAZABlAHIAKABmAG8AbABkAGUAcgBQAGEAdABoACkALgBGAGkAbABlAHMADQAKACAAIAAgACAASQBmACAATABDAGEAcwBlACgAZgBzAG8ALgBHAGUAdABFAHgAdABlAG4AcwBpAG8AbgBOAGEAbQBlACgAZgBpAGwAZQAuAE4AYQBtAGUAKQApACAAPQAgACIAZABvAGMAeAAiACAAVABoAGUAbgANAAoAIAAgACAAIAAgACAAIAAgAHQAbwB0AGEAbABDAG8AdQBuAHQAIAA9ACAAdABvAHQAYQBsAEMAbwB1AG4AdAAgACsAIAAxAA0ACgAgACAAIAAgAEUAbgBkACAASQBmAA0ACgBOAGUAeAB0AA0ACgANAAoASQBmACAAdABvAHQAYQBsAEMAbwB1AG4AdAAgAD0AIAAwACAAVABoAGUAbgANAAoAIAAgACAAIABNAHMAZwBCAG8AeAAgACIAx4yZZT5ZZ1GSbAlnIAAuAGQAbwBjAHgAIACUakhoIgAsACAAdgBiAEUAeABjAGwAYQBtAGEAdABpAG8AbgAsACAAIgB+Yg1OMFKUakhoIgANAAoAIAAgACAAIABXAFMAYwByAGkAcAB0AC4AUQB1AGkAdAANAAoARQBuAGQAIABJAGYADQAKAA0ACgAnACAAPQA9AD0AIAA0AC4AIAC6eI2K91dMiCAAPQA9AD0ADQAKAG0AcwBnACAAPQAgACIAfmIwUiAAIgAgACYAIAB0AG8AdABhAGwAQwBvAHUAbgB0ACAAJgAgACIAIAALUCAAZABvAGMAeAAgAJRqSGgiACAAJgAgAHYAYgBDAHIATABmACAAJgAgAHYAYgBDAHIATABmACAAJgAgAF8ADQAKACAAIAAgACAAIAAgACIAB1zqgdVSSY8QYiAAUABEAEYALAAyUVhbMFI6ACIAIAAmACAAdgBiAEMAcgBMAGYAIAAmACAAbwB1AHQAcAB1AHQARgBvAGwAZABlAHIAIAAmACAAdgBiAEMAcgBMAGYAIAAmACAAdgBiAEMAcgBMAGYAIAAmACAAXwANAAoAIAAgACAAIAAgACAAIgC6eJpbi5XLWc5VPwAiAA0ACgBJAGYAIABNAHMAZwBCAG8AeAAoAG0AcwBnACwAIAB2AGIAWQBlAHMATgBvACAAKwAgAHYAYgBRAHUAZQBzAHQAaQBvAG4ALAAgACIAeWIha0mPIABQAEQARgAiACkAIAA9ACAAdgBiAE4AbwAgAFQAaABlAG4ADQAKACAAIAAgACAAVwBTAGMAcgBpAHAAdAAuAFEAdQBpAHQADQAKAEUAbgBkACAASQBmAA0ACgANAAoAJwAgAD0APQA9ACAANQAuACAAi5VfVSAAVwBvAHIAZAAgACgAzIBvZvdXTIgsAA1Ob5g6eZaJl3opACAAPQA9AD0ADQAKAE8AbgAgAEUAcgByAG8AcgAgAFIAZQBzAHUAbQBlACAATgBlAHgAdAANAAoAUwBlAHQAIAB3AG8AcgBkAEEAcABwACAAPQAgAEMAcgBlAGEAdABlAE8AYgBqAGUAYwB0ACgAIgBXAG8AcgBkAC4AQQBwAHAAbABpAGMAYQB0AGkAbwBuACIAKQANAAoASQBmACAARQByAHIALgBOAHUAbQBiAGUAcgAgADwAPgAgADAAIABUAGgAZQBuAA0ACgAgACAAIAAgAE0AcwBnAEIAbwB4ACAAIgB+Yg1OMFIgAE0AaQBjAHIAbwBzAG8AZgB0ACAAVwBvAHIAZAAsAMuKuniNivuWZoHyXYlb3YggAFcAbwByAGQAIgAsACAAdgBiAEMAcgBpAHQAaQBjAGEAbAAsACAAIgAvk6SKIgANAAoAIAAgACAAIABXAFMAYwByAGkAcAB0AC4AUQB1AGkAdAANAAoARQBuAGQAIABJAGYADQAKAE8AbgAgAEUAcgByAG8AcgAgAEcAbwBUAG8AIAAwAA0ACgANAAoAdwBvAHIAZABBAHAAcAAuAFYAaQBzAGkAYgBsAGUAIAA9ACAARgBhAGwAcwBlAA0ACgB3AG8AcgBkAEEAcABwAC4ARABpAHMAcABsAGEAeQBBAGwAZQByAHQAcwAgAD0AIAAwACAAIAAnACAAdwBkAEEAbABlAHIAdABzAE4AbwBuAGUADQAKAA0ACgAnACAAPQA9AD0AIAA2AC4AIACLlctZSY/bYyAAPQA9AD0ADQAKAHMAdABhAHIAdABUAGkAbQBlACAAPQAgAFQAaQBtAGUAcgANAAoAYwBvAG4AdgBlAHIAdABDAG8AdQBuAHQAIAA9ACAAMAANAAoAZQByAHIAbwByAEMAbwB1AG4AdAAgAD0AIAAwAA0ACgANAAoARgBvAHIAIABFAGEAYwBoACAAZgBpAGwAZQAgAEkAbgAgAGYAcwBvAC4ARwBlAHQARgBvAGwAZABlAHIAKABmAG8AbABkAGUAcgBQAGEAdABoACkALgBGAGkAbABlAHMADQAKACAAIAAgACAASQBmACAATABDAGEAcwBlACgAZgBzAG8ALgBHAGUAdABFAHgAdABlAG4AcwBpAG8AbgBOAGEAbQBlACgAZgBpAGwAZQAuAE4AYQBtAGUAKQApACAAPQAgACIAZABvAGMAeAAiACAAVABoAGUAbgANAAoAIAAgACAAIAAgACAAIAAgAE8AbgAgAEUAcgByAG8AcgAgAFIAZQBzAHUAbQBlACAATgBlAHgAdAANAAoAIAAgACAAIAAgACAAIAAgAA0ACgAgACAAIAAgACAAIAAgACAAUwBlAHQAIABkAG8AYwAgAD0AIAB3AG8AcgBkAEEAcABwAC4ARABvAGMAdQBtAGUAbgB0AHMALgBPAHAAZQBuACgAZgBpAGwAZQAuAFAAYQB0AGgALAAgAEYAYQBsAHMAZQAsACAAVAByAHUAZQAsACAARgBhAGwAcwBlACkADQAKACAAIAAgACAAIAAgACAAIAANAAoAIAAgACAAIAAgACAAIAAgAEkAZgAgAE4AbwB0ACAAZABvAGMAIABJAHMAIABOAG8AdABoAGkAbgBnACAAVABoAGUAbgANAAoAIAAgACAAIAAgACAAIAAgACAAIAAgACAARABpAG0AIABwAGQAZgBOAGEAbQBlAA0ACgAgACAAIAAgACAAIAAgACAAIAAgACAAIABwAGQAZgBOAGEAbQBlACAAPQAgAG8AdQB0AHAAdQB0AEYAbwBsAGQAZQByACAAJgAgAGYAcwBvAC4ARwBlAHQAQgBhAHMAZQBOAGEAbQBlACgAZgBpAGwAZQAuAE4AYQBtAGUAKQAgACYAIAAiAC4AcABkAGYAIgANAAoAIAAgACAAIAAgACAAIAAgACAAIAAgACAADQAKACAAIAAgACAAIAAgACAAIAAgACAAIAAgACcAIAAxADcAIAA9ACAAdwBkAEUAeABwAG8AcgB0AEYAbwByAG0AYQB0AFAARABGAA0ACgAgACAAIAAgACAAIAAgACAAIAAgACAAIABkAG8AYwAuAEUAeABwAG8AcgB0AEEAcwBGAGkAeABlAGQARgBvAHIAbQBhAHQAIABwAGQAZgBOAGEAbQBlACwAIAAxADcADQAKACAAIAAgACAAIAAgACAAIAAgACAAIAAgAGQAbwBjAC4AQwBsAG8AcwBlACAARgBhAGwAcwBlAA0ACgAgACAAIAAgACAAIAAgACAAIAAgACAAIAANAAoAIAAgACAAIAAgACAAIAAgACAAIAAgACAASQBmACAARQByAHIALgBOAHUAbQBiAGUAcgAgAD0AIAAwACAAVABoAGUAbgANAAoAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIABjAG8AbgB2AGUAcgB0AEMAbwB1AG4AdAAgAD0AIABjAG8AbgB2AGUAcgB0AEMAbwB1AG4AdAAgACsAIAAxAA0ACgAgACAAIAAgACAAIAAgACAAIAAgACAAIABFAGwAcwBlAA0ACgAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgACAAIAAgAGUAcgByAG8AcgBDAG8AdQBuAHQAIAA9ACAAZQByAHIAbwByAEMAbwB1AG4AdAAgACsAIAAxAA0ACgAgACAAIAAgACAAIAAgACAAIAAgACAAIABFAG4AZAAgAEkAZgANAAoAIAAgACAAIAAgACAAIAAgAEUAbABzAGUADQAKACAAIAAgACAAIAAgACAAIAAgACAAIAAgAGUAcgByAG8AcgBDAG8AdQBuAHQAIAA9ACAAZQByAHIAbwByAEMAbwB1AG4AdAAgACsAIAAxAA0ACgAgACAAIAAgACAAIAAgACAARQBuAGQAIABJAGYADQAKACAAIAAgACAAIAAgACAAIAANAAoAIAAgACAAIAAgACAAIAAgAFMAZQB0ACAAZABvAGMAIAA9ACAATgBvAHQAaABpAG4AZwANAAoAIAAgACAAIAAgACAAIAAgAEUAcgByAC4AQwBsAGUAYQByAA0ACgAgACAAIAAgACAAIAAgACAATwBuACAARQByAHIAbwByACAARwBvAFQAbwAgADAADQAKACAAIAAgACAARQBuAGQAIABJAGYADQAKAE4AZQB4AHQADQAKAA0ACgAnACAAPQA9AD0AIAA3AC4AIADclYmVIABXAG8AcgBkACAAPQA9AD0ADQAKAHcAbwByAGQAQQBwAHAALgBRAHUAaQB0AA0ACgBTAGUAdAAgAHcAbwByAGQAQQBwAHAAIAA9ACAATgBvAHQAaABpAG4AZwANAAoADQAKAGUAbABhAHAAcwBlAGQAIAA9ACAAVABpAG0AZQByACAALQAgAHMAdABhAHIAdABUAGkAbQBlAA0ACgANAAoAJwAgAD0APQA9ACAAOAAuACAAb5g6eVB9nGcmTouVX1UgAFAARABGACAAx4yZZT5ZIAA9AD0APQANAAoAbQBzAGcAIAA9ACAAIgBJj9tjjFsQYiEAIgAgACYAIAB2AGIAQwByAEwAZgAgACYAIAB2AGIAQwByAEwAZgAgACYAIABfAA0ACgAgACAAIAAgACAAIAAiABBin1I6ACIAIAAmACAAYwBvAG4AdgBlAHIAdABDAG8AdQBuAHQAIAAmACAAIgAgAC8AIAAiACAAJgAgAHQAbwB0AGEAbABDAG8AdQBuAHQAIAAmACAAIgAgAP1OIgAgACYAIAB2AGIAQwByAEwAZgANAAoASQBmACAAZQByAHIAbwByAEMAbwB1AG4AdAAgAD4AIAAwACAAVABoAGUAbgANAAoAIAAgACAAIABtAHMAZwAgAD0AIABtAHMAZwAgACYAIAAiADFZV2U6ACIAIAAmACAAZQByAHIAbwByAEMAbwB1AG4AdAAgACYAIAAiACAA/U4iACAAJgAgAHYAYgBDAHIATABmAA0ACgBFAG4AZAAgAEkAZgANAAoAbQBzAGcAIAA9ACAAbQBzAGcAIAAmACAAIgAXgEJmOgAiACAAJgAgAEYAbwByAG0AYQB0AE4AdQBtAGIAZQByACgAZQBsAGEAcABzAGUAZAAsACAAMQApACAAJgAgACIAIADSeSIAIAAmACAAdgBiAEMAcgBMAGYAIAAmACAAdgBiAEMAcgBMAGYAIAAmACAAXwANAAoAIAAgACAAIAAgACAAIgBQAEQARgAgADJRWFu8ZToAIgAgACYAIAB2AGIAQwByAEwAZgAgACYAIABvAHUAdABwAHUAdABGAG8AbABkAGUAcgANAAoADQAKAE0AcwBnAEIAbwB4ACAAbQBzAGcALAAgAHYAYgBJAG4AZgBvAHIAbQBhAHQAaQBvAG4ALAAgACIAjFsQYiIADQAKAA0ACgAnACAA6oHVUouVX1UgAFAARABGACAAx4yZZT5ZDQAKAHMAaABlAGwAbAAuAE8AcABlAG4AIABvAHUAdABwAHUAdABGAG8AbABkAGUAcgANAAoADQAKACcAIAAFbgZ0DQAKAFMAZQB0ACAAZgBzAG8AIAA9ACAATgBvAHQAaABpAG4AZwANAAoAUwBlAHQAIABzAGgAZQBsAGwAIAA9ACAATgBvAHQAaABpAG4AZwANAAoA";
+  const README_TXT_BASE64 = "//49AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQANAAoAXnlHWauOw19Il3hb0YIgAC4AIACPdYdleWIha0mPIABQAEQARgANAAoAPQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0APQA9AD0ADQAKAA0ACgAQMH9PKHW5ZdVsETANAAoADQAKACAAIAAxAC4AIADZlspkIAAgAHliIWtJj1AARABGAC4AdgBiAHMADQAKACAAIAAyAC4AIADzjfpRlomXeiwAeJArVCAAZABvAGMAeAAgAIR2x4yZZT5ZDQAKACAAIAAzAC4AIAAJYxAwL2YRMIuVy1lJj5RqDQAKACAAIAA0AC4AIABJexlQjFsQYiAAKAAxADAAMAAwACAA/U4EfSAANQAtADEAMAAgAAZSGJQpAA0ACgAgACAANQAuACAA6oHVUouVX1UgAFAARABGACAAx4yZZT5ZDQAKAA0ACgANAAoAEDA4XouJT1VMmBEwDQAKAA0ACgAgACAAUQA6ANmWymSMX/ON+lF4kMdki5VfVbllD18/AA0ACgAgACAAQQA6AHiQDDBNAGkAYwByAG8AcwBvAGYAdAAgAFcAaQBuAGQAbwB3AHMAIABCAGEAcwBlAGQAIABTAGMAcgBpAHAAdAAgAEgAbwBzAHQADTCLlV9Vc1PvUw0ACgAgACAAIAAgACAAKAAWYihXlGpIaApOCWPzU3WTIACSISAAi5VfVbllD18gAJIhIAB4kCAAVwBpAG4AZABvAHcAcwAgAEIAYQBzAGUAZAAgAFMAYwByAGkAcAB0ACAASABvAHMAdAApAA0ACgANAAoAIAAgAFEAOgDzjfpRfmINTjBSIABNAGkAYwByAG8AcwBvAGYAdAAgAFcAbwByAGQAIACEdi+TpIo/AA0ACgAgACAAQQA6APuWZoEAl4GJiVvdiCAATQBpAGMAcgBvAHMAbwBmAHQAIABXAG8AcgBkACgAZGsLeg9ff08odSAAVwBvAHIAZAAgABVfzmRJj5RqKQANAAoADQAKACAAIABRADoA0GebTiAAZABvAGMAeAAgAEmPMVlXZT8ADQAKACAAIABBADoAGpA4Xi9mcoogAGQAbwBjAHgAIAANZN5YLADLikti1VIodSAAVwBvAHIAZAAgAFNii5WiauVnDQAKAA0ACgANAAoAEDBElqBSqooOZhEwDQAKAA0ACgAgACAALGcLeg9fDU4DZ+5POWWfUyxnhHYgAGQAbwBjAHgAIACUakhoLAANAAoAIAAgAOpTKFfHjJllPlktTrBlnlgMMFAARABGAA0wUFvHjJllPllYWz5lSY99WYR2IABQAEQARgACMA0ACgAgACAADQAKACAAIACMWxBijF8gAGQAbwBjAHgAIADNTu9T3U9ZdVxPunCZUP1OAjANAAoADQAKAA==";
+
+function base64ToBlob(b64, mime) {
+  const bin = atob(b64);
+  const arr = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type: mime || 'application/octet-stream' });
+}
+
+//============== 對照表（內建寫死） ==============
+const ITEM_MAPPING = {
+  // 法會 9 種
+  '補財': '01消災添財',
+  '補庫': '02消災補庫',
+  '補運(消災解厄)': '03消災解厄',
+  '補運': '03消災解厄',
+  '夫妻(金姻緣)': '04姻緣夫婦金',
+  '貴人(木姻緣)': '05姻緣朋友貴人木',
+  '單身(水姻緣)': '06姻緣未婚水',
+  '和合(火姻緣)': '07姻緣再婚火',
+  '同性(土姻緣)': '08姻緣同性緣土',
+  '冤親(解冤釋結)': '09解冤釋結文疏',
+  '冤親': '09解冤釋結文疏',
+  // 斗燈 5 種
+  '財神斗': '10斗燈財神斗',
+  '月老斗': '11斗燈月老斗',
+  '化煞斗': '12斗燈化煞斗',
+  '貴人斗': '13斗燈貴人斗',
+  '開運斗': '14斗燈開運斗',
+  '斗燈-姻緣斗': '11斗燈月老斗',
+  '斗燈-財神斗': '10斗燈財神斗',
+  '斗燈-貴人斗': '13斗燈貴人斗',
+  '斗燈-化煞斗': '12斗燈化煞斗',
+  '斗燈-開運斗': '14斗燈開運斗',
+  // 特殊
+  '拔薦牒文': '15拔薦牒文',
+  '天赦金': '16天赦日文疏',
+  '招貴人': '18親貴人祈安植福文疏',
+  '化小人': '19遠小人祈安植福文疏',
+  '祭改': '21祭送煞星文疏',
+  // 普桌
+  '普桌': '20祈安普度牒文',
+};
+
+// === 預設祈願文字(當客人的備註欄是空白時,依項目自動填入) ===
+// 注意: 火姻緣(07)和金姻緣(04)實務上一定有對方姓名,客人填空白時不需預設
+// (因為老師會在 Excel 直接填寫對方姓名+生日)
+const DEFAULT_WISH = {
+  '01消災添財': '修復天庫、地庫的破損，守住本命正財，事業順利，財源廣進。',
+  '02消災補庫': '增財補庫，減少不必要的開支，事業順利，財源廣進。',
+  '03消災解厄': '提升整體運勢，事業順利，事事順心。',
+  '06姻緣未婚水': '提升個人魅力與自信。天賜良緣，感情上能遇到好的桃花，合適的對象。',
+  '05姻緣朋友貴人木': '廣結善緣，讓跟自己有善緣的人顯化出來，貴人相助。',
+  '19遠小人祈安植福文疏': '化解身邊所有的男女小人，化惡緣轉善緣',
+  '09解冤釋結文疏': '迴向給自身討報之冤親債主，因果業力，化惡緣轉善緣',
+  '18親貴人祈安植福文疏': '提升各方面貴人運，萬事順利，皆能有貴人相助',
+};
+
+// === 項目分組(用於勾選「要產出哪幾類」) ===
+// 預設只勾「法會」「斗燈」(老師日常主要用的)
+// 還陰債、祭改等需手動勾選
+const ITEM_GROUPS = {
+  '法會': {
+    templates: ['01消災添財','02消災補庫','03消災解厄','04姻緣夫婦金','05姻緣朋友貴人木','06姻緣未婚水','07姻緣再婚火','08姻緣同性緣土','09解冤釋結文疏'],
+    defaultChecked: true,
+  },
+  '斗燈': {
+    templates: ['10斗燈財神斗','11斗燈月老斗','12斗燈化煞斗','13斗燈貴人斗','14斗燈開運斗'],
+    defaultChecked: true,
+  },
+  '天赦日': {
+    templates: ['16天赦日文疏'],
+    defaultChecked: true,  // 天赦日預設勾選(每月固定有)
+  },
+  '親貴人/遠小人': {
+    templates: ['18親貴人祈安植福文疏','19遠小人祈安植福文疏'],
+    defaultChecked: true,
+  },
+  '還陰債(拔薦)': {
+    templates: ['15拔薦牒文'],
+    defaultChecked: false,
+  },
+  '祭改': {
+    templates: ['21祭送煞星文疏'],
+    defaultChecked: false,
+  },
+  '普桌': {
+    templates: ['20祈安普度牒文'],
+    defaultChecked: false,
+  },
+  '狐仙': {
+    templates: ['17狐仙文疏'],
+    defaultChecked: false,
+  },
+};
+
+// 已勾選的群組(全域狀態)
+let selectedGroups = new Set(
+  Object.entries(ITEM_GROUPS).filter(([k, v]) => v.defaultChecked).map(([k]) => k)
+);
+
+// 取得目前已啟用的模板清單(根據 selectedGroups)
+function getEnabledTemplates() {
+  const enabled = new Set();
+  for (const g of selectedGroups) {
+    if (ITEM_GROUPS[g]) ITEM_GROUPS[g].templates.forEach(t => enabled.add(t));
+  }
+  return enabled;
+}
+
+const REQUIRED_TEMPLATES = [...new Set(Object.values(ITEM_MAPPING))];
+
+//============== 主題 / 字體 ==============
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  document.documentElement.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+}
+function toggleFontSize() {
+  const cur = document.documentElement.getAttribute('data-fontsize');
+  document.documentElement.setAttribute('data-fontsize', cur === 'large' ? '' : 'large');
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function toggleCard(cardId) {
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  card.classList.toggle('collapsed');
+  // 使用者手動操作後就不再自動收合
+  card.dataset.userExpanded = card.classList.contains('collapsed') ? '' : '1';
+}
+
+// 切換「跳過已產過」設定
+function toggleSkipDup() {
+  skipAlreadyGenerated = !skipAlreadyGenerated;
+  const btn = document.getElementById('skip-dup-btn');
+  if (btn) {
+    btn.textContent = skipAlreadyGenerated ? '✓ 跳過已產過的' : '⊕ 重新產生(含已產過)';
+    btn.style.background = skipAlreadyGenerated ? '' : 'var(--vermilion)';
+    btn.style.color = skipAlreadyGenerated ? '' : 'var(--bg-paper)';
+  }
+  checkReady();
+}
+
+// 清除產出記錄
+async function confirmClearHistory() {
+  if (!confirm('確定要清除所有「已產過」的記錄嗎?\n清除後,所有資料都會被視為「全新」可重新產出。')) return;
+  await clearGeneratedHistory();
+  generatedSignatures = new Set();
+  // 重新解析以更新狀態
+  parsePreview();
+  showToast('✓ 已清除產出記錄');
+}
+async function clearSummaryHistory() {
+  const scope = onlineMonth ? ('本月（'+onlineMonth+'）') : '本機';
+  if (!confirm('確定清除「已產過」記錄？\n清除後，本次總冊會把所有資料當成全新、全部重新產出（不用一筆筆勾）。\n\n注意：會一併清除後端共享記錄（'+scope+'），其他人載入時也會看到這些變回「未產」。')) return;
+  await clearGeneratedHistory();
+  generatedSignatures = new Set();
+  try { forceRegenerate.clear(); } catch (e) {}
+  // 連後端共享記錄一起清（否則重新載入又會被抓回來）
+  if (onlineMonth) {
+    try { await fetch(SHU_API + '?action=shuSigClear&month=' + encodeURIComponent(onlineMonth)); } catch (e) {}
+  }
+  showToast('✓ 已清除（含共享記錄），全部資料將重新產出');
+  const area = document.getElementById('summary-preview-area');
+  if (area && area.style.display !== 'none') previewSummary();
+}
+
+//============== 中文數字 ==============
+const CN_DIGITS = ['零','一','二','三','四','五','六','七','八','九'];
+const CN_DIGITS_BIG = ['零','壹','貳','參','肆','伍','陸','柒','捌','玖'];
+
+function toChineseNum(n, big = false) {
+  if (typeof n === 'string') {
+    const trimmed = n.trim();
+    // 處理「閏3」「潤3」「閏 3」「潤三月」等含閏/潤的格式
+    // 統一輸出為「閏三」(去掉「月」字尾、把數字轉中文,前綴用「閏」)
+    const lunarMatch = trimmed.match(/^[閏潤]\s*(\d+)\s*月?$/);
+    if (lunarMatch) {
+      const num = parseInt(lunarMatch[1]);
+      return '閏' + toChineseNum(num, big);
+    }
+    // 「潤三月」「閏三月」這種已經是中文的也要處理(去掉「月」字)
+    const lunarCnMatch = trimmed.match(/^[閏潤]\s*([一二三四五六七八九十]+)\s*月?$/);
+    if (lunarCnMatch) {
+      return '閏' + lunarCnMatch[1];  // 統一用「閏」字(不用「潤」)
+    }
+    if (!/^\d+$/.test(trimmed)) return trimmed;
+    n = parseInt(trimmed);
+  }
+  if (isNaN(n)) return '';
+  const d = big ? CN_DIGITS_BIG : CN_DIGITS;
+  if (n < 10) return d[n];
+  if (n < 20) return (big ? '拾' : '十') + (n % 10 === 0 ? '' : d[n % 10]);
+  if (n < 100) {
+    const t = Math.floor(n / 10), o = n % 10;
+    return d[t] + (big ? '拾' : '十') + (o === 0 ? '' : d[o]);
+  }
+  return String(n);
+}
+
+//============== IndexedDB ==============
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('MagicHaloShuV5', 2);  // bump 版本號
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('templates')) db.createObjectStore('templates', { keyPath: 'name' });
+      if (!db.objectStoreNames.contains('settings')) db.createObjectStore('settings', { keyPath: 'key' });
+      if (!db.objectStoreNames.contains('generated')) db.createObjectStore('generated', { keyPath: 'sig' });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// === 已產生記錄 ===
+// 簽章格式: type|姓名|項目|地址  (type=shu 疏文 / type=summary 總冊)
+function makeSignature(name, item, address, type = 'shu', uniq = '') {
+  return [type, name || '', item || '', address || '', uniq || ''].map(s => String(s).trim()).join('|');
+}
+// 每筆唯一碼：優先用系統編號(填單給的唯一ID)，手key無編號則用 份數+祈願 區分
+function rowUniq(row){
+  const id = row.sysId && String(row.sysId).trim();
+  if (id) return 'id:' + id;
+  // 無系統編號(手key)：用 分頁+列位置 保證每筆唯一，避免同人同項目同地址第二筆撞章被重印
+  if (row.rowIndex != null) return 'rx:' + String(row.sheetName||row.sheet||'') + '#' + row.rowIndex;
+  return 'pn:' + String(row.parts || '') + '/' + String(row.note || '');
+}
+
+async function recordGenerated(sig, info) {
+  try {
+    const db = await openDB();
+    return new Promise((resolve) => {
+      const tx = db.transaction('generated', 'readwrite');
+      tx.objectStore('generated').put({ 
+        sig, 
+        ...info, 
+        timestamp: new Date().toISOString() 
+      });
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => resolve();
+    });
+  } catch (e) {}
+}
+
+async function loadAllGenerated() {
+  try {
+    const db = await openDB();
+    return new Promise((resolve) => {
+      const tx = db.transaction('generated', 'readonly');
+      const req = tx.objectStore('generated').getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => resolve([]);
+    });
+  } catch (e) { return []; }
+}
+
+async function clearGeneratedHistory() {
+  try {
+    const db = await openDB();
+    return new Promise((resolve) => {
+      const tx = db.transaction('generated', 'readwrite');
+      tx.objectStore('generated').clear();
+      tx.oncomplete = () => resolve();
+    });
+  } catch (e) {}
+}
+
+async function saveTemplateToDB(name, buffer, size) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction('templates', 'readwrite');
+    tx.objectStore('templates').put({ name, buffer, size });
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function loadTemplatesFromDB() {
+  const db = await openDB();
+  return new Promise((resolve) => {
+    const tx = db.transaction('templates', 'readonly');
+    const req = tx.objectStore('templates').getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => resolve([]);
+  });
+}
+
+async function clearTemplatesDB() {
+  const db = await openDB();
+  return new Promise((resolve) => {
+    const tx = db.transaction('templates', 'readwrite');
+    tx.objectStore('templates').clear();
+    tx.oncomplete = () => resolve();
+  });
+}
+
+async function saveSetting(key, value) {
+  const db = await openDB();
+  return new Promise((resolve) => {
+    const tx = db.transaction('settings', 'readwrite');
+    tx.objectStore('settings').put({ key, value });
+    tx.oncomplete = () => resolve();
+  });
+}
+
+async function loadSetting(key) {
+  const db = await openDB();
+  return new Promise((resolve) => {
+    const tx = db.transaction('settings', 'readonly');
+    const req = tx.objectStore('settings').get(key);
+    req.onsuccess = () => resolve(req.result?.value);
+    req.onerror = () => resolve(null);
+  });
+}
+
+//============== 模板管理 ==============
+let loadedTemplates = {};
+
+async function loadTemplates(event) {
+  const files = Array.from(event.target.files);
+  if (files.length === 0) return;
+  
+  let count = 0;
+  for (const file of files) {
+    if (!file.name.endsWith('.docx')) continue;
+    const buffer = await file.arrayBuffer();
+    const name = file.name.replace('.docx', '');
+    loadedTemplates[name] = { buffer, size: file.size };
+    try { await saveTemplateToDB(name, buffer, file.size); } catch (e) {}
+    count++;
+  }
+  updateTemplateUI();
+  buildMappingUI();
+  checkReady();
+  showToast(`✓ 已載入 ${count} 個模板`);
+}
+
+function updateTemplateUI() {
+  const zone = document.getElementById('template-zone');
+  const text = document.getElementById('template-zone-text');
+  const hint = document.getElementById('template-zone-hint');
+  const list = document.getElementById('template-list');
+  const card = document.getElementById('card-1');
+  const card2 = document.getElementById('card-2');
+  const clearBtn = document.getElementById('clear-tpl-btn');
+  
+  const loadedNames = Object.keys(loadedTemplates);
+  const missing = REQUIRED_TEMPLATES.filter(n => !loadedTemplates[n]);
+  
+  if (loadedNames.length > 0) {
+    if (missing.length === 0) {
+      zone.classList.add('has-files');
+      zone.classList.remove('warn');
+      text.textContent = `✓ 已載入全部 ${loadedNames.length} 個模板`;
+      hint.textContent = '所有模板齊全（點擊可重新上傳）';
+      card.classList.add('completed');
+      // 模板齊全時自動收合(只在初次載入時做)
+      if (!card.dataset.userExpanded) {
+        card.classList.add('collapsed');
+      }
+      // 對照表也預設收合(已內建,平時不需展開看)
+      if (card2 && !card2.dataset.userExpanded) {
+        card2.classList.add('collapsed');
+      }
+    } else {
+      zone.classList.add('has-files', 'warn');
+      text.textContent = `⚠ 已載入 ${loadedNames.length} 個，還缺 ${missing.length} 個`;
+      hint.textContent = '部分項目可能無法產出（點擊補上）';
+      card.classList.remove('completed');
+      card.classList.remove('collapsed'); // 缺檔不收合,讓使用者看到
+    }
+    clearBtn.style.display = '';
+    
+    // 顯示所有需要的模板狀態
+    list.innerHTML = REQUIRED_TEMPLATES.sort().map(n => {
+      const has = loadedTemplates[n];
+      return `<div class="template-item ${has ? 'found' : 'missing'}">
+        <span class="ico">${has ? '✓' : '✗'}</span>
+        <span>${n}</span>
+      </div>`;
+    }).join('');
+  } else {
+    zone.classList.remove('has-files', 'warn');
+    text.textContent = '點此上傳 21 個 .docx 模板（按 Ctrl 多選）';
+    hint.textContent = '所有模板會儲存在你的瀏覽器，下次開不用再上傳';
+    card.classList.remove('completed');
+    card.classList.remove('collapsed');
+    clearBtn.style.display = 'none';
+    list.innerHTML = '';
+  }
+}
+
+async function clearAllTemplates() {
+  if (!confirm('確定清除所有已儲存的模板？')) return;
+  loadedTemplates = {};
+  await clearTemplatesDB();
+  updateTemplateUI();
+  buildMappingUI();
+  checkReady();
+}
+
+//============== 對照表 UI（唯讀） ==============
+function buildMappingUI() {
+  const display = document.getElementById('mapping-display');
+  // 把 ITEM_MAPPING 整理成獨特的（避免重複）
+  const seen = new Set();
+  const items = [];
+  for (const [item, tpl] of Object.entries(ITEM_MAPPING)) {
+    if (!seen.has(item)) {
+      seen.add(item);
+      const has = !!loadedTemplates[tpl];
+      items.push({ item, tpl, has });
+    }
+  }
+  
+  display.innerHTML = items.map(({item, tpl, has}) => `
+    <div class="mapping-item" style="${has ? '' : 'opacity:0.5'}">
+      <span class="item-name">${item}</span>
+      <span class="arrow">→</span>
+      <span class="tpl-name">${has ? '✓' : '✗'} ${tpl}</span>
+    </div>
+  `).join('');
+}
+
+//============== 上傳 Excel ==============
+let workbookData = null; // { sheets: { sheetName: rows[] } }
+let selectedSheets = new Set();
+
+async function loadExcel(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const buffer = await file.arrayBuffer();
+  const wb = XLSX.read(buffer, { type: 'array' });
+  
+  // 解析所有工作表
+  workbookData = { sheets: {}, fileName: file.name };
+  
+  for (const sheetName of wb.SheetNames) {
+    const ws = wb.Sheets[sheetName];
+    // 用 array of arrays 模式讀取（保留所有列，包含合併、空白）
+    const aoa = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: false });
+    workbookData.sheets[sheetName] = aoa;
+  }
+  
+  // 同步寫入 allWorkbooks(供總表用),取代同名檔案
+  allWorkbooks = allWorkbooks.filter(w => w.fileName !== file.name);
+  allWorkbooks.push({ fileName: file.name, sheets: workbookData.sheets });
+  updateLoadedExcelsInfo();
+  
+  // 預設選中當月份所有工作表
+  selectedSheets = new Set();
+  const today = new Date();
+  const curMonth = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}`;
+  for (const name of wb.SheetNames) {
+    if (name.includes(curMonth)) selectedSheets.add(name);
+  }
+  
+  // 更新 UI
+  document.getElementById('excel-zone-text').textContent = `✓ 已載入：${file.name}`;
+  document.getElementById('excel-zone').classList.add('has-files');
+  
+  buildSheetSelector();
+  parsePreview();
+  showToast(`✓ 載入 ${wb.SheetNames.length} 個工作表`);
+}
+
+// 多檔案上傳:加入 allWorkbooks(總表用),不影響步驟肆預覽
+async function loadMultipleExcels(event) {
+  const files = Array.from(event.target.files);
+  if (files.length === 0) return;
+  
+  let count = 0;
+  for (const file of files) {
+    try {
+      const buffer = await file.arrayBuffer();
+      const wb = XLSX.read(buffer, { type: 'array' });
+      const sheets = {};
+      for (const sheetName of wb.SheetNames) {
+        const ws = wb.Sheets[sheetName];
+        sheets[sheetName] = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: false });
+      }
+      // 取代同名檔
+      allWorkbooks = allWorkbooks.filter(w => w.fileName !== file.name);
+      allWorkbooks.push({ fileName: file.name, sheets });
+      count++;
+    } catch (e) {
+      console.error(`載入 ${file.name} 失敗:`, e);
+    }
+  }
+  updateLoadedExcelsInfo();
+  showToast(`✓ 已加入 ${count} 份 Excel,目前共 ${allWorkbooks.length} 份`);
+  // 清空 input 讓同檔可重複選
+  event.target.value = '';
+}
+
+// ====== 線上香量帶入（沿用 workbookData / allWorkbooks 原流程）======
+const SHU_API = 'https://script.google.com/macros/s/AKfycbwSM81dVKy_ZkFdQneulQKv7m13rfYe8xonhBFPI6T1sASw3A2Q3rBNjJ1oY3MsOPIYZw/exec';
+let onlineBooks = null;      // { teacher: { sheetName: rows[] } }
+let onlineMonth = '';        // 目前載入的月份（推回簽章用）
+let onlineTeacher = '';      // 目前載入的老師（推回簽章用）
+// 載入老師清單到下拉
+async function loadShuTeacherList(){
+  try{ const d = await (await fetch(SHU_API + '?action=teachers')).json();
+    if(d && d.ok && d.teachers){ const sel=document.getElementById('shu-pick-teacher');
+      sel.innerHTML = '<option value="__ALL__">全部老師（總冊用）</option>' + d.teachers.map(t=>`<option value="${t.name}">${t.no}　${t.name}</option>`).join('');
+    }
+  }catch(e){}
+}
+// 合併後端共享的「已產簽章」，讓別人產過的也會跳過
+async function mergeSharedSigs(month){
+  try{ const d = await (await fetch(SHU_API + '?action=shuSigs&month=' + encodeURIComponent(month))).json();
+    if(d && d.ok && d.sigs){ d.sigs.forEach(s=>generatedSignatures.add(s)); return d.sigs.length; }
+  }catch(e){}
+  return 0;
+}
+// 產生後把簽章推回後端（其他人就會看到已產、自動跳過）
+function pushSharedSigs(sigs){
+  if(!onlineMonth || !sigs || !sigs.length) return;
+  try{ fetch(SHU_API, {method:'POST', body: JSON.stringify({action:'shuSigAdd', sigs:sigs, month:onlineMonth, by:onlineTeacher||''})}).catch(()=>{}); }catch(e){}
+}
+// 產疏文後回寫「✓已出疏文」到老師Sheet（業績/總冊以此為準）。marks:[{teacher,cat,sysId}]
+function pushProduced(marks){
+  if(!onlineMonth || !marks || !marks.length) return;
+  marks = marks.filter(m=>m && m.teacher && m.sysId);
+  if(!marks.length) return;
+  try{ fetch(SHU_API, {method:'POST', body: JSON.stringify({action:'markShu', month:onlineMonth, by:onlineTeacher||'', marks:marks})}).catch(()=>{}); }catch(e){}
+}
+async function loadOnlineShu(){
+  const mEl = document.getElementById('shu-online-month');
+  const st = document.getElementById('shu-online-status');
+  const pick = document.getElementById('shu-pick-teacher').value;
+  let month = (mEl.value||'').trim();
+  if(!month){ const d=new Date(); month = d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0'); mEl.value=month; }
+  onlineMonth = month;
+  st.textContent = (pick==='__ALL__'?'讀取中…（全部老師，約需數十秒）':'讀取中…（'+pick+'）');
+  try{
+    const url = SHU_API + '?action=raw&month=' + encodeURIComponent(month) + (pick==='__ALL__'?'':'&teacher='+encodeURIComponent(pick));
+    const res = await fetch(url);
+    const data = await res.json();
+    if(!data.ok || !data.books){ st.textContent='讀取失敗，請確認月份與後端部署'; return; }
+    onlineBooks = data.books;
+    const teachers = Object.keys(onlineBooks);
+    if(!teachers.length){ st.textContent='該月份' + (pick==='__ALL__'?'':('（'+pick+'）')) + '目前沒有線上資料'; return; }
+    allWorkbooks = teachers.map(t => ({ fileName: t, sheets: onlineBooks[t] }));
+    updateLoadedExcelsInfo();
+    const sharedN = await mergeSharedSigs(month);   // 先合併共享已產簽章
+    const sel = document.getElementById('shu-online-teacher');
+    sel.innerHTML = teachers.map(t => `<option value="${t}">${t}</option>`).join('');
+    document.getElementById('shu-online-teacher-wrap').style.display = '';
+    onlineTeacher = (pick==='__ALL__') ? teachers[0] : pick;
+    pickOnlineTeacher();
+    st.textContent = '✓ 已載入 ' + teachers.length + ' 位（' + month + '）' + (sharedN?('・已同步 '+sharedN+' 筆他人已產記錄'):'');
+  }catch(e){ st.textContent = '連線失敗：' + e; }
+}
+function pickOnlineTeacher(){
+  if(!onlineBooks) return;
+  const t = document.getElementById('shu-online-teacher').value;
+  const sheets = onlineBooks[t]; if(!sheets) return;
+  onlineTeacher = t;
+  workbookData = { sheets: sheets, fileName: t };
+  selectedSheets = new Set();
+  for(const name of Object.keys(sheets)) selectedSheets.add(name);
+  document.getElementById('excel-zone-text').textContent = '✓ 線上：' + t;
+  document.getElementById('excel-zone').classList.add('has-files');
+  buildSheetSelector();
+  parsePreview();
+}
+try{ loadShuTeacherList(); }catch(e){}
+
+function updateLoadedExcelsInfo() {
+  const info = document.getElementById('loaded-excels-info');
+  if (!info) return;
+  if (allWorkbooks.length === 0) {
+    info.textContent = '尚未載入任何 Excel';
+    info.style.color = 'var(--ink-soft)';
+  } else {
+    const fileNames = allWorkbooks.map(w => w.fileName).join('、');
+    info.innerHTML = `目前已載入 <strong>${allWorkbooks.length}</strong> 份: ${fileNames}`;
+    info.style.color = 'var(--ink)';
+  }
+}
+
+//============== 產生總表(月底人名清冊) ==============
+
+// 項目 -> 封面標題對照表
+const COVER_TITLE_MAP = {
+  '補財': '消災補財人名清冊',
+  '補庫': '消災補庫人名清冊',
+  '補運(消災解厄)': '消災解厄人名清冊',
+  '補運': '消災解厄人名清冊',
+  '貴人(木姻緣)': '木姻緣人名清冊',
+  '和合(火姻緣)': '火姻緣人名清冊',
+  '同性(土姻緣)': '土姻緣人名清冊',
+  '夫妻(金姻緣)': '金姻緣人名清冊',
+  '單身(水姻緣)': '水姻緣人名清冊',
+  '冤親(解冤釋結)': '解冤釋結人名清冊',
+  '冤親': '解冤釋結人名清冊',
+  '財神斗': '財神斗燈人名清冊',
+  '開運斗': '開運斗燈人名清冊',
+  '月老斗': '姻緣斗燈人名清冊',
+  '貴人斗': '貴人斗燈人名清冊',
+  '化煞斗': '化煞斗燈人名清冊',
+  '天赦金': '天赦日人名清冊',
+  '招貴人': '親貴人人名清冊',
+  '化小人': '遠小人人名清冊',
+  '祭改': '祭改人名清冊',
+  '拔薦牒文': '拔薦諜文人名清冊',
+};
+
+// 份數欄「金名稱」對照 — 例如補財項目顯示「萬寶金X份 / 補財金X份」
+const GOLD_NAME_MAP = {
+  '補財': '補財金',
+  '補庫': '補庫金',
+  '補運(消災解厄)': '補運金',
+  '補運': '補運金',
+  '貴人(木姻緣)': '木姻緣金',
+  '和合(火姻緣)': '火姻緣金',
+  '同性(土姻緣)': '土姻緣金',
+  '夫妻(金姻緣)': '金姻緣金',
+  '單身(水姻緣)': '水姻緣金',
+  '冤親(解冤釋結)': '解冤親金',
+  '冤親': '解冤親金',
+  '財神斗': '財神斗金',
+  '開運斗': '開運斗金',
+  '月老斗': '月老斗金',
+  '貴人斗': '貴人斗金',
+  '化煞斗': '化煞斗金',
+  '天赦金': '天赦金',
+  '招貴人': '貴人金',
+  '化小人': '小人金',
+  '祭改': '祭改金',
+};
+
+// 從所有 allWorkbooks 收集資料,合併去重,按項目分組
+function collectAllRowsForSummary() {
+  // 收集所有 Excel + 老師資料,按項目分組去重
+  const rowsByItem = {};
+  const seenSig = new Set();
+  
+  // 取得目前已啟用的群組對應模板(用於過濾類別)
+  const enabledTpls = getEnabledTemplates();
+  
+  // 取得「月份過濾」設定:從步驟肆已勾選的 selectedSheets 抓出月份
+  // 格式如「法會(2026.05)」「斗燈(2026.04)」「還陰債(2026.04)」
+  const enabledMonths = new Set();
+  for (const sheetName of selectedSheets) {
+    const m = sheetName.match(/(\d{4})[.\-/](\d{1,2})/);
+    if (m) enabledMonths.add(`${m[1]}.${String(m[2]).padStart(2,'0')}`);
+  }
+  
+  const originalParsed = parsedRows;
+  
+  for (const wb of allWorkbooks) {
+    for (const [sheetName, aoa] of Object.entries(wb.sheets)) {
+      // 月份過濾: 該工作表的月份必須在 enabledMonths 中
+      // (若沒設定 enabledMonths,則全部接受 — 比如多老師上傳沒勾選任何月份時)
+      if (enabledMonths.size > 0) {
+        const m = sheetName.match(/(\d{4})[.\-/](\d{1,2})/);
+        if (!m) continue;
+        const monthKey = `${m[1]}.${String(m[2]).padStart(2,'0')}`;
+        if (!enabledMonths.has(monthKey)) continue;
+      }
+      
+      parsedRows = [];
+      try {
+        parseSheet(sheetName, aoa);
+      } catch (e) {
+        console.warn(`解析 ${wb.fileName} / ${sheetName} 失敗:`, e);
+        continue;
+      }
+      
+      for (const row of parsedRows) {
+        if (!row.name || !row.address || !row.item) continue;
+        
+        // 類別過濾: 必須是已勾選類別的模板
+        if (!row.template || !enabledTpls.has(row.template)) continue;
+        // 斗燈：令牌加購、單筆加購不進總冊（單張疏文不受影響）
+        if (/^斗燈/.test(row.sheet) && (row.buyType === '令牌加購' || row.buyType === '單筆加購')) continue;
+        
+        // 簽章用 summary 類型,跟疏文分開記錄
+        const sumSig = makeSignature(row.name, row.item, row.address, 'summary', rowUniq(row));
+        if (seenSig.has(sumSig)) continue;
+        seenSig.add(sumSig);
+        
+        if (!rowsByItem[row.item]) rowsByItem[row.item] = [];
+        rowsByItem[row.item].push({
+          name: row.name,
+          address: row.address,
+          parts: row.parts || '1',
+          fromFile: wb.fileName,
+          sysId: row.sysId || '',
+          cat: (row.sheet || '').split('(')[0],
+          signature: sumSig,
+          alreadyGenerated: generatedSignatures.has(sumSig),
+          forceInclude: forceRegenerate.has(sumSig),
+        });
+      }
+    }
+  }
+  
+  parsedRows = originalParsed;
+  return rowsByItem;
+}
+
+async function loadCustomTpl(event, type) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const arrBuf = await file.arrayBuffer();
+  if (type === 'summary') {
+    customSummaryTplBuf = arrBuf;
+    document.getElementById('custom-summary-tpl-info').textContent = `✓ 已上傳: ${file.name}`;
+    document.getElementById('custom-summary-tpl-info').style.color = 'var(--success)';
+    showToast(`總表模板已載入: ${file.name}`);
+  } else {
+    customCoverTplBuf = arrBuf;
+    document.getElementById('custom-cover-tpl-info').textContent = `✓ 已上傳: ${file.name}`;
+    document.getElementById('custom-cover-tpl-info').style.color = 'var(--success)';
+    showToast(`封面模板已載入: ${file.name}`);
+  }
+  event.target.value = '';
+}
+
+// 從原始封面 docx 抽出指定標題的那一頁 XML 段落
+async function extractCoverPage(coverTitle) {
+  // 載入封面模板:有自訂用自訂,沒有用內建
+  let arrBuf;
+  if (customCoverTplBuf) {
+    arrBuf = customCoverTplBuf;
+  } else {
+    const buf = base64ToBlob(COVER_TEMPLATE_B64);
+    arrBuf = await buf.arrayBuffer();
+  }
+  const zip = await JSZip.loadAsync(arrBuf);
+  const xml = await zip.file('word/document.xml').async('string');
+  
+  // 抓 <w:body> 內所有段落
+  const bodyMatch = xml.match(/<w:body>([\s\S]*?)<\/w:body>/);
+  if (!bodyMatch) return null;
+  const bodyContent = bodyMatch[1];
+  
+  // 拆成段落陣列
+  const paras = [];
+  const paraRegex = /<w:p[^>]*>[\s\S]*?<\/w:p>/g;
+  let m;
+  while ((m = paraRegex.exec(bodyContent)) !== null) paras.push(m[0]);
+  
+  // 找含 coverTitle 的那段
+  let targetIdx = -1;
+  for (let i = 0; i < paras.length; i++) {
+    const texts = (paras[i].match(/<w:t[^>]*>([^<]*)<\/w:t>/g) || [])
+      .map(t => t.replace(/<[^>]+>/g, ''));
+    const fullText = texts.join('');
+    if (fullText.includes(coverTitle)) {
+      targetIdx = i;
+      break;
+    }
+  }
+  
+  if (targetIdx === -1) return null;
+  
+  // 回傳這個段落
+  return paras[targetIdx];
+}
+
+// 用「總表模板」的 4列x26欄表格,複製多份成多頁,每頁填 25 筆
+// ============== 月底總冊 — 純程式產生 docx (不用模板) ==============
+
+// XML escape
+function xmlEscape(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+// 直書 A3 橫式的 sectPr (底部一頁版面設定)
+// pgSz: A3 橫向 (w=23814, h=16840 是 A3 直立, A3 橫式應該 w=16840, h=11906 縮小為 A4)
+// 但為了清冊容納 4×26 表格,實際用 A3 直書(直行由右往左,字型由上往下,中文古文書格式)
+// w:textDirection val=tbRl 表示直書
+// pgSz: A3 = 16840 x 23814(twentieths-of-points), 橫向就交換
+const SUMMARY_SECTPR = `<w:sectPr><w:pgSz w:w="23814" w:h="16840" w:orient="landscape" w:code="8"/><w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" w:header="0" w:footer="0" w:gutter="0"/><w:cols w:space="425"/><w:textDirection w:val="tbRl"/><w:docGrid w:type="linesAndChars" w:linePitch="360" w:charSpace="13372"/></w:sectPr>`;
+
+// 標楷體+大小的 rPr (範本字級 32 = 16pt)
+function rPrXml(sz = 32, bold = true) {
+  const sizeXml = `<w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/>`;
+  const boldXml = bold ? '<w:b/><w:bCs/>' : '';
+  return `<w:rPr><w:rFonts w:ascii="標楷體" w:eastAsia="標楷體" w:hAnsi="標楷體" w:cs="標楷體" w:hint="eastAsia"/>${boldXml}${sizeXml}</w:rPr>`;
+}
+
+// 產生一個 cell (含文字)
+// width: 儲存格寬度 (twentieths of point); 預設值適合 4x26 表格
+function makeCell(text, width = 720, bold = true, fontSize = 32) {
+  const lines = String(text || '').split('\n');
+  const paras = lines.map(line => {
+    const safe = xmlEscape(line);
+    return `<w:p><w:pPr><w:jc w:val="center"/><w:rPr>${rPrXml(fontSize, bold).replace(/<\/?w:rPr>/g, '')}</w:rPr></w:pPr>${safe ? `<w:r>${rPrXml(fontSize, bold)}<w:t xml:space="preserve">${safe}</w:t></w:r>` : ''}</w:p>`;
+  }).join('');
+  // 注意: cell 的 textDirection=tbRlV 才會讓文字在儲存格內直書
+  // section 的 textDirection=tbRl 只控制頁面整體方向,不影響 cell 內文字
+  // border 統一由 tblBorders 處理, cell 不重複設定
+  return `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/><w:textDirection w:val="tbRlV"/><w:vAlign w:val="center"/></w:tcPr>${paras}</w:tc>`;
+}
+
+// 產生一頁的 4x26 表格
+// pageRows: 該頁實際資料 (最多 25 筆)
+// goldName: 「萬寶金/X金」中的 X (如「補財金」)
+// skipWanbao: 若為 true,份數欄不顯示「萬寶金X份」,只顯示「X金X份」(天赦日專用)
+function makeSummaryTable(pageRows, goldName, skipWanbao = false) {
+  // 每欄寬度都是 850 dxa(跟範本一致), 26 欄合計 22100 dxa
+  const cellWidth = 850;
+  
+  // 列 0 = 編號 (右起為標題, 然後 25, 24, ..., 1)
+  // 列 1 = 姓名
+  // 列 2 = 份數 (萬寶金X份 \n XX金X份)
+  // 列 3 = 地址
+  
+  const tcs = {
+    no: [],     // 列 0: 編號
+    name: [],   // 列 1: 姓名
+    parts: [],  // 列 2: 份數
+    addr: [],   // 列 3: 地址
+  };
+  
+  // 資料順序: cell[0] 對應編號 25, cell[1]=24, ..., cell[24]=1, cell[25]=標題欄
+  // 「直書由右往左讀」 + 中文古文書順序 → 第一筆要在最右側(編號最大的位置)
+  
+  for (let i = 0; i < 25; i++) {
+    const dataIdx = 24 - i;  // cell[i] 對應編號 (25-i)
+    const num = 25 - i;
+    const r = pageRows[dataIdx];  // 實際資料
+    
+    tcs.no.push(makeCell(String(num), cellWidth));
+    tcs.name.push(makeCell(r ? r.name : '', cellWidth));
+    
+    // 份數: 一般項目「萬寶金X份 + 換行 + XX金X份」; 天赦日只顯示「天赦金X份」
+    let partsText = '';
+    if (r && r.parts) {
+      const p = String(r.parts).replace(/\.0$/, '');
+      if (skipWanbao) {
+        partsText = `${goldName}${p}份`;
+      } else {
+        partsText = `萬寶金${p}份\n${goldName}${p}份`;
+      }
+    }
+    tcs.parts.push(makeCell(partsText, cellWidth));
+    
+    tcs.addr.push(makeCell(r ? r.address : '', cellWidth));
+  }
+  
+  // 標題欄 (最後一欄,在最左邊,直書時是最後讀的)
+  tcs.no.push(makeCell('編號', cellWidth));
+  tcs.name.push(makeCell('姓名', cellWidth));
+  tcs.parts.push(makeCell('份數', cellWidth));
+  tcs.addr.push(makeCell('地址', cellWidth));
+  
+  // 組成 4 列 — 列高採用 00總表.docx 範本實測值
+  // 列高指字在「直書方向」上可容納的長度;地址通常較長要 8602
+  const trs = [
+    `<w:tr><w:trPr><w:trHeight w:val="1140"/></w:trPr>${tcs.no.join('')}</w:tr>`,
+    `<w:tr><w:trPr><w:trHeight w:val="2135"/></w:trPr>${tcs.name.join('')}</w:tr>`,
+    `<w:tr><w:trPr><w:trHeight w:val="2650"/></w:trPr>${tcs.parts.join('')}</w:tr>`,
+    `<w:tr><w:trPr><w:trHeight w:val="8602"/></w:trPr>${tcs.addr.join('')}</w:tr>`,
+  ];
+  
+  // 表格屬性 — fixed 寬度 22100(26*850),確保 cell 寬度按 grid 設定不會被自動調整
+  const tblPr = `<w:tblPr><w:tblW w:w="22100" w:type="dxa"/><w:jc w:val="center"/><w:tblBorders><w:top w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:left w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:bottom w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:right w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:insideH w:val="single" w:sz="4" w:space="0" w:color="auto"/><w:insideV w:val="single" w:sz="4" w:space="0" w:color="auto"/></w:tblBorders><w:tblLayout w:type="fixed"/><w:tblLook w:val="04A0"/></w:tblPr>`;
+  
+  // 表格網格 (26 欄,全部 850)
+  const grids = Array.from({length: 26}, () => `<w:gridCol w:w="${cellWidth}"/>`).join('');
+  
+  return `<w:tbl>${tblPr}<w:tblGrid>${grids}</w:tblGrid>${trs.join('')}</w:tbl>`;
+}
+
+// 產生封面段落 (大字型,項目名+人名清冊)
+// 在直書版面中,封面也要直書,所以段落要用 textDirection
+function makeCoverPara(title) {
+  const safe = xmlEscape(title);
+  // 封面用單元格包裹,這樣能控制其方向
+  // 用一個 1x1 表格佔據整頁,儲存格設 textDirection=tbRlV
+  return `<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/><w:jc w:val="center"/><w:tblLayout w:type="fixed"/><w:tblLook w:val="04A0"/></w:tblPr><w:tblGrid><w:gridCol w:w="8000"/></w:tblGrid><w:tr><w:trPr><w:trHeight w:val="14000"/></w:trPr><w:tc><w:tcPr><w:tcW w:w="8000" w:type="dxa"/><w:textDirection w:val="tbRlV"/><w:vAlign w:val="center"/></w:tcPr><w:p><w:pPr><w:jc w:val="center"/><w:rPr><w:rFonts w:ascii="標楷體" w:eastAsia="標楷體" w:hAnsi="標楷體" w:cs="標楷體" w:hint="eastAsia"/><w:b/><w:bCs/><w:sz w:val="96"/><w:szCs w:val="96"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii="標楷體" w:eastAsia="標楷體" w:hAnsi="標楷體" w:cs="標楷體" w:hint="eastAsia"/><w:b/><w:bCs/><w:sz w:val="96"/><w:szCs w:val="96"/></w:rPr><w:t>${safe}</w:t></w:r></w:p></w:tc></w:tr></w:tbl>`;
+}
+
+// 產生完整 docx (從零組裝)
+async function buildSummaryDocx(itemName, rows) {
+  // 取得封面標題和金名稱
+  const coverTitle = COVER_TITLE_MAP[itemName] || `${itemName}人名清冊`;
+  const goldName = GOLD_NAME_MAP[itemName] || `${itemName}金`;
+  
+  // 天赦日特殊處理: 跟疏文一致,份數欄不顯示「萬寶金X份」,只顯示「天赦金X份」
+  const skipWanbao = (itemName === '天赦金');
+  
+  // 切頁: 每頁 25 筆
+  const pages = [];
+  for (let i = 0; i < rows.length; i += 25) {
+    pages.push(rows.slice(i, i + 25));
+  }
+  if (pages.length === 0) pages.push([]);
+  
+  // 產生 body 內容
+  let bodyContent = '';
+  
+  // 封面
+  bodyContent += makeCoverPara(coverTitle);
+  bodyContent += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+  
+  // 每頁一個表格,中間用分頁
+  for (let i = 0; i < pages.length; i++) {
+    bodyContent += makeSummaryTable(pages[i], goldName, skipWanbao);
+    if (i < pages.length - 1) {
+      bodyContent += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+    } else {
+      bodyContent += '<w:p/>';  // sectPr 依附
+    }
+  }
+  
+  bodyContent += SUMMARY_SECTPR;
+  
+  // 完整 document.xml
+  const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+<w:body>${bodyContent}</w:body>
+</w:document>`;
+  
+  // 從零組裝最小 docx
+  const zip = new JSZip();
+  zip.file('[Content_Types].xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+<Default Extension="xml" ContentType="application/xml"/>
+<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+</Types>`);
+  
+  zip.file('_rels/.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`);
+  
+  zip.file('word/document.xml', documentXml);
+  
+  return await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+}
+
+// 把資料填入單一個 4x26 的表格(該頁最多 25 筆)
+// 表格結構: 列 0=編號(已寫死 25..1+標題), 列 1=姓名, 列 2=份數, 列 3=地址
+// 欄位順序: cell[0..24] 對應編號 25..1, cell[25] 是標題欄(編號/姓名/份數/地址)
+// 即 第 N 筆(N從1起)資料,要填到 cell[25-N]
+function fillSummaryTable(tblTemplate, pageRows, pageIdx) {
+  // 抓出所有 <w:tr>
+  const trs = [];
+  const trRegex = /<w:tr[^>]*>[\s\S]*?<\/w:tr>/g;
+  let m;
+  while ((m = trRegex.exec(tblTemplate)) !== null) trs.push(m[0]);
+  
+  if (trs.length < 4) return tblTemplate;
+  
+  // 對每個列做填入
+  // 列 0=編號 (已有 25,24,...,1 不需動)
+  // 列 1=姓名,列 2=份數,列 3=地址
+  const newTrs = [
+    trs[0],  // 編號列保持原樣
+    fillTrWithData(trs[1], pageRows.map(r => r.name), '姓名'),
+    fillTrWithData(trs[2], pageRows.map(r => String(r.parts).replace(/\.0$/, '')), '份數'),
+    fillTrWithData(trs[3], pageRows.map(r => r.address), '地址'),
+  ];
+  
+  // 重組表格
+  return tblTemplate.replace(/<w:tr[^>]*>[\s\S]*?<\/w:tr>(\s*<w:tr[^>]*>[\s\S]*?<\/w:tr>){3}/, newTrs.join(''));
+}
+
+// 把資料填入單一列的 cell[0..24] (cell[25]是標題,不動)
+// pageRows[0..N-1] 為當頁實際資料,要填到 cell[25-1-i] = cell[24-i]
+function fillTrWithData(trXml, dataArray, labelText) {
+  const tcs = [];
+  const tcRegex = /<w:tc>[\s\S]*?<\/w:tc>/g;
+  let m;
+  while ((m = tcRegex.exec(trXml)) !== null) tcs.push(m[0]);
+  
+  if (tcs.length !== 26) return trXml;
+  
+  // cell[25] 是標題欄,不動
+  // cell[0..24] 對應編號 25..1
+  // 第 N 筆(N從1起)要填到編號為 N 的欄位 = cell[25-N] = cell[25 - N]
+  // 換算:cell[i] 的編號 = 25 - i,要填的資料是 dataArray[編號-1] = dataArray[25-i-1] = dataArray[24-i]
+  
+  const newTcs = tcs.map((tc, i) => {
+    if (i === 25) return tc;  // 標題欄不動
+    const dataIdx = 24 - i;  // cell[24] = 編號1 = dataArray[0]
+    if (dataIdx < dataArray.length && dataArray[dataIdx]) {
+      return fillTcText(tc, dataArray[dataIdx]);
+    }
+    return tc;  // 沒資料就保持空
+  });
+  
+  // 用組裝後的 cells 取代原本的
+  // 簡單做法:tr 內部用 newTcs 重構
+  const trOpenMatch = trXml.match(/<w:tr[^>]*>/);
+  const trOpen = trOpenMatch[0];
+  // 抓 trPr 之類的東西(若有的話,在第一個 tc 前)
+  const beforeFirstTc = trXml.substring(trOpen.length, trXml.indexOf('<w:tc>'));
+  return trOpen + beforeFirstTc + newTcs.join('') + '</w:tr>';
+}
+
+// 把單一 cell 的文字內容換成新文字(保留原本字體/大小設定)
+function fillTcText(tcXml, newText) {
+  // 找 cell 內的 <w:p>...</w:p>
+  // 找第一個 <w:r>,把它的 <w:t>...</w:t> 換成新文字
+  // 如果沒有 <w:r>,就加一個
+  
+  // 簡單處理:把 <w:t>...</w:t>(若有)的內容換掉
+  const tMatch = tcXml.match(/<w:t[^>]*>[^<]*<\/w:t>/);
+  if (tMatch) {
+    // 已有文字,換掉
+    return tcXml.replace(/(<w:t[^>]*>)[^<]*(<\/w:t>)/, '$1' + escapeXml(newText) + '$2');
+  }
+  
+  // 沒有 <w:t>,但 cell 應該有 <w:p>,需要在裡面加 <w:r><w:t>
+  // 找 <w:p>...</w:p>,在 </w:p> 前插 <w:r>
+  // 用模板的字體 (金梅新毛筆顏楷,12pt = w:sz=24)
+  const newRun = `<w:r><w:rPr><w:rFonts w:ascii="標楷體" w:eastAsia="標楷體" w:hAnsi="標楷體" w:cs="標楷體" w:hint="eastAsia"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr><w:t>${escapeXml(newText)}</w:t></w:r>`;
+  
+  // 在 </w:p> 之前插入 (注意:可能有多個 <w:p>,只插第一個)
+  return tcXml.replace(/<\/w:p>/, newRun + '</w:p>');
+}
+
+async function generateSummary() {
+  if (allWorkbooks.length === 0) {
+    showToast('請先在步驟肆上傳 Excel,或在這裡加入更多老師的 Excel');
+    return;
+  }
+  
+  // 先檢查月份和類別有沒有設定
+  const enabledTpls = getEnabledTemplates();
+  if (enabledTpls.size === 0) {
+    showToast('請先在步驟伍勾選要產出的項目類別(法會/斗燈/還陰債等)');
+    return;
+  }
+  
+  const btn = document.getElementById('summary-btn');
+  const progArea = document.getElementById('summary-progress-area');
+  const progFill = document.getElementById('summary-progress-fill');
+  const progText = document.getElementById('summary-progress-text');
+  const successBanner = document.getElementById('summary-success-banner');
+  
+  btn.disabled = true;
+  progArea.classList.add('show');
+  successBanner.classList.remove('show');
+  progFill.style.width = '0%';
+  progFill.textContent = '0%';
+  progText.textContent = '收集所有老師的資料(依勾選月份+類別過濾)...';
+  
+  const startTime = Date.now();
+  
+  try {
+    // 1. 收集所有資料,按項目分組去重
+    const rowsByItem = collectAllRowsForSummary();
+    const itemNames = Object.keys(rowsByItem).filter(it => rowsByItem[it].length > 0);
+    
+    if (itemNames.length === 0) {
+      throw new Error('沒有可產出的資料');
+    }
+    
+    progText.textContent = `共 ${itemNames.length} 個項目,開始產生總表...`;
+    await new Promise(r => setTimeout(r, 100));
+    
+    const outputZip = new JSZip();
+    let totalWritten = 0, totalSkipped = 0;
+    const recordList = [];  // 待 recordGenerated 的清單
+    
+    // 2. 每個項目產一份 docx (只寫「新增 + 強制重產」的)
+    for (let i = 0; i < itemNames.length; i++) {
+      const itemName = itemNames[i];
+      const allRows = rowsByItem[itemName];
+      
+      // 過濾: 新增的 + 使用者勾選「強制重產」的; 跳過「已產過且未勾」的
+      const rows = allRows.filter(r => !r.alreadyGenerated || forceRegenerate.has(r.signature));
+      totalSkipped += allRows.length - rows.length;
+      
+      if (rows.length === 0) {
+        // 沒可寫的就跳過(該項目已全部寫過)
+        continue;
+      }
+      totalWritten += rows.length;
+      
+      progText.textContent = `[${i + 1}/${itemNames.length}] 產生「${itemName}」總表 (${rows.length} 筆,跳過 ${allRows.length - rows.length})...`;
+      const pct = Math.round(((i + 1) / itemNames.length) * 100);
+      progFill.style.width = pct + '%';
+      progFill.textContent = pct + '%';
+      
+      const blob = await buildSummaryDocx(itemName, rows);
+      const safeItemName = itemName.replace(/[\/\\:*?"<>|]/g, '_');
+      const filename = `${safeItemName}人名清冊(${rows.length}人).docx`;
+      outputZip.file(filename, blob);
+      
+      // 收集要 record 的(只 record 真的有寫進去的)
+      for (const r of rows) {
+        recordList.push({ sig: r.signature, name: r.name, item: itemName, address: r.address, sysId: r.sysId||'', teacher: r.fromFile||'', cat: r.cat||'' });
+      }
+      
+      await new Promise(r => setTimeout(r, 0));
+    }
+    
+    if (totalWritten === 0) {
+      throw new Error('全部項目都已產過,沒有新增或重產的資料\n如果要重新產出某些人,請點「👁 預覽要寫入的資料」勾選');
+    }
+    
+    // 3. 加入 PDF 轉檔工具
+    progText.textContent = '打包 ZIP 中...';
+    outputZip.file('批次轉PDF.vbs', base64ToBlob(VBA_MACRO_BASE64));
+    outputZip.file('使用說明.txt', base64ToBlob(README_TXT_BASE64));
+    
+    const zipBlob = await outputZip.generateAsync(
+      { type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } },
+      (meta) => {
+        progFill.style.width = meta.percent.toFixed(0) + '%';
+        progFill.textContent = '打包 ' + meta.percent.toFixed(0) + '%';
+      }
+    );
+    
+    const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+    const sizeMB = (zipBlob.size / 1024 / 1024).toFixed(1);
+    
+    const today = new Date();
+    const dateStr = `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
+    const zipName = `月底總冊_${dateStr}_${itemNames.length}項_${totalWritten}人.zip`;
+    saveAs(zipBlob, zipName);
+    
+    // 記錄已產出的簽章 (下次預覽會反黑)
+    for (const r of recordList) {
+      await recordGenerated(r.sig, { name: r.name, item: r.item, address: r.address });
+      generatedSignatures.add(r.sig);
+    }
+    try{ pushSharedSigs(recordList.map(r=>r.sig)); }catch(e){}
+    try{ pushProduced(recordList.map(r=>({teacher:r.teacher, cat:r.cat, sysId:r.sysId}))); }catch(e){}
+    forceRegenerate.clear();
+    
+    successBanner.innerHTML = `✓ 總冊完成!${itemNames.length} 個項目 ・ 寫入 ${totalWritten} 筆 (跳過已產 ${totalSkipped} 筆) ・ ${sizeMB} MB ・ 耗時 ${elapsed} 秒<br><span style="font-size:13px;font-weight:normal;display:block;margin-top:8px;">📋 每個項目一個 docx,首頁是封面,後面是 25 人/頁的清冊<br>已記錄 ${recordList.length} 筆簽章,下次產生會自動跳過(若要重產,點「👁 預覽」勾選)</span>`;
+    successBanner.classList.add('show');
+    progArea.classList.remove('show');
+    
+  } catch (err) {
+    console.error(err);
+    progText.textContent = '❌ 錯誤: ' + err.message;
+    showToast('產生失敗: ' + err.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function buildSheetSelector() {
+  const area = document.getElementById('sheet-selector-area');
+  const selector = document.getElementById('sheet-selector');
+  
+  if (!workbookData) {
+    area.style.display = 'none';
+    return;
+  }
+  
+  area.style.display = '';
+  
+  // 從工作表名稱提取所有月份
+  const monthSet = new Set();  // 'YYYY.MM' 格式
+  const sheetByMonth = {};     // 'YYYY.MM' -> [sheetName, ...]
+  
+  for (const name of Object.keys(workbookData.sheets)) {
+    const m = name.match(/(20\d{2})[.\s_-]?(\d{2})/);
+    if (m) {
+      const key = `${m[1]}.${m[2]}`;
+      monthSet.add(key);
+      if (!sheetByMonth[key]) sheetByMonth[key] = [];
+      sheetByMonth[key].push(name);
+    }
+  }
+  
+  // 排序月份 (新→舊)
+  const allMonths = [...monthSet].sort().reverse();
+  
+  // 預設只顯示前一個月 / 當月 / 下個月
+  const today = new Date();
+  const recentMonths = [];
+  for (let offset = -1; offset <= 1; offset++) {
+    const d = new Date(today.getFullYear(), today.getMonth() + offset, 1);
+    recentMonths.push(`${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}`);
+  }
+  
+  const showAll = window._showAllSheets === true;
+  const displayMonths = showAll ? allMonths : allMonths.filter(m => recentMonths.includes(m));
+  
+  let html = '';
+  
+  if (displayMonths.length === 0) {
+    html = `<div style="padding:14px;color:var(--ink-soft);font-size:13px;">
+      找不到 ${recentMonths.join(' / ')} 的資料
+    </div>`;
+  } else {
+    html = displayMonths.map(month => {
+      const sheets = sheetByMonth[month];
+      const totalCount = sheets.reduce((sum, name) => 
+        sum + workbookData.sheets[name].filter(r => r && r.some(c => c)).length, 0);
+      // 月份是否被選中(只要該月任何一個工作表被選中就算)
+      const isSelected = sheets.some(s => selectedSheets.has(s));
+      const sheetTypes = sheets.map(s => s.replace(/[\s\(].*$/, '').trim()).join('・');
+      return `
+        <div class="sheet-chip ${isSelected ? 'selected' : ''}" 
+             onclick="toggleMonth('${month}')">
+          📅 ${month}<span class="count">(${sheetTypes} ・ ${totalCount} 筆)</span>
+        </div>
+      `;
+    }).join('');
+  }
+  
+  // 切換按鈕
+  html += `
+    <div style="margin-top:8px;width:100%;display:flex;gap:6px;align-items:center;font-size:12px;">
+      <button class="icon-btn" onclick="toggleShowAllSheets()" style="font-size:12px;padding:5px 10px;">
+        ${showAll ? '🔼 只顯示最近三個月' : `🔽 顯示全部月份 (共 ${allMonths.length} 個)`}
+      </button>
+    </div>
+  `;
+  
+  selector.innerHTML = html;
+  
+  // 暫存月份對照表
+  window._sheetByMonth = sheetByMonth;
+}
+
+function toggleShowAllSheets() {
+  window._showAllSheets = !window._showAllSheets;
+  buildSheetSelector();
+}
+
+// 點月份 → 該月所有工作表全選/全取消
+function toggleMonth(month) {
+  const sheets = window._sheetByMonth[month];
+  if (!sheets) return;
+  
+  const anySelected = sheets.some(s => selectedSheets.has(s));
+  if (anySelected) {
+    // 全取消
+    sheets.forEach(s => selectedSheets.delete(s));
+  } else {
+    // 全選
+    sheets.forEach(s => selectedSheets.add(s));
+  }
+  buildSheetSelector();
+  parsePreview();
+}
+
+function toggleSheet(name) {
+  if (selectedSheets.has(name)) selectedSheets.delete(name);
+  else selectedSheets.add(name);
+  buildSheetSelector();
+  parsePreview();
+}
+
+//============== 解析選定的工作表 ==============
+let parsedRows = [];
+let generatedSignatures = new Set();  // 已產過的簽章
+let skipAlreadyGenerated = true;  // 是否略過已產過的(預設略過)
+let forceRegenerate = new Set();  // 使用者手動勾選「強制重產」的簽章(預覽期間有效)
+
+function parsePreview() {
+  if (!workbookData || selectedSheets.size === 0) {
+    document.getElementById('preview-area').style.display = 'none';
+    parsedRows = [];
+    checkReady();
+    return;
+  }
+  
+  parsedRows = [];
+  
+  for (const sheetName of selectedSheets) {
+    const aoa = workbookData.sheets[sheetName];
+    if (!aoa) continue;
+    parseSheet(sheetName, aoa);
+  }
+  
+  renderPreview();
+  renderGroupSelector();
+  checkReady();
+}
+
+function parseSheet(sheetName, aoa) {
+  // 找表頭：含「姓名」或「陽世報恩人」字樣 + 含「地址」字樣的列
+  let headerIdx = -1;
+  let header = null;
+  
+  for (let i = 0; i < Math.min(aoa.length, 20); i++) {
+    const row = aoa[i] || [];
+    const hasName = row.some(c => {
+      const s = String(c).trim();
+      return s === '姓名' || /陽世報恩人|報名者/.test(s);
+    });
+    const hasAddr = row.some(c => /地址/.test(String(c)));
+    if (hasName && hasAddr) {
+      header = row.map(c => String(c || '').trim());
+      headerIdx = i;
+      break;
+    }
+  }
+  
+  if (headerIdx === -1) {
+    // 找不到表頭，跳過
+    return;
+  }
+  
+  // 找出每個欄位的位置
+  let idxName = -1, idxYear = -1, idxMonth = -1, idxDay = -1, idxHour = -1;
+  let idxAddr = -1, idxItem = -1, idxParts = -1, idxNote = -1;
+  let idxRecipient = -1; // 收單人
+  let idxSysId = -1; // 系統編號（每筆唯一ID）
+  let idxDeath = -1; // 牒文類別（拔薦用）
+  let idxShrine = -1; // 神位地址(只拔薦用)
+  let idxAncestor = -1; // 先祖名(只拔薦用,如「鄭氏前世今生之冤親債主」)
+  let idxDeathYear = -1, idxDeathMonth = -1, idxDeathDay = -1, idxDeathAge = -1; // 亡者卒于年/月/日/歲
+  
+  for (let i = 0; i < header.length; i++) {
+    const h = header[i];
+    // 神位地址先判斷(優先級最高,專屬於拔薦)
+    if (/神位地址/.test(h)) idxShrine = i;
+    else if (/先祖名/.test(h)) idxAncestor = i;  // 先祖名(故顯祖內容)
+    else if (/卒于.*年|歲數.*年/.test(h)) idxDeathYear = i;
+    else if (/卒于.*月/.test(h)) idxDeathMonth = i;
+    else if (/卒于.*日/.test(h)) idxDeathDay = i;
+    else if (/歲數/.test(h)) idxDeathAge = i;
+    // 地址優先判斷
+    else if (/居住地址/.test(h) && idxAddr < 0) idxAddr = i;
+    else if (/^地址$|地址$/.test(h) && idxAddr < 0) idxAddr = i;
+    else if (/地址/.test(h) && idxAddr < 0) idxAddr = i;
+    else if (h === '姓名') idxName = i;
+    else if (/陽世報恩人|報名者/.test(h) && !/居住|地址/.test(h)) idxName = i;
+    else if (/亡者.*生日.*年|生日.*年|生年/.test(h)) idxYear = i;
+    else if (/亡者.*生日.*月|生日.*月|生月/.test(h)) idxMonth = i;
+    else if (/亡者.*生日.*日|生日.*日|生日$/.test(h)) idxDay = i;
+    else if (h === '時辰') idxHour = i;
+    else if (h === '項目') idxItem = i;
+    else if (h === '份數') idxParts = i;
+    else if (/備註|祈願/.test(h)) idxNote = i;
+    else if (/收單人/.test(h)) idxRecipient = i;
+    else if (/系統編號/.test(h)) idxSysId = i;
+    else if (/牒文類別/.test(h)) idxDeath = i;
+  }
+  
+  // 「項目」如果沒找到，就找地址後的第一欄
+  if (idxItem < 0 && idxAddr >= 0) idxItem = idxAddr + 1;
+  
+  // 處理每一資料列
+  for (let i = headerIdx + 1; i < aoa.length; i++) {
+    const cols = (aoa[i] || []).map(c => String(c || '').trim());
+    if (cols.length === 0) continue;
+    
+    const joined = cols.join(' ');
+    
+    // 跳過分隔列
+    if (/已[出輸]\s*疏文|已出總冊|已結令牌|已出貼標|已出牌位|已輸出標籤|疏文未出|已結.*令牌/.test(joined)) continue;
+    
+    // 全空白列跳過
+    const hasContent = cols.some(c => c.length > 0);
+    if (!hasContent) continue;
+    
+    const name = cols[idxName] || '';
+    let item = cols[idxItem] || '';
+    
+    // 全空白列（只有編號）跳過
+    if (!name && !item) continue;
+    
+    // 跳過「令牌」相關項目（不產生疏文）
+    if (/令牌|加購令牌/.test(item)) continue;
+    
+    // 還陰債的特殊處理：用「牒文類別」取代「項目」
+    if (idxDeath >= 0 && cols[idxDeath]) {
+      item = '拔薦牒文'; // 統一用拔薦牒文，模板就是 15
+    }
+    
+    const row = {
+      sheet: sheetName,
+      lineNum: i + 1,
+      name,
+      by: cols[idxYear] || '',
+      bm: cols[idxMonth] || '',
+      bd: cols[idxDay] || '',
+      bh: cols[idxHour] || '',
+      address: cols[idxAddr] || '',
+      shrineAddress: idxShrine >= 0 ? (cols[idxShrine] || '') : '',  // 神位地址
+      ancestor: idxAncestor >= 0 ? (cols[idxAncestor] || '') : '',   // 先祖名(故顯祖內容)
+      deathYear: idxDeathYear >= 0 ? (cols[idxDeathYear] || '') : '',
+      deathMonth: idxDeathMonth >= 0 ? (cols[idxDeathMonth] || '') : '',
+      deathDay: idxDeathDay >= 0 ? (cols[idxDeathDay] || '') : '',
+      deathAge: idxDeathAge >= 0 ? (cols[idxDeathAge] || '') : '',
+      item,
+      parts: cols[idxParts] || '1',
+      note: cols[idxNote] || '',
+      recipient: idxRecipient >= 0 ? cols[idxRecipient] : '',
+      sysId: idxSysId >= 0 ? (cols[idxSysId] || '') : '',
+      rowIndex: i,
+      sheetName: sheetName,
+      buyType: /^斗燈/.test(sheetName) ? ((cols.find(c => /^(單筆加購|季斗加購|令牌加購|五行年斗|五行季斗)$/.test(c))) || '') : '',
+      deathType: idxDeath >= 0 ? (cols[idxDeath] || '') : '',  // 牒文類別(冤親債主拔薦牒文/歷代祖先拔薦牒文...)
+      errors: [],
+      template: null,
+      alreadyGenerated: false,
+      signature: '',
+    };
+    
+    // 對應模板
+    row.template = ITEM_MAPPING[item] || null;
+    
+    // 計算疏文簽章並檢查是否已產過(type=shu)
+    row.signature = makeSignature(name, item, row.address, 'shu', rowUniq(row));
+    if (generatedSignatures.has(row.signature)) {
+      row.alreadyGenerated = true;
+    }
+    
+    // 驗證（拔薦牒文不需要生年，因為是亡者；只需姓名+地址）
+    if (!name) row.errors.push('姓名空白');
+    if (!row.address) row.errors.push('地址空白');
+    if (item !== '拔薦牒文' && !row.by) row.errors.push('生年空白');
+    if (!item) row.errors.push('項目空白');
+    
+    parsedRows.push(row);
+  }
+}
+
+// 點擊已產過的 row 切換「強制重產」狀態
+function toggleForceRegenerate(sig, trElement) {
+  if (forceRegenerate.has(sig)) {
+    forceRegenerate.delete(sig);
+  } else {
+    forceRegenerate.add(sig);
+  }
+  // 重新渲染預覽以更新 row 顯示
+  renderPreview();
+  checkReady();
+}
+
+// 預覽月底總冊要寫入的資料
+function previewSummary() {
+  if (allWorkbooks.length === 0) {
+    showToast('請先上傳 Excel');
+    return;
+  }
+  const enabledTpls = getEnabledTemplates();
+  if (enabledTpls.size === 0) {
+    showToast('請先在步驟伍勾選類別');
+    return;
+  }
+  
+  const rowsByItem = collectAllRowsForSummary();
+  const itemNames = Object.keys(rowsByItem).filter(it => rowsByItem[it].length > 0);
+  
+  const previewArea = document.getElementById('summary-preview-area');
+  const content = document.getElementById('summary-preview-content');
+  
+  if (itemNames.length === 0) {
+    content.innerHTML = '<p style="text-align:center;color:var(--ink-soft);">沒有符合條件的資料(請確認月份和類別)</p>';
+    previewArea.style.display = '';
+    return;
+  }
+  
+  let html = '';
+  let totalNew = 0, totalDup = 0, totalForce = 0;
+  
+  for (const itemName of itemNames) {
+    const rows = rowsByItem[itemName];
+    const newCount = rows.filter(r => !r.alreadyGenerated).length;
+    const dupCount = rows.filter(r => r.alreadyGenerated && !forceRegenerate.has(r.signature)).length;
+    const forceCount = rows.filter(r => forceRegenerate.has(r.signature)).length;
+    totalNew += newCount;
+    totalDup += dupCount;
+    totalForce += forceCount;
+    
+    html += `<div style="margin-bottom:12px;">`;
+    html += `<div style="font-weight:700;padding:4px 8px;background:var(--ink);color:var(--bg-paper);border-radius:3px;">${itemName} <span style="font-weight:normal;font-size:11px;">(共 ${rows.length} 筆;新增 ${newCount}・已寫過 ${dupCount}・重產 ${forceCount})</span></div>`;
+    html += `<table style="width:100%;font-size:12px;border-collapse:collapse;">`;
+    for (const r of rows) {
+      const isDup = r.alreadyGenerated;
+      const isForce = forceRegenerate.has(r.signature);
+      let cls = '', label = '';
+      if (isForce) { cls = 'background:rgba(184,57,42,0.18);'; label = '⟲ 重產'; }
+      else if (isDup) { cls = 'background:rgba(184,137,58,0.15);opacity:0.6;'; label = '↻ 已寫過'; }
+      else { label = '✓ 新增'; }
+      
+      const safeSig = r.signature.replace(/'/g, "\\'");
+      const cursor = isDup ? 'cursor:pointer;' : '';
+      const onclick = isDup ? `onclick="toggleForceRegenerateSummary('${safeSig}')"` : '';
+      
+      html += `<tr style="${cls}${cursor}border-bottom:1px solid var(--rule);" ${onclick}>`;
+      html += `<td style="padding:3px 6px;">${r.name}</td>`;
+      html += `<td style="padding:3px 6px;color:var(--ink-soft);font-size:11px;">${r.address}</td>`;
+      html += `<td style="padding:3px 6px;font-size:11px;">${r.parts}份</td>`;
+      html += `<td style="padding:3px 6px;font-size:11px;font-weight:700;">${label}</td>`;
+      html += `</tr>`;
+    }
+    html += `</table></div>`;
+  }
+  
+  // 上方總計
+  const summary = `<div style="margin-bottom:10px;padding:8px;background:var(--bg-paper);border-left:3px solid var(--gold);">
+    <strong>共 ${itemNames.length} 個項目 ・ 總計 ${totalNew + totalDup + totalForce} 筆</strong><br>
+    <span style="color:var(--success);">✓ 新增 ${totalNew} 筆</span> ・
+    <span style="color:var(--gold);">↻ 已寫過 ${totalDup} 筆</span> ・
+    <span style="color:var(--vermilion);">⟲ 強制重產 ${totalForce} 筆</span><br>
+    <span style="font-size:11px;color:var(--ink-soft);">點擊「已寫過」的列可切換為「強制重產」(加回新總冊)</span>
+  </div>`;
+  
+  content.innerHTML = summary + html;
+  previewArea.style.display = '';
+}
+
+// 切換總冊強制重產
+function toggleForceRegenerateSummary(sig) {
+  if (forceRegenerate.has(sig)) forceRegenerate.delete(sig);
+  else forceRegenerate.add(sig);
+  previewSummary();  // 重新渲染預覽
+}
+
+function renderPreview() {
+  const previewArea = document.getElementById('preview-area');
+  
+  if (parsedRows.length === 0) {
+    previewArea.style.display = 'none';
+    return;
+  }
+  
+  const enabledTpls = getEnabledTemplates();
+  
+  let okCount = 0, errCount = 0, skipCount = 0, dupCount = 0, notEnabledCount = 0;
+  for (const r of parsedRows) {
+    if (r.errors.length === 0 && r.template && loadedTemplates[r.template]) {
+      if (!enabledTpls.has(r.template)) notEnabledCount++;  // 沒勾選類別
+      else if (r.alreadyGenerated) dupCount++;
+      else okCount++;
+    }
+    else if (r.errors.length === 0 && r.template && !loadedTemplates[r.template]) skipCount++;
+    else if (r.errors.length === 0 && !r.template) skipCount++;
+    else errCount++;
+  }
+  
+  document.getElementById('ok-count').textContent = okCount;
+  document.getElementById('err-count').textContent = errCount;
+  document.getElementById('skip-count').textContent = skipCount;
+  document.getElementById('err-info').style.display = errCount > 0 ? '' : 'none';
+  document.getElementById('skip-info').style.display = skipCount > 0 ? '' : 'none';
+  
+  const dupInfo = document.getElementById('dup-info');
+  if (dupInfo) {
+    document.getElementById('dup-count').textContent = dupCount;
+    dupInfo.style.display = dupCount > 0 ? '' : 'none';
+  }
+  
+  const tbody = document.getElementById('preview-tbody');
+  tbody.innerHTML = parsedRows.slice(0, 200).map((r, i) => {
+    let cls = '';
+    let status = '';
+    const tplExists = r.template && loadedTemplates[r.template];
+    const isEnabled = r.template && enabledTpls.has(r.template);
+    
+    if (r.errors.length > 0) {
+      cls = 'row-error';
+      status = `<span class="error-msg">${r.errors.join(', ')}</span>`;
+    } else if (!r.template) {
+      cls = 'row-skip';
+      status = `<span class="error-msg">未定義對照</span>`;
+    } else if (!tplExists) {
+      cls = 'row-skip';
+      status = `<span class="error-msg">缺模板</span>`;
+    } else if (!isEnabled) {
+      cls = 'row-skip';
+      status = `<span style="color:var(--ink-soft);">⊘ 未勾選類別</span>`;
+    } else if (r.alreadyGenerated && !forceRegenerate.has(r.signature)) {
+      cls = 'row-dup';
+      status = `<span style="color:var(--gold);font-weight:700;">↻ 已產過 (點切換)</span>`;
+    } else if (r.alreadyGenerated && forceRegenerate.has(r.signature)) {
+      cls = 'row-force';
+      status = `<span style="color:var(--vermilion);font-weight:700;">⟲ 重產 (點切換)</span>`;
+    } else {
+      status = '<span style="color:var(--success);font-weight:700;">✓</span>';
+    }
+    
+    // 已產過的 row 可以點擊切換是否強制重產
+    const clickHandler = r.alreadyGenerated 
+      ? `onclick="toggleForceRegenerate('${r.signature.replace(/'/g, "\\'")}', this)"` 
+      : '';
+    
+    const tplTag = r.template
+      ? `<span class="item-tag${tplExists ? '' : ' unknown'}">${r.template.replace(/^\d+/, '')}</span>`
+      : `<span class="item-tag unknown">未對照</span>`;
+    
+    return `
+      <tr class="${cls}" ${clickHandler} ${r.alreadyGenerated ? 'style="cursor:pointer;"' : ''}>
+        <td class="row-num">${i + 1}</td>
+        <td style="font-size:11px;color:var(--ink-soft);">${r.sheet}</td>
+        <td>${r.name || '<span class="error-msg">空</span>'}</td>
+        <td>${r.item}</td>
+        <td>${tplTag}</td>
+        <td>${r.by}.${r.bm}.${r.bd} ${r.bh}</td>
+        <td title="${r.address}">${r.address || '<span class="error-msg">空</span>'}</td>
+        <td>${r.parts}</td>
+        <td>${status}</td>
+      </tr>
+    `;
+  }).join('');
+  
+  if (parsedRows.length > 200) {
+    tbody.innerHTML += `<tr><td colspan="9" style="text-align:center;color:var(--ink-soft);padding:10px;">⋯另有 ${parsedRows.length - 200} 筆未顯示</td></tr>`;
+  }
+  
+  previewArea.style.display = '';
+  
+  // 同步更新群組選擇器(因為要顯示每組的筆數)
+  renderGroupSelector();
+}
+
+//============== 檢查可否產生 ==============
+function checkReady() {
+  const btn = document.getElementById('gen-btn');
+  const enabledTpls = getEnabledTemplates();
+  const validRows = parsedRows.filter(r => 
+    r.errors.length === 0 && r.template && loadedTemplates[r.template] && enabledTpls.has(r.template)
+  );
+  // 依「跳過已產過」設定計算實際產出數 (forceRegenerate 中的會被算進)
+  const okCount = skipAlreadyGenerated 
+    ? validRows.filter(r => !r.alreadyGenerated || forceRegenerate.has(r.signature)).length
+    : validRows.length;
+  const hasTemplates = Object.keys(loadedTemplates).length > 0;
+  
+  if (hasTemplates && okCount > 0) {
+    btn.disabled = false;
+    btn.textContent = `🎯 產生 ${okCount} 份疏文 docx 並下載 ZIP`;
+  } else {
+    btn.disabled = true;
+    btn.textContent = selectedGroups.size === 0 
+      ? '⚠ 請至少勾選一個項目類別' 
+      : '🎯 產生全部疏文 docx 並下載 ZIP';
+  }
+}
+
+// 渲染項目分組勾選
+function renderGroupSelector() {
+  const container = document.getElementById('group-selector');
+  if (!container) return;
+  container.innerHTML = '';
+  for (const [name, info] of Object.entries(ITEM_GROUPS)) {
+    const isOn = selectedGroups.has(name);
+    // 計算這個群組有幾筆資料
+    const groupTpls = new Set(info.templates);
+    const matchCount = parsedRows.filter(r => r.template && groupTpls.has(r.template) && r.errors.length === 0).length;
+    
+    const chip = document.createElement('button');
+    chip.className = 'sheet-chip' + (isOn ? ' selected' : '');
+    chip.style.cssText = `padding:8px 14px;border-radius:20px;border:2px solid ${isOn ? 'var(--vermilion)' : 'var(--ink-soft)'};background:${isOn ? 'var(--vermilion)' : 'var(--bg-paper)'};color:${isOn ? 'var(--bg-paper)' : 'var(--ink)'};cursor:pointer;font-size:13px;font-weight:700;letter-spacing:1px;transition:all 0.2s;`;
+    chip.innerHTML = `${isOn ? '✓ ' : ''}${name}` + (matchCount > 0 ? ` <span style="opacity:0.8;">(${matchCount})</span>` : '');
+    chip.onclick = () => toggleGroup(name);
+    container.appendChild(chip);
+  }
+}
+
+function toggleGroup(name) {
+  if (selectedGroups.has(name)) selectedGroups.delete(name);
+  else selectedGroups.add(name);
+  renderGroupSelector();
+  renderPreview();  // 重新渲染預覽表(只顯示已勾選類別)
+  checkReady();
+}
+
+//============== 替換 docx 文字 ==============
+function replaceInWordXml(xml, replacements) {
+  const pattern = /(<w:t(?:\s[^>]*)?>)([^<]*)(<\/w:t>)/g;
+  const nodes = [];
+  let m;
+  while ((m = pattern.exec(xml)) !== null) {
+    nodes.push({ 
+      start: m.index, 
+      end: m.index + m[0].length, 
+      openTag: m[1], 
+      text: m[2], 
+      closeTag: m[3],
+      modified: false  // 標記是否被替換過
+    });
+  }
+  if (nodes.length === 0) return xml;
+  
+  let fullText = '';
+  const charToNode = [];
+  for (let ni = 0; ni < nodes.length; ni++) {
+    for (let ci = 0; ci < nodes[ni].text.length; ci++) charToNode.push([ni, ci]);
+    fullText += nodes[ni].text;
+  }
+  
+  const ops = [];
+  let pos = 0;
+  while (pos < fullText.length) {
+    let match = null;
+    for (const [find] of replacements) {
+      if (fullText.startsWith(find, pos)) {
+        if (!match || find.length > match[0].length) {
+          match = replacements.find(r => r[0] === find);
+        }
+      }
+    }
+    if (match) {
+      ops.push({ start: pos, end: pos + match[0].length, newText: match[1] || '' });
+      pos += match[0].length;
+    } else pos++;
+  }
+  
+  if (ops.length === 0) return xml;
+  
+  // 套用替換，標記被改動的 node
+  for (let i = ops.length - 1; i >= 0; i--) {
+    const op = ops[i];
+    const [firstNi, firstCi] = charToNode[op.start];
+    const [lastNi, lastCi] = charToNode[op.end - 1];
+    if (firstNi === lastNi) {
+      const node = nodes[firstNi];
+      node.text = node.text.substring(0, firstCi) + op.newText + node.text.substring(lastCi + 1);
+      node.modified = true;
+    } else {
+      nodes[firstNi].text = nodes[firstNi].text.substring(0, firstCi) + op.newText;
+      nodes[firstNi].modified = true;
+      for (let ni = firstNi + 1; ni < lastNi; ni++) {
+        nodes[ni].text = '';
+        nodes[ni].modified = true;
+      }
+      nodes[lastNi].text = nodes[lastNi].text.substring(lastCi + 1);
+      nodes[lastNi].modified = true;
+    }
+  }
+  
+  // 組回 XML（從後往前），對被改動的 node 替換它所屬 <w:r> 內的字體設定
+  let result = xml;
+  // 收集被修改後的 node 文字內容（用於後續精準找 run）
+  const modifiedTextContents = nodes
+    .filter(n => n.modified && n.text.length > 0)
+    .map(n => n.text);
+  
+  for (let i = nodes.length - 1; i >= 0; i--) {
+    const n = nodes[i];
+    let openTag = n.openTag;
+    if ((n.text.startsWith(' ') || n.text.endsWith(' ')) && !openTag.includes('xml:space')) {
+      openTag = openTag.replace('>', ' xml:space="preserve">');
+    }
+    const replacement = openTag + escapeXml(n.text) + n.closeTag;
+    result = result.substring(0, n.start) + replacement + result.substring(n.end);
+  }
+  
+  // 把被修改過的 node 所在的 <w:r> 字體改成標楷體
+  // 用 node 的最終 text 內容當識別碼（而不是子串比對，避免誤改）
+  if (modifiedTextContents.length > 0) {
+    result = changeRunsFontByExactText(result, modifiedTextContents);
+  }
+  
+  return result;
+}
+
+// 找出 <w:t> 文字「精確等於」目標的 <w:r>，改其字體
+// 為避免一個 text 多處出現只改第一個，用「逐個移除」策略
+function changeRunsFontByExactText(xml, targetTexts) {
+  // 用 multiset 統計每個 text 該改幾次
+  const need = new Map();
+  for (const t of targetTexts) {
+    need.set(t, (need.get(t) || 0) + 1);
+  }
+  
+  const runPattern = /<w:r(?:\s[^>]*)?>[\s\S]*?<\/w:r>/g;
+  
+  return xml.replace(runPattern, (runMatch) => {
+    const tMatch = runMatch.match(/<w:t(?:\s[^>]*)?>([^<]*)<\/w:t>/);
+    if (!tMatch) return runMatch;
+    const text = tMatch[1].replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    
+    const remaining = need.get(text) || 0;
+    if (remaining <= 0) return runMatch;
+    
+    need.set(text, remaining - 1);
+    return changeRunFont(runMatch);
+  });
+}
+
+// 把單一 <w:r>...</w:r> 內的 rFonts 改成標楷體
+function changeRunFont(runXml) {
+  const KAI_FONT = '<w:rFonts w:ascii="標楷體" w:eastAsia="標楷體" w:hAnsi="標楷體" w:cs="標楷體" w:hint="eastAsia"/>';
+  
+  // 情況 1：有 <w:rPr>...</w:rPr>
+  if (/<w:rPr>/.test(runXml)) {
+    return runXml.replace(/<w:rPr>([\s\S]*?)<\/w:rPr>/, (m, rPrContent) => {
+      if (/<w:rFonts[^/]*\/>/.test(rPrContent)) {
+        return '<w:rPr>' + rPrContent.replace(/<w:rFonts[^/]*\/>/, KAI_FONT) + '</w:rPr>';
+      }
+      return '<w:rPr>' + KAI_FONT + rPrContent + '</w:rPr>';
+    });
+  }
+  
+  // 情況 2：沒有 <w:rPr>，在 <w:r ...> 後插入
+  return runXml.replace(/<w:r(\s[^>]*)?>/, (m, attrs) => {
+    return `<w:r${attrs || ''}><w:rPr>${KAI_FONT}</w:rPr>`;
+  });
+}
+
+function escapeXml(text) {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+//============== 抓姻緣對象 ==============
+function extractPartner(note) {
+  if (!note) return '';
+  
+  // 多種格式都要匹配,順序從特定到一般
+  const patterns = [
+    // 「化解與(XX 日期)」「(XX 日期)」 — 名字在括號內,後接數字
+    /[（(]([\u4e00-\u9fa5]{2,4})\s*\d/,
+    // 「願與前夫XX(...)」「使隋馨(...)」「願男友戴裕庭(...)」
+    // 動詞或關係前綴 + (前夫/前妻/男友/女友/男朋友/女朋友/老公/老婆) + 名字 + 括號
+    /(?:願|盼|希望|祈|拜託|求|讓|使|拉近|吸引|化解|提升|尋|遇)?(?:與|跟|和|讓)?\s*(?:前夫|前妻|男友|女友|男朋友|女朋友|老公|老婆)\s*([\u4e00-\u9fa5]{2,4})\s*[（(]/,
+    // 「願與XX(...)」「化解和XX(...)」「跟XX(...)」
+    /(?:願|盼|希望|祈|拜託|求|讓|使|拉近|吸引|化解|提升)?(?:與|跟|和)\s*([\u4e00-\u9fa5]{2,4})\s*[（(]/,
+    // 「願XX(...)」「使XX(...)」 — 動詞 + 名字 + 括號 (沒有與/跟/和)
+    /(?:願|盼|希望|祈|拜託|求|讓|使)\s*([\u4e00-\u9fa5]{2,4})\s*[（(]/,
+    // 「XX(日期)」 — 開頭直接是名字+括號
+    /^([\u4e00-\u9fa5]{2,4})\s*[（(]/,
+    // 「和/與/跟 XX (...)」 — 一般句中
+    /(?:與|跟|和)\s*([\u4e00-\u9fa5]{2,4})\s*[（(]/,
+  ];
+  
+  // 排除「假名字」(備註中常出現的非人名詞)
+  const blacklist = /^(早餐|生意|客源|婚姻|感情|工作|事業|身體|身心|生活|關係|溝通|互動|家庭|孩子|外緣|心態|健康|農曆|國曆|男|女|前夫|前妻|老公|老婆|男友|女友|對方|本人|信士|信女|本命|轉職|兼職|直播|父母|債務|心結|阻礙|誤會|心防|彼此|今年|順利|穩定|緩解|體貼|主動|勿太|字數|限制|格式|跑掉)$/;
+  
+  for (const p of patterns) {
+    const matches = [...note.matchAll(new RegExp(p.source, p.flags + 'g'))];
+    for (const m of matches) {
+      const name = m[1];
+      if (blacklist.test(name)) continue;
+      return name;
+    }
+  }
+  return '';
+}
+
+//============== 產生單一 docx ==============
+// 產生單份疏文的 document.xml（不打包成 zip,留給合併用）
+async function generateOneDocxXml(row, fixedSettings) {
+  const tplName = row.template;
+  const tplData = loadedTemplates[tplName];
+  if (!tplData) throw new Error(`找不到模板: ${tplName}`);
+  
+  const zip = await JSZip.loadAsync(tplData.buffer);
+  let xml = await zip.file('word/document.xml').async('string');
+  
+  const birthYear = toChineseNum(row.by);
+  const birthMonth = toChineseNum(row.bm);
+  const birthDay = toChineseNum(row.bd);
+  
+  let parts = row.parts || fixedSettings.count || '一';
+  if (/^\d+$/.test(parts)) parts = toChineseNum(parseInt(parts));
+  
+  // 拔薦牒文判斷
+  const isPullJian = /拔薦/.test(row.item || '');
+  
+  // 祈願內容: 客人有填就用客人的, 沒填就用預設(依模板)
+  let wishContent = (row.note || '').trim();
+  if (!wishContent && DEFAULT_WISH[row.template]) {
+    wishContent = DEFAULT_WISH[row.template];
+  }
+  
+  // 拔薦的「牒文類別」(完整,如「冤親債主拔薦牒文」)
+  const deathTypeFull = (row.deathType || '').trim();
+  
+  // 拔薦的「先祖名」(老師在 Excel 「先祖名」欄填好,如「鄭氏前世今生之冤親債主」)
+  const ancestor = (row.ancestor || '').trim();
+  
+  const shrineAddress = row.shrineAddress || '';
+  const name = row.name || '';
+  
+  // 亡者卒于資料(只拔薦用)
+  const deathYear = toChineseNum(row.deathYear);
+  const deathMonth = toChineseNum(row.deathMonth);
+  const deathDay = toChineseNum(row.deathDay);
+  const deathAge = toChineseNum(row.deathAge);
+  
+  // === 共用 replacements ===
+  // 重要: 所有「件/盒/份/道/封」相關註X 都用 row.parts (份數),不再用 fixedSettings.seal/silver_count
+  //   - 註一 / 註一零 = 件數 (「內 X 件」)
+  //   - 註三 / 註三零 = 地址 (跟「道」字無關,是「大中華民國: 地址」)
+  //   - 註六 / 註七 = 立疏/庫財「封」數 (姻緣模板的投文/祝文道數也用這兩個)
+  //   - 註一一 = 萬寶金「盒」數 (拔薦/天赦/狐仙)
+  //   - 註一二 = 天赦金/份數
+  //   - 註一三 / 註一四 = 狐仙的投文/祝文「道」數
+  const common = [
+    // 3 字長
+    ['註一零', parts],
+    ['註一一', parts],   // 萬寶金 X 盒
+    ['註一二', parts],   // 天赦金 X 份
+    ['註一三', parts],   // 狐仙投文 X 道
+    ['註一四', parts],   // 狐仙祝文 X 道
+    ['註二零', fixedSettings.ritual_year],
+    ['註二一', fixedSettings.ritual_month],
+    ['註二三', fixedSettings.ritual_day],
+    ['註八零', fixedSettings.ritual_year],
+    ['註八一', fixedSettings.ritual_month],
+    ['註八二', fixedSettings.ritual_day],
+    ['註三零', row.address],
+    ['註四零', name],
+    ['註四一', name],
+    ['註四二', name],
+    ['註五零', birthYear],
+    ['註五一', birthMonth],
+    ['註五二', birthDay],
+    ['註五三', row.bh],
+    // 2 字長
+    ['註一', parts],     // 內 X 件
+    ['註二', fixedSettings.ritual_month],
+    ['註三', row.address],
+    ['註四', name],
+    ['註五', ''],
+    ['註六', parts],     // 立疏 X 封 / 投文 X 道
+    ['註七', parts],     // 庫財銀錢 X 封 / 祝文 X 道
+    ['註八', fixedSettings.ritual_year],
+    ['註九', name],   // 具求人 = 信徒本人(報名者),不是對方姓名
+  ];
+  
+  let replacements;
+  
+  if (isPullJian) {
+    // === 拔薦牒文專用 ===
+    replacements = [
+      ...common,
+      ['註十一', deathTypeFull],          // 牒文類別(完整)
+      ['註十二', deathTypeFull],
+      ['註三一', shrineAddress],          // 神位地址
+      ['註四三', ''],                      // 故顯祖前(空白)
+      ['註四五', ancestor],                // 先祖名
+      ['註四六', ''],                      // 故顯祖前(空白)
+      ['註四七', ''],                      // 故顯祖後(空白)
+      ['註五四', deathYear],               // 卒于年
+      ['註五六', deathMonth],              // 卒于月
+      ['註五七', deathDay],                // 卒于日
+      ['註五八', deathAge],                // 享陽壽歲
+      ['註十', wishContent],               // 祈願(備註欄,有就填)
+    ];
+  } else {
+    // === 其他疏文(姻緣/補庫/斗燈等) ===
+    replacements = [
+      ...common,
+      ['註十一', ''],
+      ['註十二', ''],
+      ['註三一', ''],
+      ['註四三', ''],
+      ['註四五', ''],
+      ['註四六', ''],
+      ['註四七', ''],
+      ['註五四', ''],
+      ['註五六', ''],
+      ['註五七', ''],
+      ['註五八', ''],
+      ['註十', wishContent],               // 祈願(整段備註)
+    ];
+  }
+  
+  let result = replaceInWordXml(xml, replacements);
+  
+  // 天赦日特殊處理: 「萬寶金 X 盒 」整段不顯示 (只保留「天赦金 X 份」)
+  // 註: 此時 result 內的「萬寶金 X 盒」已被填上實際數字
+  if (row.template === '16天赦日文疏') {
+    // 用 fullText 比對方式刪除「萬寶金」+「盒」之間的內容 + 「萬寶金」前後空白
+    // 抓 <w:t>...</w:t> 內含「萬寶金」「盒」的部分,把該段文字內容置空
+    // 簡化作法: 在 XML 字元層級用 regex 把「萬寶金 X 盒 」整段在 <w:t> 內刪除
+    // 但中文字會被切到多個 <w:t>,所以需要在 fullText 層處理
+    result = removeTextRange(result, /萬寶金\s*\S*\s*盒\s*/);
+  }
+  
+  return result;
+}
+
+// 在 docx XML 中,找到符合 regex 的「fullText」位置,把對應的所有 <w:t> 字元置空
+// 用於刪除「萬寶金 X 盒」這類整段文字 (中文字會跨 <w:t> 節點)
+function removeTextRange(xml, pattern) {
+  const nodePattern = /<w:t(\s[^>]*)?>([^<]*)<\/w:t>/g;
+  const nodes = [];
+  let m;
+  while ((m = nodePattern.exec(xml)) !== null) {
+    nodes.push({
+      start: m.index,
+      end: m.index + m[0].length,
+      openTag: '<w:t' + (m[1] || '') + '>',
+      text: m[2],
+      closeTag: '</w:t>',
+    });
+  }
+  if (nodes.length === 0) return xml;
+  
+  let fullText = '';
+  const charToNode = [];
+  for (let ni = 0; ni < nodes.length; ni++) {
+    for (let ci = 0; ci < nodes[ni].text.length; ci++) charToNode.push([ni, ci]);
+    fullText += nodes[ni].text;
+  }
+  
+  const match = fullText.match(pattern);
+  if (!match) return xml;
+  
+  const matchStart = match.index;
+  const matchEnd = matchStart + match[0].length;
+  
+  // 把這些 character 對應 node 的字元清空
+  for (let i = matchStart; i < matchEnd; i++) {
+    const [ni, ci] = charToNode[i];
+    nodes[ni].text = nodes[ni].text.substring(0, ci) + '\x00' + nodes[ni].text.substring(ci + 1);
+  }
+  // 移除 \x00
+  for (const n of nodes) n.text = n.text.replace(/\x00/g, '');
+  
+  // 重組 XML
+  let result = xml;
+  for (let i = nodes.length - 1; i >= 0; i--) {
+    const n = nodes[i];
+    let openTag = n.openTag;
+    if ((n.text.startsWith(' ') || n.text.endsWith(' ')) && !openTag.includes('xml:space')) {
+      openTag = openTag.replace('>', ' xml:space="preserve">');
+    }
+    const safeText = n.text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    result = result.substring(0, n.start) + openTag + safeText + n.closeTag + result.substring(n.end);
+  }
+  return result;
+}
+
+// 把多份 document.xml 合併成單一 docx,使用模板的圖片等資源
+async function buildMergedDocx(tplName, xmlList) {
+  const tplData = loadedTemplates[tplName];
+  if (!tplData) throw new Error(`找不到模板: ${tplName}`);
+  
+  // 載入模板取得所有資源(圖片等)
+  const zip = await JSZip.loadAsync(tplData.buffer);
+  
+  if (xmlList.length === 0) {
+    return await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+  }
+  
+  let mergedXml;
+  
+  if (xmlList.length === 1) {
+    mergedXml = xmlList[0];
+  } else {
+    // 用第一份當基底
+    const base = xmlList[0];
+    
+    // 找 <w:body> 起點
+    const bodyStartMatch = base.match(/<w:body>/);
+    if (!bodyStartMatch) throw new Error('document.xml 沒有 <w:body>');
+    const bodyStart = bodyStartMatch.index + bodyStartMatch[0].length;
+    
+    // 找最後的 sectPr (在 body 結尾)
+    const sectprMatch = base.match(/<w:sectPr[\s\S]*?<\/w:sectPr>/);
+    if (!sectprMatch) throw new Error('找不到 sectPr');
+    const sectprStart = sectprMatch.index;
+    const sectprEnd = sectprMatch.index + sectprMatch[0].length;
+    
+    // 第一份的 body 內容(到 sectPr 之前)
+    const firstBodyContent = base.substring(bodyStart, sectprStart);
+    const sectprContent = sectprMatch[0];
+    
+    // 後續每份的 body 內容(去掉 sectPr)
+    // 分頁符策略: 不加獨立空段落(會多一行/多一頁)
+    // 而是把 <w:pageBreakBefore/> 加到「下一份第一個 <w:p>」的 <w:pPr> 中
+    // 這樣下一份從新一頁開始,但不佔額外段落空間
+    let mergedBody = firstBodyContent;
+    
+    for (let i = 1; i < xmlList.length; i++) {
+      const xml = xmlList[i];
+      const bs = xml.match(/<w:body>/);
+      const sm = xml.match(/<w:sectPr[\s\S]*?<\/w:sectPr>/);
+      if (!bs || !sm) continue;
+      let content = xml.substring(bs.index + bs[0].length, sm.index);
+      
+      // 找第一個 <w:p ...> 的開頭,把 <w:pageBreakBefore/> 加入它的 <w:pPr>
+      // 兩種情況:
+      //   A. <w:p ...><w:pPr>...</w:pPr> ...   → 在 <w:pPr> 內最前面加
+      //   B. <w:p ...><w:r>...                  → 沒有 <w:pPr>,需新增 <w:pPr>
+      const firstPMatch = content.match(/<w:p(\s[^>]*)?>/);
+      if (firstPMatch) {
+        const afterPOpen = firstPMatch.index + firstPMatch[0].length;
+        const rest = content.substring(afterPOpen);
+        const pprMatch = rest.match(/^<w:pPr>/);
+        
+        if (pprMatch) {
+          // A. 已有 <w:pPr>,在它內部最前面加 <w:pageBreakBefore/>
+          const insertPos = afterPOpen + pprMatch[0].length;
+          content = content.substring(0, insertPos) + '<w:pageBreakBefore/>' + content.substring(insertPos);
+        } else {
+          // B. 沒有 <w:pPr>,新增整個 <w:pPr>
+          content = content.substring(0, afterPOpen) + '<w:pPr><w:pageBreakBefore/></w:pPr>' + content.substring(afterPOpen);
+        }
+      }
+      
+      mergedBody += content;
+    }
+    
+    // 重組 XML
+    const bodyEndMatch = base.match(/<\/w:body>/);
+    mergedXml = base.substring(0, bodyStart) + mergedBody + sectprContent + base.substring(bodyEndMatch.index);
+  }
+  
+  // 寫回 zip
+  zip.file('word/document.xml', mergedXml);
+  return await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+}
+
+//============== 批次產生 ==============
+async function generateAll() {
+  const enabledTpls = getEnabledTemplates();
+  let validRows = parsedRows.filter(r => 
+    r.errors.length === 0 && r.template && loadedTemplates[r.template] && enabledTpls.has(r.template)
+  );
+  
+  // 跳過已產過的(但「使用者手動點選重產」的不跳過)
+  if (skipAlreadyGenerated) {
+    validRows = validRows.filter(r => !r.alreadyGenerated || forceRegenerate.has(r.signature));
+  }
+  
+  if (validRows.length === 0) { showToast('沒有可產出的資料(請確認已勾選對應的項目類別)'); return; }
+  
+  const fixedSettings = {
+    ritual_year: document.getElementById('ritual_year').value.trim(),
+    ritual_month: document.getElementById('ritual_month').value.trim(),
+    ritual_day: document.getElementById('ritual_day').value.trim(),
+    count: document.getElementById('count').value.trim(),
+    seal_count: document.getElementById('seal_count').value.trim(),
+    silver_count: document.getElementById('silver_count').value.trim(),
+  };
+  
+  if (/^\d+$/.test(fixedSettings.ritual_month)) {
+    fixedSettings.ritual_month = toChineseNum(parseInt(fixedSettings.ritual_month), true);
+  }
+  if (/^\d+$/.test(fixedSettings.ritual_day)) {
+    fixedSettings.ritual_day = toChineseNum(parseInt(fixedSettings.ritual_day), true);
+  }
+  
+  await saveSetting('fixedSettings', fixedSettings);
+  
+  const btn = document.getElementById('gen-btn');
+  const progArea = document.getElementById('progress-area');
+  const progFill = document.getElementById('progress-fill');
+  const progText = document.getElementById('progress-text');
+  const successBanner = document.getElementById('success-banner');
+  
+  btn.disabled = true;
+  progArea.classList.add('show');
+  successBanner.classList.remove('show');
+  
+  const outputZip = new JSZip();
+  const padLen = String(validRows.length).length;
+  const startTime = Date.now();
+  
+  try {
+    // 1. 按「項目」分組
+    const groups = {};  // { itemName: [rows...] }
+    for (const row of validRows) {
+      if (!groups[row.item]) groups[row.item] = [];
+      groups[row.item].push(row);
+    }
+    
+    const itemNames = Object.keys(groups);
+    let processedRows = 0;
+    
+    progText.textContent = `共 ${itemNames.length} 種項目, ${validRows.length} 筆資料`;
+    
+    // 2. 每組(每個項目)處理一遍
+    for (let gi = 0; gi < itemNames.length; gi++) {
+      const itemName = itemNames[gi];
+      const rows = groups[itemName];
+      const tplName = rows[0].template; // 同組共用同一模板
+      
+      // 為每筆 row 產生 document.xml
+      const xmlList = [];
+      for (let ri = 0; ri < rows.length; ri++) {
+        const row = rows[ri];
+        const xml = await generateOneDocxXml(row, fixedSettings);
+        xmlList.push(xml);
+        
+        processedRows++;
+        const pct = Math.round((processedRows / validRows.length) * 100);
+        progFill.style.width = pct + '%';
+        progFill.textContent = pct + '%';
+        progText.textContent = `產生中... [${itemName}] ${ri + 1}/${rows.length}（${row.name}）`;
+        
+        if (processedRows % 10 === 0) await new Promise(r => setTimeout(r, 0));
+      }
+      
+      // 合併成單一 docx
+      progText.textContent = `合併 [${itemName}] (${rows.length} 份)...`;
+      const mergedBlob = await buildMergedDocx(tplName, xmlList);
+      
+      // 檔名 = 項目名稱(清理特殊字元)
+      const safeItemName = itemName.replace(/[\/\\:*?"<>|]/g, '_');
+      const filename = `${safeItemName}（${rows.length}份）.docx`;
+      
+      outputZip.file(filename, mergedBlob);
+      
+      await new Promise(r => setTimeout(r, 0));
+    }
+    
+    progText.textContent = '打包 ZIP 中...';
+    
+    // 加入 VBA 巨集和使用說明
+    outputZip.file('批次轉PDF.vbs', base64ToBlob(VBA_MACRO_BASE64));
+    outputZip.file('使用說明.txt', base64ToBlob(README_TXT_BASE64));
+    
+    const zipBlob = await outputZip.generateAsync(
+      { type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } },
+      (meta) => {
+        progFill.style.width = meta.percent.toFixed(0) + '%';
+        progFill.textContent = '打包 ' + meta.percent.toFixed(0) + '%';
+      }
+    );
+    
+    const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+    const sizeMB = (zipBlob.size / 1024 / 1024).toFixed(1);
+    
+    const today = new Date();
+    const dateStr = `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
+    const zipName = `疏文_${dateStr}_${itemNames.length}項目_${validRows.length}份.zip`;
+    saveAs(zipBlob, zipName);
+    
+    // 記錄已產出的簽章
+    let recordedCount = 0;
+    for (const row of validRows) {
+      await recordGenerated(row.signature, {
+        name: row.name,
+        item: row.item,
+        address: row.address,
+      });
+      generatedSignatures.add(row.signature);
+      recordedCount++;
+    }
+    try{ pushSharedSigs(validRows.map(r=>r.signature)); }catch(e){}
+    try{ pushProduced(validRows.filter(r=>r.sysId).map(r=>({teacher:onlineTeacher, cat:(r.sheet||'').split('(')[0], sysId:r.sysId}))); }catch(e){}
+    // 重新標記資料(讓預覽顯示已產過); 清除 forceRegenerate (剛產過,等下次再選)
+    for (const r of parsedRows) {
+      if (generatedSignatures.has(r.signature)) r.alreadyGenerated = true;
+    }
+    forceRegenerate.clear();
+    renderPreview();
+    checkReady();
+    
+    successBanner.innerHTML = `✓ 完成！${itemNames.length} 個項目檔案 ・ 共 ${validRows.length} 份疏文 ・ ${sizeMB} MB ・ 耗時 ${elapsed} 秒<br><span style="font-size:13px;font-weight:normal;display:block;margin-top:8px;">📄 ZIP 內每個項目一個 docx,內含該項目的所有客戶疏文(每人一頁)<br>另含「批次轉PDF.vbs」(雙擊執行)和「使用說明.txt」<br>↻ 已記錄 ${recordedCount} 筆簽章,下次產生會自動跳過這些</span>`;
+    successBanner.classList.add('show');
+    progArea.classList.remove('show');
+    
+  } catch (err) {
+    console.error(err);
+    progText.textContent = '❌ 錯誤：' + err.message;
+    showToast('產生失敗：' + err.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+//============== 啟動 ==============
+window.addEventListener('load', async () => {
+  const saved = await loadTemplatesFromDB();
+  for (const t of saved) loadedTemplates[t.name] = { buffer: t.buffer, size: t.size };
+  
+  const savedFixed = await loadSetting('fixedSettings');
+  if (savedFixed) {
+    if (savedFixed.ritual_year) document.getElementById('ritual_year').value = savedFixed.ritual_year;
+    if (savedFixed.ritual_month) document.getElementById('ritual_month').value = savedFixed.ritual_month;
+    if (savedFixed.ritual_day) document.getElementById('ritual_day').value = savedFixed.ritual_day;
+    if (savedFixed.count) document.getElementById('count').value = savedFixed.count;
+    if (savedFixed.seal_count) document.getElementById('seal_count').value = savedFixed.seal_count;
+    if (savedFixed.silver_count) document.getElementById('silver_count').value = savedFixed.silver_count;
+  }
+  
+  // 載入已產出簽章記錄 (但若跨月則先清空)
+  const now = new Date();
+  const thisMonth = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const lastMonth = await loadSetting('lastGeneratedMonth');
+  let clearedDueToMonth = false;
+  if (lastMonth && lastMonth !== thisMonth) {
+    await clearGeneratedHistory();
+    clearedDueToMonth = true;
+    console.log(`月份從 ${lastMonth} 變更為 ${thisMonth},已自動清空產出記錄`);
+  }
+  await saveSetting('lastGeneratedMonth', thisMonth);
+  
+  const generated = await loadAllGenerated();
+  for (const g of generated) generatedSignatures.add(g.sig);
+  
+  if (saved.length > 0) {
+    const msgParts = [`✓ 自動載入 ${saved.length} 個已儲存模板`];
+    if (generated.length > 0) msgParts.push(`${generated.length} 筆已產記錄`);
+    if (clearedDueToMonth) msgParts.push(`(已自動清空上月記錄)`);
+    showToast(msgParts.join(' / '));
+  } else if (clearedDueToMonth) {
+    showToast(`📅 已自動清空上月(${lastMonth})的產出記錄`);
+  }
+  
+  updateTemplateUI();
+  buildMappingUI();
+  renderGroupSelector();  // 一開始就顯示分組勾選 UI(讓使用者預先看到預設值)
+  checkReady();
+});
+</script>
+
+</body>
+</html>
