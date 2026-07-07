@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f6f2ea">
+<title>神奇學苑 · 香量線上填單</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#f6f2ea;--bg2:#fbf8f1;--panel:#fff;--line:#e2d8c4;--gold:#9c7e3a;--gold2:#7a6228;--cream:#3a3024;--txt:#2e2820;--mut:#8a7e6a;--green:#3fa86b;--red:#c0392b;--fs:16px}
+.dark{--bg:#1f1d1a;--bg2:#272320;--panel:#2c2723;--line:#473f36;--gold:#c9a961;--gold2:#e0c585;--cream:#f4e9c8;--txt:#f0ece2;--mut:#9c9486;--green:#7fae6e;--red:#d9776a}
+.big{--fs:19px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--txt);font-family:'Noto Sans TC',sans-serif;font-size:var(--fs);line-height:1.55;min-height:100vh}
+.wrap{max-width:780px;margin:0 auto;padding:16px 14px 100px}
+header.top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--gold);padding-bottom:12px;flex-wrap:wrap;gap:8px}
+h1{font-family:'Noto Serif TC',serif;font-weight:900;color:var(--gold2);font-size:1.4em;letter-spacing:1px}
+h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-weight:500;margin-top:4px}
+.who{font-family:'Noto Serif TC',serif;font-weight:900;color:#fff;background:var(--gold);border-radius:9px;padding:7px 14px;font-size:1em}
+.toggles button{background:var(--panel);color:var(--txt);border:1px solid var(--line);border-radius:7px;padding:8px 12px;cursor:pointer;font-size:1em;margin-left:5px;font-family:inherit}
+.toggles button.on{background:var(--gold);color:#fff;border-color:var(--gold)}
+.bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:10px;padding:12px 15px;margin:14px 0}
+.bar label{color:var(--gold2);font-family:'Noto Serif TC',serif;font-weight:700;margin-right:6px}
+.bar input{background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:7px;padding:8px 11px;font-family:inherit;font-size:1em}
+#status{margin-left:auto;font-size:.82em;color:var(--mut)}#status.ok{color:var(--green)}#status.err{color:var(--red)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 4px}
+.tab{flex:1;min-width:84px;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:10px 10px 0 0;padding:11px 6px;cursor:pointer;font-family:'Noto Serif TC',serif;font-weight:700;font-size:1em;text-align:center}
+.tab.active{background:var(--gold);color:#fff;border-color:var(--gold)}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:0 14px 14px 14px;margin:0 0 16px;padding:18px}
+.card h2{font-family:'Noto Serif TC',serif;font-size:1.05em;color:var(--cream);font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.card h2 .n{background:var(--gold);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:.7em}
+.sub{color:var(--mut);font-size:.8em;margin:2px 0 14px;line-height:1.5}
+.field{margin-bottom:13px}
+.field>label{display:block;color:var(--gold2);font-weight:700;font-size:.9em;margin-bottom:5px}
+.field .req{color:var(--red);margin-left:3px}
+.field input,.field select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:11px 12px;font-family:inherit;font-size:1.02em}
+.field input:focus,.field select:focus{outline:none;border-color:var(--gold)}
+.field.miss input,.field.miss select{border-color:var(--red);background:rgba(192,57,43,.05)}
+.ymd{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.ymd .cal{flex:0 0 78px}.ymd .seg{flex:1;min-width:58px;display:flex;align-items:center;gap:4px}
+.ymd .seg input{text-align:center}.ymd .seg span{color:var(--mut);font-size:.85em}
+.fhint{color:var(--gold2);font-size:.78em;margin-top:4px;background:rgba(156,126,58,.08);border-radius:6px;padding:5px 9px}
+.fhint:empty{display:none}
+.grouphd{font-family:'Noto Serif TC',serif;color:var(--gold2);font-weight:700;font-size:.88em;margin:16px 0 9px;padding-left:8px;border-left:3px solid var(--gold)}
+.itembox{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:13px}
+.fitem{position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:13px 12px 12px;margin-bottom:11px}
+.fi-del{position:absolute;top:8px;right:8px;background:transparent;border:1px solid var(--line);color:var(--red);font-size:.8em;cursor:pointer;padding:5px 9px;border-radius:7px;font-family:inherit}
+.fi-item{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:12px 11px;font-family:inherit;font-size:1.05em;margin-bottom:10px}
+.fi-qrow{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.fi-qlabel{color:var(--gold2);font-weight:700;font-size:.92em;margin-right:auto}
+.fi-step{width:46px;height:46px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--gold2);font-size:24px;font-weight:700;cursor:pointer;line-height:1;font-family:inherit}
+.fi-step:active{background:var(--gold);color:#fff}
+.fi-qty{width:66px;height:46px;text-align:center;font-size:1.2em;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:9px;font-family:inherit}
+.fi-qty:focus{outline:none;border-color:var(--gold)}
+.fi-wish{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:10px 11px;font-family:inherit;font-size:.98em}
+.fi-wish:focus{outline:none;border-color:var(--gold)}
+.fi-partner{margin-top:10px;padding:11px;border:1px dashed var(--gold);border-radius:9px;background:rgba(156,126,58,.05)}
+.fi-partner .fp-hd{margin-bottom:8px}
+.fi-partner .fp-title{font-weight:700;font-size:1.05em;color:var(--gold2)}
+.fi-partner .fp-note{font-size:.82em;color:var(--mut);margin-top:2px}
+.fi-partner input,.fi-partner select{background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px;font-family:inherit;font-size:.95em}
+.fp-name{width:100%;margin-bottom:8px}
+.fp-bd{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.fp-y{width:72px}.fp-m,.fp-d{width:56px}
+.fp-prev{font-size:.82em;color:var(--mut);margin-top:6px}
+.additem{background:transparent;border:1px dashed var(--gold);color:var(--gold);border-radius:8px;padding:8px;width:100%;cursor:pointer;font-family:'Noto Serif TC';font-weight:700;font-size:.92em}
+.actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.btn{background:var(--gold);color:#fff;border:none;border-radius:9px;padding:13px 24px;font-size:1.04em;font-weight:700;cursor:pointer;font-family:'Noto Serif TC',serif;letter-spacing:1px;flex:1;min-width:130px}
+.btn:hover{background:var(--gold2)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold);flex:0 0 auto;min-width:0;padding:13px 16px}
+.listcard{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px}
+.catgroup{margin-bottom:14px}
+.catgroup h3{font-family:'Noto Serif TC',serif;color:var(--gold2);font-size:.95em;margin-bottom:6px;display:flex;justify-content:space-between}
+.catgroup h3 .c{color:var(--mut);font-weight:400;font-size:.85em}
+.entry{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 12px;margin-bottom:6px}
+.entry .info{flex:1;min-width:0;font-size:.92em}
+.entry .info small{color:var(--mut);display:block;font-size:.82em;margin-top:1px}
+.entry.ed{outline:2px solid var(--gold)}
+.rowbtn{background:transparent;border:none;cursor:pointer;font-size:.9em;padding:3px 6px;font-family:inherit}
+.rowbtn.e{color:var(--gold2)}.rowbtn.d{color:var(--red)}
+.empty{color:var(--mut);text-align:center;padding:18px;font-size:.9em}
+.totbar{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff;border-radius:11px;padding:13px 16px;margin-top:12px;font-size:.92em;line-height:1.7}
+.totbar b{font-size:1.15em}
+.totbar .items{font-size:.84em;opacity:.92;margin-top:5px;border-top:1px solid rgba(255,255,255,.25);padding-top:5px}
+.banner{border-radius:9px;padding:11px 14px;margin:8px 0;font-size:.88em;line-height:1.5}
+.banner.info{background:rgba(156,126,58,.12);border-left:3px solid var(--gold);color:var(--gold2)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--gold2);color:#fff;padding:12px 22px;border-radius:30px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.25);opacity:0;transition:.3s;z-index:99;font-size:.92em}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style></head>
+<body>
+<div class="wrap">
+<header class="top">
+  <h1>香量線上填單<small>MIIRAGIC · 香量回報</small></h1>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <span class="who" id="whoBadge" style="display:none"></span>
+    <button id="logoutBtn" onclick="logout()" style="display:none;background:transparent;border:1px solid var(--line);color:var(--mut);border-radius:7px;padding:6px 10px;cursor:pointer;font-family:inherit;font-size:.8em">登出</button>
+    <button id="adminOpenBtn" onclick="openAdminPanel()" style="display:none;background:#9c7e3a;border:none;color:#fff;border-radius:7px;padding:6px 12px;cursor:pointer;font-family:inherit;font-size:.8em;margin-left:6px">⚙ 開放設定</button>
+    <span class="toggles"><button onclick="bigfont()">A± 大字</button></span>
+  </div>
+</header>
+
+<div id="setupNote"></div>
+<div id="login" style="display:none">
+  <div class="card" style="border-radius:14px;max-width:430px;margin:24px auto">
+    <h2><span class="n">🔑</span>老師登入</h2>
+    <p class="sub" style="display:none"></p>
+    <div class="field"><label>老師<span class="req">*</span></label><select id="loginTeacher"></select></div>
+    <div class="field"><label>密碼<span class="req">*</span></label><input type="password" id="loginPw" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="actions"><button class="btn" onclick="doLogin()">進入</button></div>
+    <div id="loginErr" style="display:none"></div>
+  </div>
+</div>
+
+<div id="adminScreen" style="display:none;max-width:760px;margin:18px auto;padding:0 14px"></div>
+
+<div id="app" style="display:none">
+<div class="bar">
+  <div><label>結算月份</label><select id="month" onchange="onMonth()" style="background:var(--bg);border:1px solid var(--line);color:var(--txt);border-radius:7px;padding:8px 11px;font-family:inherit;font-size:1em"></select></div>
+  <span id="status">—</span>
+</div>
+<div class="tabs" id="tabs"></div>
+<div class="card">
+  <h2><span class="n">＋</span><span id="formTitle">新增明細</span></h2>
+  <p class="sub" id="formSub"></p>
+  <div id="formFields"></div>
+  <div class="actions">
+    <button class="btn" id="submitBtn" onclick="submitForm()">加入清單</button>
+    <button class="btn ghost" onclick="clearForm()">清空</button>
+    <button class="btn ghost" id="cancelBtn" style="display:none" onclick="cancelEdit()">取消編輯</button>
+  </div>
+</div>
+<div class="listcard">
+  <h2 style="font-family:'Noto Serif TC';color:var(--cream);font-size:1.05em;margin-bottom:4px">📋 本月已填清單</h2>
+  <p class="sub">最底「總計」就是會寫進香量統計總表、被獎金系統抓走的數字，可直接核對。</p>
+  <div id="listArea"><p class="empty">尚未載入。</p></div>
+  <div id="totArea"></div>
+</div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ====== 後端網址（部署 Apps Script 後貼 /exec 網址） ====== */
+const API_URL = 'https://script.google.com/macros/s/AKfycbwSM81dVKy_ZkFdQneulQKv7m13rfYe8xonhBFPI6T1sASw3A2Q3rBNjJ1oY3MsOPIYZw/exec';
+/* ========================================================= */
+
+/* ★ 老師清單與編號 ★  新增老師：加一行 {name:'姓名',no:22}，密碼自動＝123+編號，後端自動納入 */
+let TEACHERS=[
+ {name:'陳捷容',no:1},{name:'羅文勳',no:2},{name:'陳彩綺',no:3},{name:'蕭竣方',no:4},
+ {name:'湯雯莉',no:5},{name:'沈佳琪',no:6},{name:'周冠榮',no:7},{name:'蕭鎧峻',no:8},
+ {name:'賴素貞',no:9},{name:'張簡玉靖',no:10},{name:'梁凱妍',no:11},{name:'鄭聖勳',no:12},
+ {name:'謝欣諭',no:13},{name:'王宥心',no:14},{name:'熊卿妃',no:15},{name:'鐘宥涵',no:16},
+ {name:'謝承殷',no:17},{name:'陳昕昀',no:18},{name:'林雅涵',no:19},{name:'公司內部',no:20},
+ {name:'靈應壇',no:21}
+];
+let TBYNAME={}; function rebuildT(){TBYNAME={};TEACHERS.forEach(t=>TBYNAME[t.name]=t);} rebuildT();
+function pwOf(no){return '123'+no;}
+
+/* 各老師收單人(下線)清單；沒列的老師不顯示此欄 */
+let TEACHER_SHOUDAN={'羅文勳':['院長','子瑄','包年','章宴','釧益','旂彰','瑋齊'],'陳彩綺':['彩綺','冠穎','晏蓉','茜茹','豐州'],'湯雯莉':['莫莉','柏雅'],'王宥心':['玥希','宥心']};
+
+const ITEMS=['補財','補庫','補運(消災解厄)','夫妻(金姻緣)','貴人(木姻緣)','單身(水姻緣)','和合(火姻緣)','同性(土姻緣)','冤親(解冤釋結)','化小人','招貴人'];
+const FAHUI_ITEMS=ITEMS.concat(['天赦金']);
+
+/* ★ 項目開放設定（全院共用，行政後台控制） ★ */
+const ADMIN_NAMES=['蕭竣方','公司內部'];        /* 這些帳號登入才看得到「開放設定」 */
+const TOGGLE_CATS=['斗燈','還陰債','祭改','普桌'];              /* 可整類開關的分類 */
+let OPENCFG=null;                                /* null＝全開；{fahui:{項目:bool}, 斗燈:bool, 還陰債:bool} */
+let ITEMLABELS={};                               /* 項目顯示名稱對應 {原始名:顯示名}，計價仍用原始名 */
+let ADMINS=[];                                   /* 後端設定的行政人員名單 */
+function labelOf(it){ return ITEMLABELS[it]||it; }
+function itemOpen(it){ return !(OPENCFG&&OPENCFG.fahui&&OPENCFG.fahui[it]===false); }
+function catOpen(c){ if(TOGGLE_CATS.indexOf(c)<0) return true; return !(OPENCFG&&OPENCFG[c]===false); }
+function loadOpenCfg(cb){ if(!API_URL){cb&&cb();return;} fetch(API_URL+'?action=openItems').then(r=>r.json()).then(d=>{ OPENCFG=(d&&d.config)||null; cb&&cb(); }).catch(()=>{cb&&cb();}); }
+function loadSysCfg(cb){ if(!API_URL){cb&&cb();return;} fetch(API_URL+'?action=sysConfig').then(r=>r.json()).then(d=>{ if(d&&d.ok){ ITEMLABELS=d.itemLabels||{}; ADMINS=d.admins||[]; } cb&&cb(); }).catch(()=>{cb&&cb();}); }
+function fahuiOptions(selected){ return FAHUI_ITEMS.filter(o=>itemOpen(o)||o===selected).map(o=>`<option value="${o}"${o===selected?' selected':''}>${labelOf(o)}</option>`).join(''); }
+const FAHUI_NOBIRTH=['天赦金'];   /* ← 這些法會項目「免填生日」；其餘項目生日必填 */
+const SHICHEN=[{v:'吉',t:'吉（不知時辰就用吉）'},{v:'子',t:'子（23–01時）'},{v:'丑',t:'丑（01–03時）'},{v:'寅',t:'寅（03–05時）'},{v:'卯',t:'卯（05–07時）'},{v:'辰',t:'辰（07–09時）'},{v:'巳',t:'巳（09–11時）'},{v:'午',t:'午（11–13時）'},{v:'未',t:'未（13–15時）'},{v:'申',t:'申（15–17時）'},{v:'酉',t:'酉（17–19時）'},{v:'戌',t:'戌（19–21時）'},{v:'亥',t:'亥（21–23時）'}];
+const CATS_ORDER=['法會','斗燈','還陰債','祭改','普桌'];
+
+/* 後端欄位（與 Code.gs 一致；collect 依此逐欄收集）*/
+const COLS={
+ '法會':['收單人','公司行號','項目','份數','姓名','生日別','生日年','生日月','生日日','時辰','居住地址','祈願','備註'],
+ '斗燈':['收單人','加購類型','斗種','份數','姓名','生日年','生日月','生日日','時辰','居住地址','令牌字或祈願','祈願'],
+ '還陰債':['收單人','牒文類別','份數','陽世報恩人','報恩人居住地址','祈願','亡者生日年','亡者生日月','亡者生日日','時辰','卒于年','卒于月','卒于日','歲數','姓','公姑娘媽','名','考妣','神位地址','先祖名'],
+ '祭改':['收單人','公司行號','份數','姓名','生日別','生日年','生日月','生日日','時辰','居住地址','性別','衣服'],
+ '普桌':['公司行號','份數','姓名','居住地址','備註','捐掉或寄回']
+};
+
+/* 法會客戶欄位（項目另由多項目區處理）*/
+const FAHUI_CUST=[
+ {sh:1,k:'收單人',type:'select',from:'shoudan'},
+ {k:'姓名',type:'text',req:1},
+ {type:'ymd',cal:1,conv:1,y:'生日年',m:'生日月',d:'生日日',calk:'生日別',label:'生日',rk:'生日年'},
+ {k:'時辰',type:'select',opts:SHICHEN},
+ {k:'居住地址',type:'text',req:1},
+ {k:'公司行號',type:'text'}
+];
+
+/* 斗燈/祭改/普桌 通用欄位 */
+const FIELDS={
+ '祭改':[
+   {sh:1,k:'收單人',label:'收單人/下線老師',type:'select',from:'shoudan'},
+   {k:'份數',type:'num',req:1,def:1},
+   {k:'姓名',type:'text',req:1},
+   {type:'ymd',cal:1,conv:1,y:'生日年',m:'生日月',d:'生日日',calk:'生日別',label:'生日'},
+   {k:'時辰',type:'select',opts:SHICHEN},
+   {k:'居住地址',type:'text',req:1},
+   {k:'性別',type:'select',opts:['','男','女'],req:1},
+   {k:'衣服',type:'select',opts:['','有','無']},
+   {k:'公司行號',type:'text'}
+ ],
+ '普桌':[
+   {k:'份數',type:'num',req:1,def:1},
+   {k:'姓名',type:'text',req:1},
+   {k:'居住地址',type:'text',req:1},
+   {k:'捐掉或寄回',type:'select',opts:['','捐掉','寄回'],req:1},
+   {k:'公司行號',type:'text',label:'公司行號(公司填名稱+負責人)'},
+   {k:'備註',type:'text',label:'備註(想上疏文的家人姓名)'}
+ ]
+};
+
+/* 還陰債：固定欄 + 依牒文類別動態亡者明細 */
+const YIN_TOP=[
+ {sh:1,k:'收單人',type:'select',from:'shoudan'},
+ {k:'牒文類別',type:'select',opts:['','個人正魂','冤親債主','歷代祖先','地基主','嬰靈','獸魂','辭祖'],req:1,onchg:'renderYinDetail'},
+ {k:'份數',type:'num',req:1,def:1},
+ {k:'陽世報恩人',label:'陽世報恩人(報名者)',type:'text',req:1,oninp:'yinAuto'},
+ {k:'報恩人居住地址',type:'text',req:1}
+];
+const YDEF={
+ '生日':{type:'ymd',y:'亡者生日年',m:'亡者生日月',d:'亡者生日日',label:'亡者生日(國曆)',eg:'國曆，例：45 6 3（不知可空白）'},
+ '時辰':{k:'時辰',type:'select',opts:SHICHEN,label:'時辰',eg:'不知道就選「吉」'},
+ '卒於':{type:'ymd',y:'卒于年',m:'卒于月',d:'卒于日',label:'亡者卒於(國曆)',eg:'國曆，例：98 3 12'},
+ '歲數':{k:'歲數',type:'num',label:'歲數(國曆計算)',eg:'例：78'},
+ '姓':{k:'姓',type:'text',eg:'例：謝'},
+ '稱':{k:'公姑娘媽',type:'select',opts:['','公','姑娘','媽'],label:'公/姑娘/媽',eg:'男性填「公」；女性未婚「姑娘」、已婚「媽」'},
+ '名':{k:'名',type:'text',eg:'例：志明'},
+ '考妣':{k:'考妣',type:'select',opts:['','考','妣'],label:'考/妣',eg:'男性填「考」、女性填「妣」'},
+ '神位':{k:'神位地址',type:'text',hint:'神'},
+ '祖名':{k:'先祖名',type:'text',hint:'祖'}
+};
+const YINCAT={
+ '個人正魂':{order:['生日','時辰','卒於','姓','稱','名','神位','祖名'],allReq:true,noReqZu:true},
+ '冤親債主':{order:['祖名'],req:['先祖名']},
+ '歷代祖先':{order:['神位','祖名'],req:['神位地址','先祖名']},
+ '地基主':{order:['神位','祖名'],req:['神位地址','先祖名']},
+ '嬰靈':{order:['祖名'],req:['先祖名']},
+ '獸魂':{order:['祖名'],req:['先祖名']},
+ '辭祖':{order:['神位','祖名'],req:['神位地址','先祖名']}
+};
+const YINHINT_TXT={
+ '個人正魂':{神:'填牌位或塔位地址',祖:'系統依上面「姓＋公/姑娘/媽＋名」自動帶入，免填'},
+ '冤親債主':{祖:'姓氏+前世今生之冤親債主'},
+ '歷代祖先':{神:'祖先牌位地址',祖:'只填姓氏即可，系統自動組成「○氏九玄七祖歷代祖先」（夫家或自家姓氏皆可）'},
+ '地基主':{神:'要施作的地址',祖:'直接填「地基主」'},
+ '嬰靈':{祖:'只填媽媽姓氏即可，系統自動組成「○氏嬰靈」'},
+ '獸魂':{祖:'獸魂（知道名字則填名字）'},
+ '辭祖':{神:'前夫祖先牌位地址',祖:'只填前夫姓氏即可，系統自動組成「○氏歷代祖先」'}
+};
+const CATDESC={'法會':'先勾選項目與份數（可多個），再填一次客戶資料。','斗燈':'選加購類型後，下方跳出對應欄位。令牌加購也要選「斗種」（令牌放哪個斗）；令牌／五行需選令牌字（天干地支）。','還陰債':'選牒文類別後，下方會跳出該類別要填的欄位（各有必填）。','祭改':'','普桌':'公司請於公司行號填名稱+負責人。'};
+
+/* 斗燈：依加購類型動態（令牌字用下拉選天干地支且必填；令牌加購也要選斗種＝放哪個斗）*/
+const GANZHI=['','甲','乙','丙','丁','戊','己','庚','辛','壬','癸','子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const DOU_TOP=[
+ {sh:1,k:'收單人',type:'select',from:'shoudan'},
+ {k:'加購類型',type:'select',opts:['','單筆加購','季斗加購','令牌加購','五行年斗','五行季斗'],req:1,onchg:'renderDouDetail'},
+ {k:'份數',type:'num',req:1,def:1},
+ {k:'姓名',type:'text',req:1},
+ {type:'ymd',cal:1,conv:1,calk:'生日別',y:'生日年',m:'生日月',d:'生日日',label:'生日'},
+ {k:'時辰',type:'select',opts:SHICHEN},
+ {k:'居住地址',type:'text',req:1},
+ {k:'祈願',type:'text',max:50}
+];
+const DOUDEF={
+ '斗種':{k:'斗種',type:'select',opts:['','月老斗','財神斗','貴人斗','化煞斗','開運斗']},
+ '令牌':{k:'令牌字或祈願',type:'select',opts:GANZHI,label:'令牌字（必選，十天干／十二地支）'}
+};
+const DOUCONF={
+ '單筆加購':{order:['斗種'],req:['斗種']},
+ '季斗加購':{order:['斗種'],req:['斗種']},
+ '五行年斗':{order:['斗種','令牌'],req:['斗種','令牌字或祈願']},
+ '五行季斗':{order:['斗種','令牌'],req:['斗種','令牌字或祈願']},
+ '令牌加購':{order:['斗種','令牌'],req:['斗種','令牌字或祈願']}
+};
+
+let TEACHER=null,MONTH,CURCAT='法會',EDIT={cat:null,id:null},DATA={},TOTALS={};
+
+function applyTheme(){document.documentElement.classList.remove('dark');document.body.classList.remove('dark');}
+function theme(m){applyTheme();}
+function bigfont(){const big=!document.body.classList.contains('big');document.documentElement.classList.toggle('big',big);document.body.classList.toggle('big',big);try{localStorage.xlbig=big?1:''}catch(e){}}
+try{applyTheme();try{localStorage.xltheme='light'}catch(e){}if(localStorage.xlbig){document.documentElement.classList.add('big');document.body.classList.add('big');}}catch(e){}
+function defMonth(){const d=new Date();return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0');}
+
+/* ===== 國曆→農曆換算（1900–2100） ===== */
+const lunarInfo=[0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b5a0,0x195a6,0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x055c0,0x0ab60,0x096d5,0x092e0,0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,0x05aa0,0x076a3,0x096d0,0x04afb,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0,0x14b63,0x09370,0x049f8,0x04970,0x064b0,0x168a6,0x0ea50,0x06b20,0x1a6c4,0x0aae0,0x0a2e0,0x0d2e3,0x0c960,0x0d557,0x0d4a0,0x0da50,0x05d55,0x056a0,0x0a6d0,0x055d4,0x052d0,0x0a9b8,0x0a950,0x0b4a0,0x0b6a6,0x0ad50,0x055a0,0x0aba4,0x0a5b0,0x052b0,0x0b273,0x06930,0x07337,0x06aa0,0x0ad50,0x14b55,0x04b60,0x0a570,0x054e4,0x0d160,0x0e968,0x0d520,0x0daa0,0x16aa6,0x056d0,0x04ae0,0x0a9d4,0x0a2d0,0x0d150,0x0f252,0x0d520];
+function lLeapMonth(y){return lunarInfo[y-1900]&0xf;}
+function lLeapDays(y){return lLeapMonth(y)?((lunarInfo[y-1900]&0x10000)?30:29):0;}
+function lMonthDays(y,m){return (lunarInfo[y-1900]&(0x10000>>m))?30:29;}
+function lYearDays(y){let s=348;for(let i=0x8000;i>0x8;i>>=1)s+=(lunarInfo[y-1900]&i)?1:0;return s+lLeapDays(y);}
+function solar2lunar(y,m,d){
+  if(y<1900||y>2100)return null;
+  let offset=Math.floor((Date.UTC(y,m-1,d)-Date.UTC(1900,0,31))/86400000);
+  let i,temp=0,ly;
+  for(i=1900;i<2101&&offset>0;i++){temp=lYearDays(i);offset-=temp;}
+  if(offset<0){offset+=temp;i--;}
+  ly=i;const leap=lLeapMonth(i);let isLeap=false;
+  for(i=1;i<13&&offset>0;i++){
+    if(leap>0&&i===leap+1&&!isLeap){--i;isLeap=true;temp=lLeapDays(ly);}
+    else temp=lMonthDays(ly,i);
+    if(isLeap&&i===leap+1)isLeap=false;
+    offset-=temp;
+  }
+  if(offset===0&&leap>0&&i===leap+1){if(isLeap)isLeap=false;else{isLeap=true;--i;}}
+  if(offset<0){offset+=temp;--i;}
+  return {lYear:ly,lMonth:i,lDay:offset+1,isLeap:isLeap};
+}
+/* 民國國曆 → 民國農曆字串 */
+function s2lMinguo(my,mm,dd){
+  my=parseInt(my);mm=parseInt(mm);dd=parseInt(dd);
+  if(!my||!mm||!dd)return null;
+  const greg = my>=1000 ? my : my+1911;   // 4位數視為西元，其餘視為民國
+  const r=solar2lunar(greg,mm,dd);if(!r)return null;
+  return {y:r.lYear-1911,m:(r.isLeap?'閏':'')+r.lMonth,d:r.lDay};
+}
+/* 收集時：若選國曆則換算成農曆存入 */
+function applyLunar(cat,o){
+  if(['法會','祭改','斗燈'].indexOf(cat)<0)return;
+  if(val('生日別')==='國'){
+    const r=s2lMinguo(o['生日年'],o['生日月'],o['生日日']);
+    if(r){o['生日年']=r.y;o['生日月']=r.m;o['生日日']=r.d;}
+  }else{
+    const lp=document.getElementById('leap_生日年');
+    if(lp&&lp.checked&&o['生日月']&&(''+o['生日月']).indexOf('閏')<0) o['生日月']='閏'+o['生日月'];
+  }
+  if('生日別' in o)o['生日別']='農';
+}
+function toggleLeap(calk,y){
+  const wrap=document.getElementById('leapwrap_'+y);if(!wrap)return;
+  const isLunar=(val(calk)==='農');
+  wrap.style.display=isLunar?'flex':'none';
+  if(!isLunar){const c=document.getElementById('leap_'+y);if(c)c.checked=false;}
+}
+/* 即時換算預覽 */
+function birthPrev(yk,mk,dk,ck){
+  const el=document.getElementById('prev_'+yk);if(!el)return;
+  if((ck?val(ck):'農')!=='國'){el.textContent='';return;}
+  const r=s2lMinguo(val(yk),val(mk),val(dk));
+  el.textContent=r?('→ 換算農曆：'+r.y+'年'+r.m+'月'+r.d+'日（將以此存入疏文）'):'';
+}
+
+/* 登入 */
+function fillMonths(){
+  const sel=document.getElementById('month');if(!sel||sel.tagName!=='SELECT')return;
+  const d=new Date();let h='';
+  for(let i=1;i>=-17;i--){const dt=new Date(d.getFullYear(),d.getMonth()+i,1);const v=dt.getFullYear()+'.'+String(dt.getMonth()+1).padStart(2,'0');h+=`<option${i===0?' selected':''}>${v}</option>`;}
+  sel.innerHTML=h;
+}
+function loadTeachers(cb){
+  if(!API_URL){cb();return;}
+  fetch(API_URL+'?action=teachers').then(r=>r.json()).then(d=>{
+    if(d&&d.ok&&Array.isArray(d.teachers)&&d.teachers.length){
+      TEACHERS=d.teachers.map(t=>({name:t.name,no:t.no}));rebuildT();
+      const sd={};d.teachers.forEach(t=>{if(t.shoudan&&t.shoudan.length)sd[t.name]=t.shoudan;});TEACHER_SHOUDAN=sd;
+    }
+  }).catch(()=>{}).then(()=>cb());
+}
+function init(){
+  if(!API_URL)document.getElementById('setupNote').innerHTML='<div class="banner info">⚙ 尚未設定後端網址：請先部署 Code.gs，把 /exec 網址貼到本檔 API_URL。</div>';
+  fillMonths();
+  loadOpenCfg();
+  loadSysCfg();
+  loadTeachers(function(){
+    document.getElementById('loginTeacher').innerHTML=TEACHERS.map(t=>`<option value="${t.name}">${t.no}　${t.name}</option>`).join('');
+    let saved=null;try{saved=localStorage.xlUser}catch(e){}
+    if(saved&&TBYNAME[saved])enterApp(saved);
+    else document.getElementById('login').style.display='';
+  });
+}
+function doLogin(){
+  const name=document.getElementById('loginTeacher').value;
+  const pw=document.getElementById('loginPw').value.trim();
+  const err=document.getElementById('loginErr');
+  if(pw==='123123'){ err.style.display='none'; try{localStorage.removeItem('xlUser')}catch(e){} document.getElementById('login').style.display='none'; enterAdmin(); return; }
+  const t=TBYNAME[name];
+  if(!t)return;
+  if(pw!==pwOf(t.no)){err.style.cssText='display:block;background:rgba(192,57,43,.12);border-left:3px solid var(--red);color:var(--red);border-radius:9px;padding:11px 14px;margin-top:10px;font-size:.88em';err.textContent='密碼不正確，請重新輸入。';return;}
+  err.style.display='none';try{localStorage.xlUser=name}catch(e){}
+  document.getElementById('login').style.display='none';enterApp(name);
+}
+function enterApp(name){
+  TEACHER=name;const t=TBYNAME[name];
+  document.getElementById('app').style.display='';
+  document.getElementById('whoBadge').style.display='';
+  document.getElementById('whoBadge').textContent='👤 '+(t?t.no+'　':'')+name;
+  document.getElementById('logoutBtn').style.display='';
+  document.getElementById('month').value=defMonth();MONTH=defMonth();
+  const adm=document.getElementById('adminOpenBtn'); if(adm) adm.style.display=(ADMIN_NAMES.indexOf(name)>=0)?'':'none';
+  loadOpenCfg(function(){ buildTabs();selectCat('法會');loadList(); });
+}
+function logout(){try{localStorage.removeItem('xlUser')}catch(e){}location.reload();}
+
+function buildTabs(){document.getElementById('tabs').innerHTML=CATS_ORDER.filter(c=>catOpen(c)).map(c=>`<button class="tab" data-c="${c}" onclick="selectCat('${c}')">${c}</button>`).join('');}
+function selectCat(c){if(EDIT.id&&EDIT.cat!==c)cancelEdit(true);CURCAT=c;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.c===c));document.getElementById('formSub').textContent=CATDESC[c]||'';renderForm();}
+
+/* 通用欄位 HTML */
+function fieldHTML(f,reqOverride){
+  if(f.group)return `<div class="grouphd">${f.group}</div>`;
+  const req=(reqOverride!=null?reqOverride:f.req);
+  const egHTML=f.eg?`<div class="fhint" style="color:var(--mut)">例如：${f.eg}</div>`:'';
+  const lab=(f.label||f.k)+(req?'<span class="req">*</span>':'');
+  if(f.type==='ymd'){
+    const oi=f.conv?` oninput="birthPrev('${f.y}','${f.m}','${f.d}','${f.calk}')"`:'';
+    const calChange=f.cal?` onchange="${f.conv?`birthPrev('${f.y}','${f.m}','${f.d}','${f.calk}');`:''}toggleLeap('${f.calk}','${f.y}')"`:'';
+    let seg='';
+    if(f.cal)seg+=`<select class="cal" id="in_${f.calk}"${calChange}><option value="國">國曆</option><option value="農">農曆</option></select>`;
+    seg+=`<span class="seg"><input type="number" id="in_${f.y}" placeholder="年"${oi}><span>年</span></span>`;
+    seg+=`<span class="seg"><input type="number" id="in_${f.m}" placeholder="月"${oi}><span>月</span></span>`;
+    seg+=`<span class="seg"><input type="number" id="in_${f.d}" placeholder="日"${oi}><span>日</span></span>`;
+    let h=`<div class="field" data-k="${f.rk||f.y}"><label>${f.label}${req?'<span class="req">*</span>':''}${f.conv?'<span style="font-weight:400;color:var(--mut);font-size:.82em">　西元或民國皆可，不知農曆填國曆自動換算</span>':''}</label><div class="ymd">${seg}</div>`;
+    if(f.cal)h+=`<label id="leapwrap_${f.y}" style="display:none;align-items:center;gap:5px;font-weight:400;font-size:.9em;margin-top:6px;color:var(--mut)"><input type="checkbox" id="leap_${f.y}" style="width:auto;margin:0 4px 0 0">此生日為農曆閏月（直接填農曆時才勾）</label>`;
+    if(f.conv)h+=`<div class="fhint" id="prev_${f.y}"></div>`;
+    return h+egHTML+`</div>`;
+  }
+  if(f.type==='select'){
+    const opts=(f.from==='shoudan'
+        ? [{v:'',t:'— 未指定'},{v:TEACHER,t:TEACHER+'（本人）'}].concat((TEACHER_SHOUDAN[TEACHER]||[]).map(x=>({v:x,t:x}))).concat([{v:'__add__',t:'＋ 新增收單人…'}])
+        : f.opts)||[];
+    const optHTML=opts.map(o=>{const v=(o&&typeof o==='object')?o.v:o;const t=(o&&typeof o==='object')?o.t:(o||'—');return `<option value="${v}">${t}</option>`;}).join('');
+    const onchg=f.onchg?` onchange="${f.onchg}()"`:(f.from==='shoudan'?` onchange="shoudanPick(this)"`:'');
+    let h=`<div class="field" data-k="${f.k}"><label>${lab}</label><select id="in_${f.k}"${onchg}>${optHTML}</select>`;
+    if(f.hint)h+=`<div class="fhint" id="hint_${f.hint}"></div>`;
+    return h+egHTML+`</div>`;
+  }
+  const labx=lab+(f.max?`<span style="font-weight:400;color:var(--mut);font-size:.8em">（限${f.max}字，最好30字內）</span>`:'');
+  let h=`<div class="field" data-k="${f.k}"><label>${labx}</label><input type="${f.type==='num'?'number':'text'}" id="in_${f.k}"${f.def!=null?` value="${f.def}"`:''}${f.max?` maxlength="${f.max}"`:''}${f.oninp?` oninput="${f.oninp}()"`:''}>`;
+  if(f.hint)h+=`<div class="fhint" id="hint_${f.hint}"></div>`;
+  return h+egHTML+`</div>`;
+}
+
+/* 渲染表單 */
+function renderForm(){
+  const wrap=document.getElementById('formFields');
+  if(CURCAT==='法會'){renderFahui(wrap);return;}
+  if(CURCAT==='斗燈'){renderDou(wrap);return;}
+  if(CURCAT==='還陰債'){renderYin(wrap);return;}
+  wrap.innerHTML=FIELDS[CURCAT].map(f=>fieldHTML(f)).join('');
+}
+/* 法會：多項目 + 客戶資料 */
+function renderFahui(wrap){
+  let h='';
+  const shf=FAHUI_CUST[0];
+  h+=fieldHTML(shf);
+  if(EDIT.id){ // 編輯單筆
+    h+=`<div class="field" data-k="項目"><label>項目<span class="req">*</span></label><select id="in_項目" onchange="fahuiEditWish()">${fahuiOptions('')}</select></div>`;
+    h+=`<div class="field" data-k="份數"><label>份數<span class="req">*</span></label><input type="number" id="in_份數" value="1"></div>`;
+    h+=`<div class="field" data-k="祈願" id="fahuiWishField"><label>祈願／願望<span style="font-weight:400;color:var(--mut);font-size:.8em">（限50字）</span></label><input type="text" id="in_祈願" maxlength="50"></div>`;
+  }else{ // 新增多項目
+    h+=`<div class="grouphd">項目（可加多個）</div><div class="itembox" id="fahuiItems"></div><button class="additem" onclick="addItemRow()">＋ 再加一個項目</button>`;
+  }
+  FAHUI_CUST.slice(1).forEach(f=>h+=fieldHTML(f));
+  wrap.innerHTML=h;
+  if(!EDIT.id){document.getElementById('fahuiItems').innerHTML='';addItemRow();}
+}
+/* ===== 法會祈願公版 ===== */
+const WISH_SIMPLE={
+ '補財':'修復天庫、地庫的破損，守住本命正財，事業順利，財源廣進。',
+ '補庫':'增財補庫，減少不必要的開支，事業順利，財源廣進。',
+ '補運(消災解厄)':'提升整體運勢，事事順心。',
+ '冤親(解冤釋結)':'迴向給自身討報之冤親債主，因果業力，化惡緣轉善緣',
+ '招貴人':'提升工作上的貴人運勢，工作有狀況時有貴人相助',
+ '化小人':'化解身邊所有的男女小人，轉為貴人相助，化惡緣轉善緣',
+ '貴人(木姻緣)':'廣結善緣，讓跟自己有善緣的人顯化出來，貴人相助。'
+};
+const WISH_WATER=[['求自我提升','提升個人魅力與自信'],['求對象','天賜良緣，感情上能遇到好的桃花，合適的對象']];
+function fireWishText(scen,name,bstr){ const b=name+(bstr?'（'+bstr+'）':'');
+ if(scen==='求在一起')return '化解和'+b+'之間的感情阻礙，有良好的互動及聯繫，感情越來越甜蜜，牽緣在一起';
+ if(scen==='求復合')return '化解和'+b+'之間的感情阻礙，有良好的互動及聯繫，重新牽緣在一起';
+ return '化解和'+b+'之間的感情阻礙，有良好的互動及溝通，感情越來越甜蜜熱絡'; }
+function wishMode(item){
+ if(item==='天赦金')return 'none';
+ if(/金姻緣/.test(item))return 'jin';
+ if(/[火土]姻緣/.test(item))return 'fire';
+ if(/水姻緣/.test(item))return 'water';
+ if(WISH_SIMPLE[item])return 'simple';
+ return 'free';
+}
+function partnerBlockHTML(){ return `<input class="fp-name" type="text" placeholder="對方姓名（XXX）" oninput="wishPartnerChg(this)">
+ <div class="fp-bd fp-bday">
+  <select class="fp-cal" onchange="wishPartnerChg(this)"><option value="國">國曆</option><option value="農">農曆</option></select>
+  <input class="fp-y" type="number" placeholder="年" oninput="wishPartnerChg(this)">
+  <input class="fp-m" type="number" placeholder="月" oninput="wishPartnerChg(this)">
+  <input class="fp-d" type="number" placeholder="日" oninput="wishPartnerChg(this)">
+ </div>`; }
+function pubBox(txt){ return `<div style="margin-top:5px;font-size:12px;color:#8a7a4a;line-height:1.6;background:rgba(156,126,58,.06);border-radius:7px;padding:7px 9px">公版參考：${txt}</div>`; }
+function scBtn(label,onclick){ return `<button type="button" onclick="${onclick}" style="padding:6px 11px;border:1px solid #9c7e3a;background:#fff;color:#9c7e3a;border-radius:15px;font-size:13px;cursor:pointer">${label}</button>`; }
+
+function itemRowHTML(item,qty,wish){
+ return `<div class="fitem">
+ <button type="button" class="fi-del" onclick="this.closest('.fitem').remove()">✕ 刪除</button>
+ <select class="fi-item" onchange="fiItemChange(this)">${fahuiOptions(item)}</select>
+ <div class="fi-qrow"><span class="fi-qlabel">份數</span>
+  <button type="button" class="fi-step" onclick="fiBump(this,-1)">−</button>
+  <input class="fi-qty" type="number" min="1" inputmode="numeric" value="${qty||1}">
+  <button type="button" class="fi-step" onclick="fiBump(this,1)">＋</button></div>
+ <div class="fi-wisharea"></div></div>`;
+}
+function renderWishArea(card,item,initWish){
+ const box=card.querySelector('.fi-wisharea'); if(!box)return;
+ const mode=wishMode(item); card.dataset.scen='';
+ const wishInput=`<input class="fi-wish" type="text" maxlength="80" placeholder="此項目的祈願／願望（最好30字內）" value="${initWish||''}">`;
+ if(mode==='none'){ box.innerHTML=''; return; }
+ if(mode==='free'){ box.innerHTML=wishInput; return; }
+ if(mode==='simple'){ box.innerHTML=wishInput
+   +`<button type="button" onclick="fillPub(this,'${item}')" style="margin-top:6px;padding:6px 10px;border:1px solid #9c7e3a;background:#fff;color:#9c7e3a;border-radius:6px;font-size:13px;cursor:pointer">📋 複製公版到祈願欄</button>`
+   +pubBox(WISH_SIMPLE[item]); return; }
+ if(mode==='water'){ box.innerHTML=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">${scBtn('求自我提升',"waterScen(this,0)")}${scBtn('求對象',"waterScen(this,1)")}</div>`
+   +wishInput+pubBox('求自我提升 → '+WISH_WATER[0][1]+'<br>求對象 → '+WISH_WATER[1][1]); return; }
+ if(mode==='jin'){ box.innerHTML=`<div class="fi-partner" style="display:block">
+   <div class="fp-hd"><div class="fp-title">祈願</div><div class="fp-note">先填對方姓名＋生日，再點「複製公版」帶入祈願欄（可再自行修改）</div></div>
+   ${partnerBlockHTML()}
+   <div style="margin:8px 0">${scBtn('📋 複製公版到祈願欄',"jinFill(this)")}</div>
+   ${wishInput}
+   ${pubBox('祈求和○○○（農曆○年○月○日）之間的感情更好，有良好的互動及溝通，感情越來越甜蜜熱絡')}</div>`; return; }
+ if(mode==='fire'){ box.innerHTML=`<div class="fi-partner" style="display:block">
+   <div class="fp-hd"><div class="fp-title">祈願</div><div class="fp-note">先填對方姓名＋生日，再點下方情境帶入完整句（可再自行修改）</div></div>
+   ${partnerBlockHTML()}
+   <div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0">${scBtn('求在一起',"fireScen(this,'求在一起')")}${scBtn('求復合',"fireScen(this,'求復合')")}${scBtn('情侶求增溫',"fireScen(this,'情侶求增溫')")}</div>
+   ${wishInput}</div>`; return; }
+}
+function fiItemChange(sel){ const card=sel.closest('.fitem'); renderWishArea(card,sel.value,''); }
+function fillPub(btn,item){ const card=btn.closest('.fitem'); const w=card.querySelector('.fi-wish'); if(w&&WISH_SIMPLE[item]){w.value=WISH_SIMPLE[item];w.focus();} }
+function waterScen(btn,i){ const card=btn.closest('.fitem'); const w=card.querySelector('.fi-wish'); if(w){w.value=WISH_WATER[i][1];w.focus();} }
+function fireScen(btn,scen){ const card=btn.closest('.fitem'); card.dataset.scen=scen; const name=(card.querySelector('.fp-name').value||'').trim(); const w=card.querySelector('.fi-wish'); if(w){w.value=fireWishText(scen,name,fpBstr(card));w.focus();} }
+function jinFill(btn){ const card=btn.closest('.fitem'); card.dataset.scen='jin'; const name=(card.querySelector('.fp-name').value||'').trim(); const w=card.querySelector('.fi-wish'); if(w){w.value=partnerWish('金',name,fpBstr(card));w.focus();} }
+function wishPartnerChg(el){ const card=el.closest('.fitem'); const item=card.querySelector('.fi-item').value; const mode=wishMode(item);
+ const name=(card.querySelector('.fp-name').value||'').trim();
+ if(mode==='jin'){ if(card.dataset.scen==='jin'){ const w=card.querySelector('.fi-wish'); if(w)w.value=partnerWish('金',name,fpBstr(card)); } }
+ else if(mode==='fire'){ const scen=card.dataset.scen; if(scen){ const w=card.querySelector('.fi-wish'); if(w)w.value=fireWishText(scen,name,fpBstr(card)); } }
+}
+function partnerWish(item,name,bstr){ if(!name)return ''; return '祈求和'+name+(bstr?'（'+bstr+'）':'')+'感情更好，有良好的互動及溝通，感情越來越甜蜜熱絡'; }
+function fpBstr(card){ let y=card.querySelector('.fp-y').value,m=card.querySelector('.fp-m').value,d=card.querySelector('.fp-d').value; if(!(y&&m&&d))return ''; if(card.querySelector('.fp-cal').value==='國'){const cv=s2lMinguo(y,m,d);if(cv){y=cv.y;m=cv.m;d=cv.d;}} return '農曆'+y+'年'+m+'月'+d+'日'; }
+function fiBump(btn,d){const inp=btn.closest('.fitem').querySelector('.fi-qty');inp.value=Math.max(1,(parseInt(inp.value)||1)+d);}
+function shoudanPick(sel){
+  if(sel.value!=='__add__')return;
+  const nm=(prompt('新增收單人（業務／客服）姓名：')||'').trim();
+  sel.value='';
+  if(!nm)return;
+  TEACHER_SHOUDAN[TEACHER]=TEACHER_SHOUDAN[TEACHER]||[];
+  if(TEACHER_SHOUDAN[TEACHER].indexOf(nm)<0){
+    TEACHER_SHOUDAN[TEACHER].push(nm);
+    const opt=document.createElement('option');opt.value=nm;opt.textContent=nm;
+    sel.insertBefore(opt, sel.querySelector('option[value="__add__"]'));
+  }
+  sel.value=nm;
+  if(API_URL) fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addShoudan',teacher:TEACHER,name:nm})}).then(r=>r.json()).catch(()=>{});
+}
+function fahuiEditWish(){const f=document.getElementById('fahuiWishField');if(!f)return;if(val('項目')==='天赦金'){f.style.display='none';const w=document.getElementById('in_祈願');if(w)w.value='';}else f.style.display='';}
+function addItemRow(){const box=document.getElementById('fahuiItems');box.insertAdjacentHTML('beforeend',itemRowHTML('',1,''));const row=box.lastElementChild;renderWishArea(row,row.querySelector('.fi-item').value,'');}
+function getItemRows(){return [...document.querySelectorAll('#fahuiItems .fitem')].map(r=>{
+  const item=r.querySelector('.fi-item').value;
+  const qty=parseInt(r.querySelector('.fi-qty').value)||0;
+  const mode=wishMode(item);
+  let wish='';
+  if(mode==='none'){ wish=''; }
+  else { const w=r.querySelector('.fi-wish'); wish=w?w.value.trim():''; }
+  return {項目:item,份數:qty,祈願:wish};
+});}
+
+/* 斗燈 */
+function renderDou(wrap){
+  let h=DOU_TOP.map(f=>fieldHTML(f)).join('');
+  h+=`<div class="grouphd">加購內容</div><div id="douDetail"></div>`;
+  wrap.innerHTML=h;renderDouDetail();
+}
+function renderDouDetail(){
+  const sel=document.getElementById('in_加購類型');const box=document.getElementById('douDetail');if(!box)return;
+  const cfg=DOUCONF[sel?sel.value:''];
+  if(!cfg){box.innerHTML='<p class="sub" style="margin:0">請先選加購類型。</p>';return;}
+  box.innerHTML=cfg.order.map(nm=>{const def=DOUDEF[nm];const req=def.k&&cfg.req.indexOf(def.k)>=0?1:0;return fieldHTML(def,req);}).join('');
+}
+/* 還陰債 */
+function renderYin(wrap){
+  let h=YIN_TOP.map(f=>fieldHTML(f)).join('');
+  h+=`<div class="grouphd">亡者明細（依牒文類別）</div><div id="yinDetail"></div>`;
+  wrap.innerHTML=h;renderYinDetail();
+}
+function renderYinDetail(){
+  const sel=document.getElementById('in_牒文類別');const box=document.getElementById('yinDetail');if(!box)return;
+  const cat=sel?sel.value:'';const cfg=YINCAT[cat];
+  if(!cfg){box.innerHTML='<p class="sub" style="margin:0">請先選牒文類別。</p>';return;}
+  box.innerHTML=cfg.order.map(nm=>{const def=YDEF[nm];const req=cfg.allReq?1:(def.k&&cfg.req&&cfg.req.indexOf(def.k)>=0?1:0);return fieldHTML(def,req);}).join('');
+  const ht=YINHINT_TXT[cat]||{};
+  const hn=document.getElementById('hint_神'),hz=document.getElementById('hint_祖');
+  if(hn)hn.textContent=ht.神?('神位地址：'+ht.神):'';
+  if(hz)hz.textContent=ht.祖?('先祖名：'+ht.祖):'';
+  yinAuto();
+}
+function yinAuto(){
+  const sel=document.getElementById('in_牒文類別');if(!sel)return;const cat=sel.value;
+  const zu=document.getElementById('in_先祖名');if(!zu)return;
+  if(cat==='地基主'){zu.value='地基主';zu.readOnly=true;zu.style.background='var(--bg2)';}
+  else if(cat==='冤親債主'){const n=val('陽世報恩人');zu.value=n?(n.charAt(0)+'前世今生之冤親債主'):'';zu.readOnly=true;zu.style.background='var(--bg2)';}
+  else if(cat==='個人正魂'){zu.value='';zu.readOnly=true;zu.placeholder='送出時自動帶入：姓＋公/姑娘/媽＋名';zu.style.background='var(--bg2)';}
+  else {zu.readOnly=false;zu.style.background='';}
+}
+
+function val(id){const e=document.getElementById('in_'+id);return e?(''+e.value).trim():'';}
+function clearMiss(){document.querySelectorAll('.field').forEach(el=>el.classList.remove('miss'));}
+function markMiss(k){const el=document.querySelector(`.field[data-k="${k}"]`);if(el)el.classList.add('miss');}
+
+/* 收集單筆（斗燈/祭改/普桌/還陰債/法會編輯）*/
+function collectSingle(){
+  const o={category:CURCAT,month:MONTH,teacher:TEACHER};
+  COLS[CURCAT].forEach(c=>o[c]=val(c));
+  if(CURCAT==='還陰債'){
+    const cat=o['牒文類別'];
+    // 只填姓氏、後面自動補：歷代祖先/嬰靈/辭祖
+    const SUF={'歷代祖先':'氏九玄七祖歷代祖先','嬰靈':'氏嬰靈','辭祖':'氏歷代祖先'};
+    if(SUF[cat]){ const s=(''+(o['先祖名']||'')).trim(); const tail=SUF[cat].slice(1);
+      if(s && s.indexOf(tail)<0) o['先祖名']=s+SUF[cat]; }
+    // 個人正魂：先祖名＝姓＋公/姑娘/媽＋名（自動組，不用重填）
+    if(cat==='個人正魂'){ o['先祖名']=(o['姓']||'')+(o['公姑娘媽']||'')+(o['名']||''); }
+  }
+  applyLunar(CURCAT,o);
+  return o;
+}
+/* 驗證；回傳缺漏欄位陣列 */
+function validateSingle(o){
+  clearMiss();let miss=[];
+  const need=requiredOf(CURCAT,o);
+  need.forEach(k=>{if(!(''+(o[k]||'')).trim()){miss.push(k);markMiss(k);}});
+  return miss;
+}
+function requiredOf(cat,o){
+  if(cat==='還陰債'){const base=['牒文類別','份數','陽世報恩人','報恩人居住地址'];const cfg=YINCAT[o['牒文類別']];if(!cfg)return base;
+    if(cfg.allReq){let r=base.slice();cfg.order.forEach(nm=>{const def=YDEF[nm];if(def.k)r.push(def.k);if(def.type==='ymd')r.push(def.y,def.m,def.d);});return r;}
+    return base.concat(cfg.req||[]);}
+  if(cat==='斗燈'){let r=['加購類型','份數','姓名','居住地址'];const cf=DOUCONF[o['加購類型']];if(cf)r=r.concat(cf.req);return r;}
+  if(cat==='祭改')return ['份數','姓名','居住地址','性別'];
+  if(cat==='普桌')return ['份數','姓名','居住地址','捐掉或寄回'];
+  if(cat==='法會'){ // 編輯單筆
+    let r=['項目','份數','姓名','居住地址'];
+    if(FAHUI_NOBIRTH.indexOf(o['項目'])<0)r=r.concat(['生日年','生日月','生日日']);
+    return r;
+  }
+  return [];
+}
+
+function submitForm(){
+  if(!API_URL){toast('尚未設定 API_URL');return;}
+  if(CURCAT==='法會'&&!EDIT.id)return submitFahui();
+  const o=collectSingle();const miss=validateSingle(o);
+  if(miss.length){toast('必填：'+miss.join('、'));return;}
+  const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='送出中…';
+  const payload=Object.assign({action:EDIT.id?'update':'add'},o);
+  if(EDIT.id){payload['編號']=EDIT.id;payload.category=EDIT.cat;}
+  fetch(API_URL,{method:'POST',body:JSON.stringify(payload)}).then(r=>r.json()).then(d=>{
+    if(d.ok){DATA=d.data||DATA;TOTALS=d.totals||TOTALS;toast(EDIT.id?'已更新 ✓':'已加入 ✓');cancelEdit(true);clearForm();renderList();setStatus('已連線','ok');}
+    else toast('失敗：'+(d.error||'未知'));
+  }).catch(e=>toast('連線失敗')).finally(()=>{btn.disabled=false;btn.textContent=EDIT.id?'更新':'加入清單';});
+}
+/* 法會多項目送出 */
+function submitFahui(){
+  clearMiss();
+  const cust={};FAHUI_CUST.forEach(f=>{if(f.type==='ymd'){cust[f.y]=val(f.y);cust[f.m]=val(f.m);cust[f.d]=val(f.d);if(f.cal)cust[f.calk]=val(f.calk);}else cust[f.k]=val(f.k);});
+  let items=getItemRows().filter(it=>it.項目&&it.份數>0);
+  let miss=[];
+  if(!items.length){toast('請至少選一個項目（份數≥1）');return;}
+  if(!cust['姓名']){miss.push('姓名');markMiss('姓名');}
+  if(!cust['居住地址']){miss.push('居住地址');markMiss('居住地址');}
+  const needBirth=items.some(it=>FAHUI_NOBIRTH.indexOf(it.項目)<0);
+  if(needBirth&&!(val('生日年')&&val('生日月')&&val('生日日'))){miss.push('生日');markMiss('生日年');}
+  if(miss.length){toast('必填：'+miss.join('、'));return;}
+  applyLunar('法會',cust);
+  const rows=items.map(it=>Object.assign({},cust,{項目:it.項目,份數:it.份數,祈願:it.祈願||''}));
+  const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='送出中…';
+  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addBatch',category:'法會',month:MONTH,teacher:TEACHER,rows:rows})}).then(r=>r.json()).then(d=>{
+    if(d.ok){DATA=d.data||DATA;TOTALS=d.totals||TOTALS;toast('已加入 '+rows.length+' 筆 ✓');clearForm();renderList();setStatus('已連線','ok');}
+    else toast('失敗：'+(d.error||'未知'));
+  }).catch(e=>toast('連線失敗')).finally(()=>{btn.disabled=false;btn.textContent='加入清單';});
+}
+function clearForm(){renderForm();const fn=document.getElementById('in_姓名')||document.getElementById('in_陽世報恩人');if(fn)fn.focus();}
+
+function startEdit(cat,id){
+  const e=(DATA[cat]||[]).find(x=>String(x.編號)===String(id));if(!e)return;
+  selectCat(cat);EDIT={cat,id};renderForm();
+  COLS[cat].forEach(c=>setv(c,e[c]));
+  if(cat==='還陰債')renderYinDetail(),COLS[cat].forEach(c=>setv(c,e[c]));
+  if(cat==='斗燈')renderDouDetail(),COLS[cat].forEach(c=>setv(c,e[c]));
+  const cb=document.getElementById('in_生日別');if(cb)cb.value='農';
+  const lpwrap=document.getElementById('leapwrap_生日年');
+  if(lpwrap){ const lp=document.getElementById('leap_生日年'); const mv=''+(e['生日月']||'');
+    if(mv.indexOf('閏')===0){ if(lp)lp.checked=true; setv('生日月',mv.replace('閏','')); }
+    else if(lp){ lp.checked=false; }
+    lpwrap.style.display='flex';
+  }
+  const pv=document.getElementById('prev_生日年');if(pv)pv.textContent='';
+  if(cat==='法會')fahuiEditWish();
+  document.getElementById('formTitle').textContent='編輯：'+(e.姓名||e.陽世報恩人||'');
+  document.getElementById('submitBtn').textContent='更新';
+  document.getElementById('cancelBtn').style.display='';
+  document.querySelector('.card').scrollIntoView({behavior:'smooth',block:'start'});
+  renderList();
+}
+function setv(id,v){const e=document.getElementById('in_'+id);if(e)e.value=(v==null?'':v);}
+function cancelEdit(silent){EDIT={cat:null,id:null};document.getElementById('formTitle').textContent='新增明細';document.getElementById('submitBtn').textContent='加入清單';document.getElementById('cancelBtn').style.display='none';if(!silent){renderForm();renderList();}}
+
+function delEntry(cat,id,name){
+  if(!confirm('確定刪除「'+(name||'這一筆')+'」？無法復原。\n\n※ 若這筆行政已產生疏文，刪除後請主動通知行政（系統會自動記到「異動記錄」）。'))return;
+  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'delete',category:cat,'編號':id,month:MONTH,teacher:TEACHER})}).then(r=>r.json()).then(d=>{
+    if(d.ok){DATA=d.data||{};TOTALS=d.totals||{};if(EDIT.id===id)cancelEdit(true);renderList();toast('已刪除');}
+    else toast('刪除失敗：'+(d.error||''));
+  }).catch(e=>toast('連線失敗'));
+}
+
+function onMonth(){MONTH=document.getElementById('month').value.trim();cancelEdit(true);loadList();}
+function setStatus(t,c){const s=document.getElementById('status');s.textContent=t;s.className=c||'';}
+function loadList(){
+  if(!API_URL){renderList();return;}
+  setStatus('讀取中…','');
+  fetch(`${API_URL}?action=list&teacher=${encodeURIComponent(TEACHER)}&month=${encodeURIComponent(MONTH)}`).then(r=>r.json()).then(d=>{
+    if(d.ok){DATA=d.data||{};TOTALS=d.totals||{};renderList();const n=CATS_ORDER.reduce((s,c)=>s+((DATA[c]||[]).length),0);setStatus('已連線 · '+n+' 筆','ok');}
+    else setStatus('讀取失敗','err');
+  }).catch(e=>setStatus('連線失敗（檢查 API 網址/部署權限）','err'));
+}
+function esc(s){return (''+(s==null?'':s)).replace(/'/g,'').replace(/</g,'');}
+function entryLabel(cat,e){
+  if(cat==='法會')return [e.姓名||'(未填)', `${e.項目||''} ×${e.份數||0}${e.祈願?' · 祈願:'+e.祈願:''}`];
+  if(cat==='斗燈')return [e.姓名||'(未填)', `${e.斗種||''}（${e.加購類型||''}）×${e.份數||0}`];
+  if(cat==='還陰債')return [e.陽世報恩人||'(未填)', `${e.牒文類別||''} ×${e.份數||0}`];
+  if(cat==='祭改')return [e.姓名||'(未填)', `祭改 ×${e.份數||0} ${e.性別||''}`];
+  if(cat==='普桌')return [e.姓名||'(未填)', `普桌 ×${e.份數||0} ${e.捐掉或寄回||''}`];
+  return [e.姓名||'',''];
+}
+function renderList(){
+  const area=document.getElementById('listArea');let h='';let total=0;
+  CATS_ORDER.forEach(cat=>{const rows=DATA[cat]||[];if(!rows.length)return;total+=rows.length;
+    const sum=rows.reduce((s,e)=>s+(parseFloat(e.份數)||0),0);
+    h+=`<div class="catgroup"><h3>${cat}<span class="c">${rows.length} 筆 · 共 ${sum} 份</span></h3>`;
+    rows.forEach(e=>{const lb=entryLabel(cat,e);const chg=e.異動?' <span style="color:var(--red);font-size:.78em">●已改</span>':'';
+      h+=`<div class="entry${EDIT.id===e.編號?' ed':''}"><div class="info">${lb[0]}${chg}<small>${lb[1]}</small></div>
+      <div><button class="rowbtn e" onclick="startEdit('${cat}','${e.編號}')">編輯</button><button class="rowbtn d" onclick="delEntry('${cat}','${e.編號}','${esc(lb[0])}')">刪</button></div></div>`;});
+    h+=`</div>`;
+  });
+  area.innerHTML= total?h:'<p class="empty">本月尚無資料，從上面選類別新增第一筆。</p>';
+  renderTotals();
+}
+function renderTotals(){
+  const t=TOTALS||{};const ta=document.getElementById('totArea');
+  if(!Object.keys(t).length){ta.innerHTML='';return;}
+  const itline=ITEMS.map(i=>`${i.replace(/\(.*\)/,'')} ${t[i]||0}`).join('　');
+  ta.innerHTML=`<div class="totbar">本月彙總（寫進統計總表）<br>
+  萬寶小計 <b>${t['萬寶小計']||0}</b>　天赦 <b>${t['天赦金']||0}</b>　還陰債 <b>${t['還陰債']||0}</b>　年斗 <b>${t['年斗']||0}</b>　季斗 <b>${t['季斗']||0}</b>　令牌 <b>${t['令牌']||0}</b>　祭改 <b>${t['祭改']||0}</b>　普桌 <b>${t['普桌']||0}</b>
+  <div class="items">萬寶金11項：${itline}</div></div>`;
+}
+let tt;function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2300);}
+
+init();
+</script>
+<script>
+/* ===== 行政：項目開放設定面板 ===== */
+function openAdminPanel(){
+  loadOpenCfg(function(){
+    let h='<div style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:20px" id="admMask" onclick="if(event.target===this)closeAdminPanel()">';
+    h+='<div style="background:#fff;border-radius:14px;max-width:520px;width:100%;padding:22px;margin-top:30px;box-shadow:0 10px 40px rgba(0,0,0,.3)">';
+    h+='<div style="font-size:20px;font-weight:800;color:#9c7e3a;margin-bottom:4px">⚙ 這場開放項目設定</div>';
+    h+='<div style="font-size:13px;color:#8a7a4a;margin-bottom:16px;line-height:1.6">勾選＝開放老師填單；取消＝關閉（老師看不到、選不到，避免誤選）。全院共用，存檔後所有老師立即生效。</div>';
+    h+='<div style="font-weight:700;margin:10px 0 6px;color:#5a4a2a">法會項目</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+    FAHUI_ITEMS.forEach(function(it){ const on=itemOpen(it); h+=`<label style="display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid #e0d6bf;border-radius:8px;font-size:14px;cursor:pointer"><input type="checkbox" class="adm-fh" data-it="${it}" ${on?'checked':''} style="width:18px;height:18px">${it}</label>`; });
+    h+='</div>';
+    h+='<div style="font-weight:700;margin:16px 0 6px;color:#5a4a2a">分類（整類開關）</div><div style="display:flex;gap:10px">';
+    TOGGLE_CATS.forEach(function(c){ const on=catOpen(c); h+=`<label style="display:flex;align-items:center;gap:7px;padding:8px 14px;border:1px solid #e0d6bf;border-radius:8px;font-size:14px;cursor:pointer"><input type="checkbox" class="adm-cat" data-c="${c}" ${on?'checked':''} style="width:18px;height:18px">${c}</label>`; });
+    h+='</div>';
+    h+='<div style="display:flex;gap:10px;margin-top:20px"><button onclick="saveAdminPanel()" style="flex:1;background:#9c7e3a;color:#fff;border:none;border-radius:9px;padding:12px;font-size:15px;font-weight:700;cursor:pointer">儲存並套用</button><button onclick="closeAdminPanel()" style="background:#f0ece0;color:#5a4a2a;border:none;border-radius:9px;padding:12px 18px;font-size:15px;cursor:pointer">取消</button></div>';
+    h+='</div></div>';
+    const d=document.createElement('div');d.id='admPanelWrap';d.innerHTML=h;document.body.appendChild(d);
+  });
+}
+function closeAdminPanel(){ const w=document.getElementById('admPanelWrap'); if(w)w.remove(); }
+function saveAdminPanel(){
+  const cfg={fahui:{}};
+  document.querySelectorAll('.adm-fh').forEach(c=>{ cfg.fahui[c.dataset.it]=c.checked; });
+  document.querySelectorAll('.adm-cat').forEach(c=>{ cfg[c.dataset.c]=c.checked; });
+  OPENCFG=cfg;
+  if(API_URL){ fetch(API_URL,{method:'POST',body:JSON.stringify({action:'setOpenItems',config:cfg})}).then(r=>r.json()).catch(()=>{}); }
+  closeAdminPanel();
+  buildTabs(); if(CATS_ORDER.filter(catOpen).indexOf(CURCAT)<0)selectCat('法會'); else renderForm();
+  alert('已儲存！老師重新整理填單頁後即可看到最新開放項目。');
+}
+</script>
+<script>
+/* ===== 行政管理介面（密碼123123進入） ===== */
+function apiPost(action,payload,cb){ if(!API_URL){cb&&cb({ok:false});return;} fetch(API_URL,{method:'POST',body:JSON.stringify(Object.assign({action:action},payload||{}))}).then(r=>r.json()).then(d=>cb&&cb(d)).catch(()=>cb&&cb({ok:false})); }
+
+function enterAdmin(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('login').style.display='none';
+  const s=document.getElementById('adminScreen'); s.style.display='';
+  s.innerHTML='<div style="text-align:center;padding:30px;color:#9c7e3a">載入中…</div>';
+  loadTeachers(function(){ loadOpenCfg(function(){ loadSysCfg(function(){ renderAdmin(); }); }); });
+}
+function exitAdmin(){ location.reload(); }
+
+function renderAdmin(){
+  const s=document.getElementById('adminScreen');
+  let h='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div style="font-size:22px;font-weight:800;color:#9c7e3a">🛠 行政管理介面</div><button onclick="exitAdmin()" style="background:#f0ece0;color:#5a4a2a;border:none;border-radius:8px;padding:8px 14px;cursor:pointer">離開</button></div>';
+  const card='background:#fff;border:1px solid #e6ddc6;border-radius:12px;padding:16px;margin-bottom:16px';
+
+  h+=`<div style="${card}"><div style="font-weight:800;font-size:16px;color:#5a4a2a;margin-bottom:10px">👥 老師管理</div>`;
+  h+='<div style="font-size:12px;color:#8a7a4a;margin-bottom:10px">密碼自動＝123＋編號（例：編號22→密碼12322）。刪除老師不會刪掉他的資料表。</div>';
+  h+='<table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="background:#f7f2e6"><th style="padding:6px;text-align:left;width:60px">編號</th><th style="padding:6px;text-align:left">姓名</th><th style="padding:6px;width:120px">操作</th></tr></thead><tbody>';
+  TEACHERS.forEach(t=>{ h+=`<tr style="border-top:1px solid #eee"><td style="padding:6px">${t.no}</td><td style="padding:6px">${t.name}</td><td style="padding:6px;text-align:center"><button onclick="admTeacherRename('${t.name}')" style="border:1px solid #9c7e3a;background:#fff;color:#9c7e3a;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px">改名</button> <button onclick="admTeacherDel('${t.name}')" style="border:1px solid #c0392b;background:#fff;color:#c0392b;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:12px">刪除</button></td></tr>`; });
+  h+='</tbody></table>';
+  h+='<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap"><input id="admTName" placeholder="新老師姓名" style="flex:1;min-width:120px;padding:9px;border:1px solid #d8cca8;border-radius:7px"><input id="admTNo" type="number" placeholder="編號(留空自動)" style="width:130px;padding:9px;border:1px solid #d8cca8;border-radius:7px"><button onclick="admTeacherAdd()" style="background:#9c7e3a;color:#fff;border:none;border-radius:7px;padding:9px 16px;cursor:pointer;font-weight:700">＋新增</button></div></div>';
+
+  h+=`<div style="${card}"><div style="font-weight:800;font-size:16px;color:#5a4a2a;margin-bottom:10px">🧾 收單人（下線）管理</div>`;
+  h+='<select id="admShTeacher" onchange="admRenderShoudan()" style="padding:9px;border:1px solid #d8cca8;border-radius:7px;width:100%;margin-bottom:10px">'+TEACHERS.map(t=>`<option value="${t.name}">${t.no}　${t.name}</option>`).join('')+'</select>';
+  h+='<div id="admShBox"></div></div>';
+
+  h+=`<div style="${card}"><div style="font-weight:800;font-size:16px;color:#5a4a2a;margin-bottom:10px">🏷 法會項目管理</div>`;
+  h+='<div style="font-size:12px;color:#8a7a4a;margin-bottom:10px">改顯示名稱：老師看到的名字會變，計價與業績仍用原始項目，安全。停用/開放請用下方「開放設定」。新增全新項目需另設單價，請找工程處理。</div>';
+  FAHUI_ITEMS.forEach(o=>{ h+=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="width:160px;font-size:13px;color:#777">${o}</span><input class="adm-lbl" data-it="${o}" value="${labelOf(o)===o?'':labelOf(o)}" placeholder="（不改留空）" style="flex:1;padding:7px;border:1px solid #d8cca8;border-radius:6px"></div>`; });
+  h+='<button onclick="admSaveLabels()" style="margin-top:8px;background:#9c7e3a;color:#fff;border:none;border-radius:7px;padding:9px 16px;cursor:pointer;font-weight:700">儲存項目顯示名稱</button>';
+  h+=' <button onclick="openAdminPanel()" style="margin-top:8px;background:#5a4a2a;color:#fff;border:none;border-radius:7px;padding:9px 16px;cursor:pointer">⚙ 開放設定</button></div>';
+
+  h+=`<div style="${card}"><div style="font-weight:800;font-size:16px;color:#5a4a2a;margin-bottom:10px">🛡 行政人員</div>`;
+  h+='<div style="font-size:12px;color:#8a7a4a;margin-bottom:10px">行政人員名單（記錄用）。所有行政共用密碼 123123 進入本介面。</div>';
+  h+='<div id="admAdminBox" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">'+admAdminChips()+'</div>';
+  h+='<div style="display:flex;gap:8px"><input id="admAdminName" placeholder="新增行政人員姓名" style="flex:1;padding:9px;border:1px solid #d8cca8;border-radius:7px"><button onclick="admAdminAdd()" style="background:#9c7e3a;color:#fff;border:none;border-radius:7px;padding:9px 16px;cursor:pointer;font-weight:700">＋新增</button></div></div>';
+
+  s.innerHTML=h;
+  admRenderShoudan();
+}
+function admAdminChips(){ if(!ADMINS.length) return '<span style="color:#aaa;font-size:13px">尚無</span>'; return ADMINS.map(n=>`<span style="background:#f0ece0;border-radius:16px;padding:5px 10px;font-size:13px">${n} <b onclick="admAdminDel('${n}')" style="cursor:pointer;color:#c0392b">✕</b></span>`).join(''); }
+
+function admTeacherAdd(){ const name=(document.getElementById('admTName').value||'').trim(); const no=(document.getElementById('admTNo').value||'').trim(); if(!name){alert('請輸入姓名');return;} apiPost('teacherAdd',{name:name,no:no},function(d){ if(d&&d.ok){ enterAdmin(); } else alert('新增失敗：'+((d&&d.error)||'')); }); }
+function admTeacherRename(old){ const name=(prompt('新姓名：',old)||'').trim(); if(!name||name===old)return; apiPost('teacherUpdate',{oldName:old,name:name},function(d){ if(d&&d.ok)enterAdmin(); else alert('改名失敗：'+((d&&d.error)||'')); }); }
+function admTeacherDel(name){ if(!confirm('確定刪除老師「'+name+'」？（資料表不會被刪）'))return; apiPost('teacherDelete',{name:name},function(d){ if(d&&d.ok)enterAdmin(); else alert('刪除失敗：'+((d&&d.error)||'')); }); }
+
+function admRenderShoudan(){ const t=document.getElementById('admShTeacher').value; const tt=TBYNAME[t]; const box=document.getElementById('admShBox');
+  const list=(tt&&tt.shoudan)||[];
+  let h='<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">';
+  h+= list.length?list.map(n=>`<span style="background:#f0ece0;border-radius:16px;padding:5px 10px;font-size:13px">${n} <b onclick="admShoudanDel('${t}','${n}')" style="cursor:pointer;color:#c0392b">✕</b></span>`).join(''):'<span style="color:#aaa;font-size:13px">尚無收單人</span>';
+  h+='</div><div style="display:flex;gap:8px"><input id="admShName" placeholder="新增收單人姓名" style="flex:1;padding:9px;border:1px solid #d8cca8;border-radius:7px"><button onclick="admShoudanAdd(\''+t+'\')" style="background:#9c7e3a;color:#fff;border:none;border-radius:7px;padding:9px 16px;cursor:pointer;font-weight:700">＋新增</button></div>';
+  box.innerHTML=h;
+}
+function admShoudanAdd(t){ const n=(document.getElementById('admShName').value||'').trim(); if(!n)return; const tt=TBYNAME[t]; const list=((tt&&tt.shoudan)||[]).slice(); if(list.indexOf(n)<0)list.push(n); apiPost('shoudanSet',{teacher:t,list:list},function(d){ if(d&&d.ok){ if(tt)tt.shoudan=list; admRenderShoudan(); } else alert('失敗'); }); }
+function admShoudanDel(t,n){ const tt=TBYNAME[t]; const list=((tt&&tt.shoudan)||[]).filter(x=>x!==n); apiPost('shoudanSet',{teacher:t,list:list},function(d){ if(d&&d.ok){ if(tt)tt.shoudan=list; admRenderShoudan(); } else alert('失敗'); }); }
+
+function admSaveLabels(){ const map={}; document.querySelectorAll('.adm-lbl').forEach(i=>{ const v=(i.value||'').trim(); if(v) map[i.dataset.it]=v; }); apiPost('itemLabelSet',{itemLabels:map},function(d){ if(d&&d.ok){ ITEMLABELS=map; alert('已儲存！老師重新整理後看到新名稱。'); } else alert('失敗'); }); }
+
+function admAdminAdd(){ const n=(document.getElementById('admAdminName').value||'').trim(); if(!n)return; apiPost('adminAdd',{name:n},function(d){ if(d&&d.ok){ ADMINS=d.admins||[]; document.getElementById('admAdminBox').innerHTML=admAdminChips(); document.getElementById('admAdminName').value=''; } else alert('失敗'); }); }
+function admAdminDel(n){ apiPost('adminDelete',{name:n},function(d){ if(d&&d.ok){ ADMINS=d.admins||[]; document.getElementById('admAdminBox').innerHTML=admAdminChips(); } else alert('失敗'); }); }
+</script>
+</body></html>
