@@ -27,6 +27,58 @@ h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-
 .tab{flex:1;min-width:84px;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:10px 10px 0 0;padding:11px 6px;cursor:pointer;font-family:'Noto Serif TC',serif;font-weight:700;font-size:1em;text-align:center}
 .tab.active{background:var(--gold);color:#fff;border-color:var(--gold)}
 .card{background:var(--bg2);border:1px solid var(--line);border-radius:0 14px 14px 14px;margin:0 0 16px;padding:18px}
+/* ===== 品階登入畫面（自內測版移植） ===== */
+/* 登入畫面 */
+#login{padding:10px 0 30px}
+.lgcard{--lc:#9c7e3a;max-width:520px;margin:18px auto;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 10px 36px rgba(60,40,10,.12);border:1px solid #eadfc8}
+.lghead{background:linear-gradient(135deg,#fbf6ea,#f3e8cf);padding:22px 20px 16px;text-align:center;border-bottom:1px solid #eadfc8}
+.lghead .lgt{font-family:'Noto Serif TC',serif;font-weight:900;font-size:1.45em;color:#6b5220;letter-spacing:3px}
+.lghead .lgs{font-size:.8em;color:#9a8a68;letter-spacing:4px;margin-top:2px}
+#loginBadges{display:flex;justify-content:center;gap:6px;margin-top:12px}
+#loginBadges svg{width:30px;height:30px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.12))}
+.lgbody{padding:16px 18px 20px}
+.lglab{font-size:.85em;color:#8a7a5a;font-weight:700;margin-bottom:8px}
+#loginTiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.lt{--c:#b9ad95;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px 7px;border:1.5px solid color-mix(in srgb,var(--c) 35%,#fff);background:color-mix(in srgb,var(--c) 6%,#fff);border-radius:12px;cursor:pointer;font-family:inherit;color:#2e2820;transition:.15s}
+.lt svg{width:30px;height:30px}
+.lt .ltno{width:30px;height:30px;border-radius:50%;background:#efe8d8;color:#8a7a5a;display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:700}
+.lt .ltn{font-weight:700;font-size:.92em}
+.lt .ltr{font-size:.7em;color:var(--c);font-weight:700}
+.lt.in{opacity:.75}
+.lt.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,#fff);box-shadow:0 0 0 2px var(--c) inset;transform:translateY(-1px)}
+#lgPwBox{max-height:0;overflow:hidden;transition:max-height .3s}
+#lgPwBox.show{max-height:260px}
+#lgWho{display:flex;align-items:center;gap:8px;justify-content:center;font-family:'Noto Serif TC',serif;font-weight:900;font-size:1.15em;color:var(--lc);margin:16px 0 10px}
+#lgWho svg{width:34px;height:34px}#lgWho small{font-size:.7em;font-family:'Noto Sans TC',sans-serif}
+#loginPw{width:100%;border:1.5px solid #e2d6bc;border-radius:12px;padding:13px 14px;font-size:1.05em;font-family:inherit;text-align:center;letter-spacing:4px;background:#fffdf8;color:#2e2820}
+#loginPw:focus{outline:none;border-color:var(--lc)}
+.lgbtn{width:100%;margin-top:10px;background:var(--lc);color:#fff;border:none;border-radius:12px;padding:13px;font-size:1.05em;font-weight:700;font-family:'Noto Serif TC',serif;letter-spacing:4px;cursor:pointer}
+@media (max-width:380px){#loginTiles{grid-template-columns:repeat(2,1fr)}}
+
+.lt{position:relative}.lt .ltnum{position:absolute;top:4px;left:6px;font-size:.72em;font-weight:700;color:var(--c);opacity:.85}
+
+
+#rankRules{margin-top:16px}
+.rrhd{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid color-mix(in srgb,var(--line) 70%,#fff);border-radius:18px;padding:13px 16px;cursor:pointer;box-shadow:0 4px 16px rgba(40,30,10,.05);font-weight:700;color:var(--gold2);font-size:.92em}
+.rrarr{font-size:.78em;color:var(--mut);font-weight:400}
+.rrbody{background:#fff;border:1px solid color-mix(in srgb,var(--line) 70%,#fff);border-top:none;border-radius:0 0 18px 18px;margin-top:-10px;padding:18px 14px 12px}
+.rrintro{font-size:.78em;color:var(--mut);line-height:1.6;margin-bottom:10px}
+.rrrow{display:flex;gap:10px;padding:11px 8px;border-bottom:1px dashed #efe7d8;border-radius:12px}
+.rrrow:last-of-type{border-bottom:none}
+.rrrow>svg{width:40px;height:40px;flex:0 0 auto}
+.rrrow.here{background:var(--rk-light,#faf6ec);box-shadow:0 0 0 1.5px var(--gold) inset;border-bottom-color:transparent}
+.rrtx{flex:1;min-width:0}
+.rrname{font-family:'Noto Serif TC',serif;font-weight:900;color:var(--gold2);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rrname small{font-family:'Noto Sans TC',sans-serif;font-weight:400;color:var(--mut);font-size:.68em}
+.rrst{margin-left:auto;font-family:'Noto Sans TC',sans-serif;font-size:.62em;font-weight:700;border-radius:10px;padding:1px 8px;background:#f3eee3;color:var(--mut)}
+.rrst.here{background:var(--gold);color:#fff}.rrst.done{background:#e6f4ec;color:#2f8a57}
+.rrhow{font-size:.8em;margin-top:2px}.rrhow b{color:var(--gold2)}
+.rrpks{margin-top:4px;display:flex;flex-direction:column;gap:2px}
+.rrpk{font-size:.72em;color:var(--txt)}.rrpk em{font-style:normal;color:var(--mut);margin-right:6px}
+.rrnote{font-size:.72em;color:var(--mut);margin-top:10px;line-height:1.6}
+#rankRulesWrap{max-width:520px;margin:0 auto 30px}
+#rankRulesWrap{max-width:520px;margin:0 auto 30px}
+
 @keyframes cardflash{0%{box-shadow:0 0 0 0 rgba(156,126,58,.75)}100%{box-shadow:0 0 0 14px rgba(156,126,58,0)}}
 .card.flash{animation:cardflash .85s ease-out 2}
 /* ===== 客人自動完成下拉 ===== */
@@ -126,14 +178,19 @@ h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-
 
 <div id="setupNote"></div>
 <div id="login" style="display:none">
-  <div class="card" style="border-radius:14px;max-width:430px;margin:24px auto">
-    <h2><span class="n">🔑</span>老師登入</h2>
-    <p class="sub" style="display:none"></p>
-    <div class="field"><label>老師<span class="req">*</span></label><select id="loginTeacher"></select></div>
-    <div class="field"><label>密碼<span class="req">*</span></label><input type="password" id="loginPw" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="actions"><button class="btn" onclick="doLogin()">進入</button></div>
-    <div id="loginErr" style="display:none"></div>
+  <div class="lgcard">
+    <div class="lghead"><div class="lgt">老師專屬填單</div><div class="lgs">MIIRAGIC · 神奇學苑</div><div id="loginBadges"></div></div>
+    <div class="lgbody">
+      <div class="lglab">請點選你的名字</div>
+      <div id="loginTiles"></div>
+      <select id="loginTeacher" style="display:none"></select>
+      <div id="lgPwBox"><div id="lgWho"></div>
+        <input type="password" id="loginPw" placeholder="輸入密碼" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="lgbtn" onclick="doLogin()">進　入</button>
+        <div id="loginErr" style="display:none"></div></div>
+    </div>
   </div>
+  <div id="rankRulesWrap"><div id="rankRules"></div></div>
 </div>
 
 <div id="adminScreen" style="display:none;max-width:760px;margin:18px auto;padding:0 14px"></div>
@@ -408,7 +465,8 @@ function init(){
   loadOpenCfg();
   loadSysCfg();
   loadTeachers(function(){
-    document.getElementById('loginTeacher').innerHTML=TEACHERS.map(t=>`<option value="${t.name}">${t.no}　${t.name}</option>`).join('');
+    document.getElementById('loginTeacher').innerHTML='<option value=""></option>'+TEACHERS.map(t=>`<option value="${t.name}">${t.no}　${t.name}</option>`).join('');
+    renderLoginTiles(); renderRankRules();
     let saved=null;try{saved=localStorage.xlUser}catch(e){}
     if(saved&&TBYNAME[saved])enterApp(saved);
     else document.getElementById('login').style.display='';
@@ -828,6 +886,154 @@ function renderTotals(){
   <div class="items">萬寶金11項：${itline}</div></div>`;
 }
 let tt;function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2300);}
+
+
+/* =====================================================================
+   品階登入畫面（2026-10-01 自品階內測版移植；資料唯讀、不影響業績計算）
+   ===================================================================== */
+const RANKS = [
+  {k:'銀階', th:0,       pct:60, main:'#7d8a99', dark:'#4a5663', light:'#eef1f5', glow:'#c9d3de', frame:'circle', sym:'star',    tag:'啟明', motto:'初心點燈，照亮第一位有緣人'},
+  {k:'黃金', th:630000,  pct:68, main:'#b3862a', dark:'#7a5a14', light:'#fbf4e2', glow:'#f1d58f', frame:'sun',    sym:'sun',     tag:'耀光', motto:'光耀有緣，福氣越做越旺'},
+  {k:'鑽石', th:1260000, pct:75, main:'#2d6aa8', dark:'#1b4675', light:'#ecf3fb', glow:'#a9cbef', frame:'hex',    sym:'diamond', tag:'恆輝', motto:'恆心如鑽，一步一腳印'},
+  {k:'晶鑽', th:1890000, pct:82, main:'#7446b0', dark:'#4d2a80', light:'#f4eefb', glow:'#d2baf0', frame:'oct',    sym:'crystal', tag:'凝華', motto:'凝聚所學，化為眾人的光'},
+  {k:'翡翠', th:2520000, pct:90, main:'#1d8465', dark:'#115a44', light:'#eaf6f1', glow:'#9fdcc6', frame:'scallop',sym:'jade',    tag:'蘊德', motto:'溫潤載德，帶領一方弟子'},
+  {k:'總裁', th:3150000, pct:97, main:'#9e1f33', dark:'#6b1020', light:'#fbeef0', glow:'#f0b4be', frame:'royal',  sym:'crown',   tag:'傳燈', motto:'傳燈至高，成就一脈傳承'},
+  /* ↓ 2026-09 新增四階（暫定：門檻 B 方案、名稱與 % 待股東確認）；need＝團隊裡（所有層級）要有幾位總裁以上 */
+  {k:'超級總裁', th:4410000, pct:105, need:1, main:'#6b2d8e', dark:'#431a5c', light:'#f4ecf8', glow:'#d9b8ea', frame:'imperial', sym:'crownstar', tag:'領航', motto:'帶出一位總裁，開啟領導之路'},
+  {k:'環球總裁', th:5670000, pct:112, need:2, main:'#16306b', dark:'#0a1838', light:'#e9eef9', glow:'#f1d27a', frame:'imperial', sym:'globe',     tag:'環宇', motto:'一脈傳燈，光照四方'},
+  {k:'皇冠總裁', th:6930000, pct:120, need:3, main:'#2e2a24', dark:'#000000', light:'#f4f1ea', glow:'#e2c06a', frame:'imperial', sym:'crowngold', tag:'冠冕', motto:'以德服眾，冠冕加身'},
+  {k:'至尊總裁', th:8190000, pct:127, need:4, main:'#a8801e', dark:'#6e520c', light:'#fbf5e3', glow:'#f3d98a', frame:'imperial', sym:'supreme',   tag:'至尊', motto:'至高傳承，萬燈同輝'}
+];
+
+function polyPts(n,r,cx,cy,rot){let s=[];for(let i=0;i<n;i++){const a=(rot||0)+i*2*Math.PI/n;s.push((cx+r*Math.cos(a)).toFixed(2)+','+(cy+r*Math.sin(a)).toFixed(2));}return s.join(' ');}
+function starPts(n,r1,r2,cx,cy,rot){let s=[];for(let i=0;i<n*2;i++){const r=i%2?r2:r1;const a=(rot==null?-Math.PI/2:rot)+i*Math.PI/n;s.push((cx+r*Math.cos(a)).toFixed(2)+','+(cy+r*Math.sin(a)).toFixed(2));}return s.join(' ');}
+function hex2rgb(h){h=(h||'').replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h,16);return [(n>>16)&255,(n>>8)&255,n&255];}
+function rgb2hex(r){return '#'+r.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');}
+function mix(a,b,t){const x=hex2rgb(a),y=hex2rgb(b);return rgb2hex(x.map((v,i)=>v+(y[i]-v)*t));}
+function badgeSVG(rk,pal){
+  const r=RBY[rk]; if(!r) return '';
+  pal=pal||r; const id='bg'+(++_bid); const M=pal.main,D=pal.dark,L=pal.light;
+  const gold='#e2c06a';
+  let frame='';
+  const grad=`<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${mix(M,'#ffffff',.25)}"/><stop offset=".55" stop-color="${M}"/><stop offset="1" stop-color="${D}"/></linearGradient></defs>`;
+  const F=`fill="url(#${id})"`;
+  switch(r.frame){
+    case 'circle': frame=`<circle cx="32" cy="32" r="29" ${F}/>`; break;
+    case 'sun':    frame=`<polygon points="${starPts(16,31,27,32,32)}" ${F}/>`; break;
+    case 'hex':    frame=`<polygon points="${polyPts(6,31,32,32,-Math.PI/2)}" ${F}/>`; break;
+    case 'oct':    frame=`<polygon points="${polyPts(8,31,32,32,Math.PI/8)}" ${F}/>`; break;
+    case 'scallop':frame=`<polygon points="${starPts(24,31,28.5,32,32)}" ${F}/>`; break;
+    case 'imperial': frame=`<polygon points="${starPts(16,31.8,26.5,32,32,-Math.PI/2)}" fill="${gold}"/><circle cx="32" cy="32" r="26.8" fill="${D}"/><circle cx="32" cy="32" r="25.2" ${F}/><circle cx="32" cy="32" r="23.6" fill="none" stroke="${gold}" stroke-width="1.2"/>`; break;
+    case 'royal':  frame=`<polygon points="${starPts(24,31.5,28.5,32,32)}" fill="${gold}"/><circle cx="32" cy="32" r="27" ${F}/>`; break;
+  }
+  const rf=r.frame==='royal'||r.frame==='imperial';
+  const inner=`<circle cx="32" cy="32" r="${r.frame==='imperial'?20.5:rf?22:22.5}" fill="${L}" stroke="${rf?gold:'#ffffff'}" stroke-width="1.6"/>`;
+  let sym='';
+  switch(r.sym){
+    case 'star': sym=`<polygon points="${starPts(5,13,5.6,32,33)}" fill="${M}"/>`; break;
+    case 'sun': { let rays=''; for(let i=0;i<8;i++){const a=i*Math.PI/4;rays+=`<line x1="${(32+9*Math.cos(a)).toFixed(1)}" y1="${(32+9*Math.sin(a)).toFixed(1)}" x2="${(32+15*Math.cos(a)).toFixed(1)}" y2="${(32+15*Math.sin(a)).toFixed(1)}" stroke="${M}" stroke-width="2.6" stroke-linecap="round"/>`;} sym=rays+`<circle cx="32" cy="32" r="6.5" fill="${M}"/>`; break; }
+    case 'diamond': sym=`<polygon points="21,27 26,20 38,20 43,27 32,45" fill="${M}"/><polyline points="21,27 43,27" stroke="${L}" stroke-width="1.3" fill="none"/><polyline points="26,20 29,27 32,45 35,27 38,20" stroke="${L}" stroke-width="1.1" fill="none"/>`; break;
+    case 'crystal': sym=`<polygon points="32,15 37,26 35,46 29,46 27,26" fill="${M}"/><polygon points="22,25 26,31 25,46 20,46 18,32" fill="${mix(M,'#ffffff',.3)}"/><polygon points="42,25 46,32 44,46 39,46 38,31" fill="${mix(M,'#ffffff',.3)}"/><line x1="32" y1="15" x2="32" y2="46" stroke="${L}" stroke-width="1"/>`; break;
+    case 'jade': sym=`<circle cx="32" cy="32" r="14" fill="${M}"/><circle cx="32" cy="32" r="5" fill="${L}"/><circle cx="32" cy="32" r="10" fill="none" stroke="${L}" stroke-width="1" stroke-dasharray="2 2.2"/>`; break;
+    case 'crownstar': sym=`<path d="M19 43 L19 30 L25.5 35 L32 25 L38.5 35 L45 30 L45 43 Z" fill="${M}"/><rect x="19" y="44" width="26" height="3.5" rx="1.5" fill="${gold}"/><polygon points="${starPts(5,5.5,2.3,32,17)}" fill="${gold}"/>`; break;
+    case 'globe': sym=`<circle cx="32" cy="32" r="13" fill="${M}"/><ellipse cx="32" cy="32" rx="6" ry="13" fill="none" stroke="${L}" stroke-width="1.4"/><line x1="19" y1="32" x2="45" y2="32" stroke="${L}" stroke-width="1.4"/><path d="M21 25.5 Q32 29 43 25.5 M21 38.5 Q32 35 43 38.5" fill="none" stroke="${L}" stroke-width="1.2"/><circle cx="32" cy="17.5" r="2.2" fill="${gold}"/>`; break;
+    case 'crowngold': sym=`<path d="M18 42 L18 25 L25 32 L32 19 L39 32 L46 25 L46 42 Z" fill="${gold}" stroke="${M}" stroke-width="1.2"/><rect x="18" y="43" width="28" height="4" rx="1.5" fill="${M}"/><circle cx="32" cy="35" r="2.6" fill="${M}"/><circle cx="24.5" cy="37" r="1.7" fill="${M}"/><circle cx="39.5" cy="37" r="1.7" fill="${M}"/>`; break;
+    case 'supreme': { let rays=''; for(let k=0;k<12;k++){const a=k*Math.PI/6;rays+=`<line x1="${(32+13*Math.cos(a)).toFixed(1)}" y1="${(33+13*Math.sin(a)).toFixed(1)}" x2="${(32+17*Math.cos(a)).toFixed(1)}" y2="${(33+17*Math.sin(a)).toFixed(1)}" stroke="${M}" stroke-width="1.6" stroke-linecap="round"/>`;} sym=rays+`<path d="M22 40 L22 29 L27 33 L32 25 L37 33 L42 29 L42 40 Z" fill="${M}"/><rect x="22" y="41" width="20" height="3" rx="1.2" fill="${gold}"/><circle cx="32" cy="24" r="1.8" fill="${gold}"/>`; break; }
+    case 'crown': sym=`<path d="M19 41 L19 26 L25.5 32 L32 20 L38.5 32 L45 26 L45 41 Z" fill="${M}"/><rect x="19" y="42.5" width="26" height="4" rx="1.5" fill="${gold}"/><circle cx="32" cy="19" r="2.2" fill="${gold}"/><circle cx="19" cy="25" r="1.9" fill="${gold}"/><circle cx="45" cy="25" r="1.9" fill="${gold}"/>`; break;
+  }
+  return `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="${rk}標章">${grad}${frame}${inner}${sym}</svg>`;
+}
+function fmt$(n){return Math.round(+n||0).toLocaleString('en-US');}
+const PERKS=[
+  {honor:['專屬填單頁','品階標章'],        face:['群組公告歡迎轉正'],            gift:['手寫轉正小卡','加持平安符']},
+  {honor:['專屬主題／顏色'],              face:['菁英宴會受獎'],                gift:[]},
+  {honor:['個人稱號＋標語'],              face:['名片印上品階與稱號'],          gift:['鑽石獎狀']},
+  {honor:['名字流光特效'],                face:['菁英宴會固定席次'],            gift:[]},
+  {honor:['個人大頭照'],                  face:['宴會上台分享'],                gift:[]},
+  {honor:['金框尊榮頁面','量身訂製主題'],  face:['宴會主桌＋擔任頒獎人'],        gift:['總裁大獎杯']},
+  {honor:['紫金尊榮頁面'],                face:['菁英宴會領航席'],              gift:[]},
+  {honor:['環球專屬標章'],                face:['年度表揚壓軸登場'],            gift:[]},
+  {honor:['皇冠黑金頁面'],                face:['公司年度策略會議席次'],        gift:[]},
+  {honor:['至尊專屬主題'],                face:['官網首頁至尊表揚'],            gift:[]}
+];
+
+const PERK_CAT=[['honor','👑 尊榮'],['face','🎖 禮遇'],['gift','🏆 獎項']];
+const CUM_ASOF='2026.08';
+const CUM={'陳捷容':9309540,'陳彩綺':7332882,'沈佳琪':6230191,'羅文勳':5858613,'湯雯莉':4218763,'周冠榮':3146236,'蕭鎧峻':1622118,'謝承殷':1539500,'蕭竣方':1478817,'賴素貞':1374600,'熊卿妃':1103850,'鐘宥涵':632120,'鄭聖勳':606173,'陳昕昀':601060,'梁凱妍':377660,'張簡玉靖':314980,'林雅涵':252160,'謝欣諭':136323,'王宥心':100000};
+/* 推薦關係（取自獎金計算系統）：誰的上線是誰 */
+const SPONSOR={'陳彩綺':'陳捷容','湯雯莉':'陳捷容','熊卿妃':'陳捷容','鐘宥涵':'陳捷容','沈佳琪':'羅文勳','周冠榮':'羅文勳','鄭聖勳':'羅文勳','王宥心':'羅文勳','謝欣諭':'湯雯莉','賴素貞':'湯雯莉','張簡玉靖':'賴素貞','梁凱妍':'陳彩綺','謝承殷':'蕭鎧峻','陳昕昀':'蕭鎧峻','林雅涵':'蕭鎧峻'};
+/* 正式老師＋目前系統上的品階（只升不降的底線） */
+const OFFICIAL={'陳捷容':'總裁','羅文勳':'總裁','陳彩綺':'總裁','沈佳琪':'總裁','湯雯莉':'翡翠','周冠榮':'翡翠','蕭竣方':'鑽石','蕭鎧峻':'鑽石','熊卿妃':'黃金','張簡玉靖':'黃金','鐘宥涵':'黃金','謝欣諭':'銀階','賴素貞':'銀階','鄭聖勳':'銀階','梁凱妍':'銀階','王宥心':'銀階'};
+
+function downline(name){ const out=[]; const walk=n=>{ Object.keys(SPONSOR).forEach(c=>{ if(SPONSOR[c]===n&&out.indexOf(c)<0){ out.push(c); walk(c); } }); }; walk(name); return out; }
+function cumRankIdx(cum){ let i=-1; RANKS.forEach((x,k)=>{ if(!x.need && cum>=x.th) i=k; }); return i; }
+
+/* ---------- 品階衍生（正式版：只從上面的固定資料算，不存任何本機設定） ---------- */
+const RBY={}; RANKS.forEach((r,i)=>{RBY[r.k]=Object.assign({i},r);});
+const INTERNAL_ACCTS=['公司內部','靈應壇'];
+const INTERNS=['康瑋齊','陳博隆','黃宇廷'];
+let _bid=0;
+function isIntern(n){return INTERNS.indexOf(n)>=0;}
+function isFormal(n){return !!OFFICIAL[n];}
+function cumOf(n){return +CUM[n]||0;}
+function presCount(name){ return downline(name).filter(c=>isFormal(c)&&cumRankIdx(cumOf(c))>=RBY['總裁'].i).length; }
+function autoRankIdx(name){
+  if(!isFormal(name)) return -1;
+  const cum=cumOf(name);
+  let i=Math.max(0,cumRankIdx(cum));
+  const pc=presCount(name);
+  RANKS.forEach((x,k)=>{ if(x.need && cum>=x.th && pc>=x.need && k>i) i=k; });
+  const off=OFFICIAL[name]&&RBY[OFFICIAL[name]]?RBY[OFFICIAL[name]].i:-1;   // 只升不降
+  return Math.max(i,off);
+}
+function rankOfName(name){ const i=autoRankIdx(name); return i>=0?RBY[RANKS[i].k]:null; }
+function paletteOf(name){ const r=rankOfName(name); return r?{main:r.main,dark:r.dark,light:r.light,glow:r.glow}:null; }
+function hx(s){return (''+(s==null?'':s)).replace(/[&<>"'`]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));}
+function escH(s){return hx(s);}
+
+/* ---------- 登入畫面：老師名牌 ---------- */
+function renderLoginTiles(){
+  const box=document.getElementById('loginTiles'); if(!box) return;
+  const bar=document.getElementById('loginBadges'); if(bar) bar.innerHTML=RANKS.map(x=>badgeSVG(x.k)).join('');
+  box.innerHTML=TEACHERS.map(t=>{
+    const r=rankOfName(t.name); const internal=INTERNAL_ACCTS.indexOf(t.name)>=0;
+    const col=r?(paletteOf(t.name)||r).main:'#b9ad95';
+    const mark=r?badgeSVG(r.k,paletteOf(t.name)):`<span class="ltno">${internal?'🏛':isIntern(t.name)?'🌱':'🔒'}</span>`;
+    const sub=r?`<span class="ltr">${r.k}</span>`:(isIntern(t.name)?'<span class="ltr" style="color:#9a8a68">實習</span>':'');
+    return `<button type="button" class="lt${internal?' in':''}" data-n="${hx(t.name)}" style="--c:${col}" onclick="pickLogin(this.dataset.n)"><span class="ltnum">${t.no}</span>${mark}<span class="ltn">${hx(t.name)}</span>${sub}</button>`;
+  }).join('');
+}
+function pickLogin(n){
+  const sel=document.getElementById('loginTeacher'); if(sel) sel.value=n;
+  document.querySelectorAll('.lt').forEach(b=>b.classList.toggle('on',b.dataset.n===n));
+  const r=rankOfName(n); const pal=r?paletteOf(n):null;
+  const card=document.querySelector('.lgcard'); if(card) card.style.setProperty('--lc',pal?pal.main:'#9c7e3a');
+  const t=TBYNAME[n]; const no=t?t.no+'　':'';
+  const who=document.getElementById('lgWho');
+  if(who) who.innerHTML=r?`${badgeSVG(r.k,pal)}<span>${no}${hx(n)}　<small>${r.k}</small></span>`:`<span>${no}${hx(n)}</span>`;
+  const bx=document.getElementById('lgPwBox'); if(bx) bx.classList.add('show');
+  const pw=document.getElementById('loginPw'); if(pw){pw.value='';setTimeout(()=>pw.focus(),50);}
+  const er=document.getElementById('loginErr'); if(er) er.style.display='none';
+}
+
+/* ---------- 聘階規則（登入頁下方，大家看到的都一樣） ---------- */
+let RR_OPEN=false;
+function renderRankRules(){
+  const box=document.getElementById('rankRules'); if(!box) return;
+  let h=`<div class="rrhd" onclick="RR_OPEN=!RR_OPEN;renderRankRules()"><span>📜 聘階規則・每一階如何達到</span><span class="rrarr">${RR_OPEN?'收起 ▴':'展開 ▾'}</span></div>`;
+  if(RR_OPEN){
+    h+=`<div class="rrbody"><div class="rrintro">每個月的「全部總業績」（金紙類＋斗燈類＋商品＋課程分潤）會一直往上累加，累積到門檻就升上那一階。升階在月結後依「上個月為止的累積業績」自動判定，只升不降。</div>`;
+    RANKS.forEach((x,i)=>{
+      const how=i===0?'轉為正式老師即為銀階':`累積業績達 <b>${fmt$(x.th)}</b> 元（${x.th/10000} 萬）`+(x.need?`，<b>而且團隊裡有 ${x.need} 位總裁以上</b>`:'');
+      const perks=PERK_CAT.map(([k,lab])=>(PERKS[i][k]||[]).length?`<span class="rrpk"><em>${lab.split(' ')[1]}</em>${PERKS[i][k].join('、')}</span>`:'').join('');
+      h+=`<div class="rrrow">${badgeSVG(x.k)}<div class="rrtx"><div class="rrname">${x.k}<small>聘階獎金 ${x.pct}%</small></div><div class="rrhow">${how}</div><div class="rrpks">${perks}</div></div></div>`;
+    });
+    h+=`<div class="rrnote">※ 往上每一階都保有前面各階的全部禮遇與尊榮。業績達標獎金另計：當月業績 10 萬 2%、20 萬 5%、30 萬 8%、40 萬 10%。<br>※ 累積業績結算至 ${CUM_ASOF} 月結；超級總裁以上四階的名稱、門檻與 % 為暫定。</div></div>`;
+  }
+  box.innerHTML=h;
+}
+function showRankRules(on){ const w=document.getElementById('rankRulesWrap'); if(w) w.style.display=on?'':'none'; }
+
 
 init();
 </script>
