@@ -27,10 +27,80 @@ h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-
 .tab{flex:1;min-width:84px;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:10px 10px 0 0;padding:11px 6px;cursor:pointer;font-family:'Noto Serif TC',serif;font-weight:700;font-size:1em;text-align:center}
 .tab.active{background:var(--gold);color:#fff;border-color:var(--gold)}
 .card{background:var(--bg2);border:1px solid var(--line);border-radius:0 14px 14px 14px;margin:0 0 16px;padding:18px}
-/* ===== 品階介面（自內測版移植） ===== */
-.who{background:var(--gold)!important;display:inline-flex;align-items:center;gap:6px;font-size:.72em!important;padding:5px 10px!important;border-radius:20px!important;white-space:nowrap}
+.card h2{font-family:'Noto Serif TC',serif;font-size:1.05em;color:var(--cream);font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.card h2 .n{background:var(--gold);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:.7em}
+.sub{color:var(--mut);font-size:.8em;margin:2px 0 14px;line-height:1.5}
+.field{margin-bottom:13px}
+.field>label{display:block;color:var(--gold2);font-weight:700;font-size:.9em;margin-bottom:5px}
+.field .req{color:var(--red);margin-left:3px}
+.field input,.field select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:11px 12px;font-family:inherit;font-size:1.02em}
+.field input:focus,.field select:focus{outline:none;border-color:var(--gold)}
+.field.miss input,.field.miss select{border-color:var(--red);background:rgba(192,57,43,.05)}
+.ymd{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.ymd .cal{flex:0 0 78px}.ymd .seg{flex:1;min-width:58px;display:flex;align-items:center;gap:4px}
+.ymd .seg input{text-align:center}.ymd .seg span{color:var(--mut);font-size:.85em}
+.fhint{color:var(--gold2);font-size:.78em;margin-top:4px;background:rgba(156,126,58,.08);border-radius:6px;padding:5px 9px}
+.fhint:empty{display:none}
+.grouphd{font-family:'Noto Serif TC',serif;color:var(--gold2);font-weight:700;font-size:.88em;margin:16px 0 9px;padding-left:8px;border-left:3px solid var(--gold)}
+.itembox{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:13px}
+.fitem{position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:13px 12px 12px;margin-bottom:11px}
+.fi-del{position:absolute;top:8px;right:8px;background:transparent;border:1px solid var(--line);color:var(--red);font-size:.8em;cursor:pointer;padding:5px 9px;border-radius:7px;font-family:inherit}
+.fi-item{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:12px 11px;font-family:inherit;font-size:1.05em;margin-bottom:10px}
+.fi-qrow{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.fi-qlabel{color:var(--gold2);font-weight:700;font-size:.92em;margin-right:auto}
+.fi-step{width:46px;height:46px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--gold2);font-size:24px;font-weight:700;cursor:pointer;line-height:1;font-family:inherit}
+.fi-step:active{background:var(--gold);color:#fff}
+.fi-qty{width:66px;height:46px;text-align:center;font-size:1.2em;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:9px;font-family:inherit}
+.fi-qty:focus{outline:none;border-color:var(--gold)}
+.fi-wish{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:10px 11px;font-family:inherit;font-size:.98em}
+.fi-wish:focus{outline:none;border-color:var(--gold)}
+.fi-partner{margin-top:10px;padding:11px;border:1px dashed var(--gold);border-radius:9px;background:rgba(156,126,58,.05)}
+.fi-partner .fp-hd{margin-bottom:8px}
+.fi-partner .fp-title{font-weight:700;font-size:1.05em;color:var(--gold2)}
+.fi-partner .fp-note{font-size:.82em;color:var(--mut);margin-top:2px}
+.fi-partner input,.fi-partner select{background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px;font-family:inherit;font-size:.95em}
+.fp-name{width:100%;margin-bottom:8px}
+.fp-bd{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.fp-y{width:72px}.fp-m,.fp-d{width:56px}
+.fp-prev{font-size:.82em;color:var(--mut);margin-top:6px}
+.additem{background:transparent;border:1px dashed var(--gold);color:var(--gold);border-radius:8px;padding:8px;width:100%;cursor:pointer;font-family:'Noto Serif TC';font-weight:700;font-size:.92em}
+.actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.btn{background:var(--gold);color:#fff;border:none;border-radius:9px;padding:13px 24px;font-size:1.04em;font-weight:700;cursor:pointer;font-family:'Noto Serif TC',serif;letter-spacing:1px;flex:1;min-width:130px}
+.btn:hover{background:var(--gold2)}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold);flex:0 0 auto;min-width:0;padding:13px 16px}
+.listcard{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px}
+.catgroup{margin-bottom:14px}
+.catgroup h3{font-family:'Noto Serif TC',serif;color:var(--gold2);font-size:.95em;margin-bottom:6px;display:flex;justify-content:space-between}
+.catgroup h3 .c{color:var(--mut);font-weight:400;font-size:.85em}
+.entry{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 12px;margin-bottom:6px}
+.entry .info{flex:1;min-width:0;font-size:.92em}
+.entry .info small{color:var(--mut);display:block;font-size:.82em;margin-top:1px}
+.entry.ed{outline:2px solid var(--gold)}
+.rowbtn{background:transparent;border:none;cursor:pointer;font-size:.9em;padding:3px 6px;font-family:inherit}
+.rowbtn.e{color:var(--gold2)}.rowbtn.d{color:var(--red)}
+.empty{color:var(--mut);text-align:center;padding:18px;font-size:.9em}
+.totbar{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff;border-radius:11px;padding:13px 16px;margin-top:12px;font-size:.92em;line-height:1.7}
+.totbar b{font-size:1.15em}
+.totbar .items{font-size:.84em;opacity:.92;margin-top:5px;border-top:1px solid rgba(255,255,255,.25);padding-top:5px}
+.banner{border-radius:9px;padding:11px 14px;margin:8px 0;font-size:.88em;line-height:1.5}
+.banner.info{background:rgba(156,126,58,.12);border-left:3px solid var(--gold);color:var(--gold2)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--gold2);color:#fff;padding:12px 22px;border-radius:30px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.25);opacity:0;transition:.3s;z-index:99;font-size:.92em}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ===== 品階內測版：強制淺色 ===== */
+@media (prefers-color-scheme: dark){:root{color-scheme:light only;--bg:#f6f2ea;--bg2:#fbf8f1;--panel:#fff;--txt:#2e2820;--mut:#8a7e6a}html,body{background:var(--bg);color:var(--txt)}}
+:root{color-scheme:light only}
+/* 內測條 */
+.betabar{position:sticky;top:0;z-index:50;background:#2e2820;color:#f6f2ea;font-size:14px;padding:8px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+.betabar b{color:#ffd98a}
+.betabar select,.betabar button{font-family:inherit;font-size:14px;border-radius:7px;padding:6px 10px;border:1px solid #6b604f;background:#fff;color:#2e2820;cursor:pointer}
+.betabar button.hl{background:#ffd98a;border-color:#ffd98a;font-weight:700}
+.betatag{display:inline-block;background:#2e2820;color:#ffd98a;font-size:.72em;border-radius:5px;padding:1px 6px;margin-left:5px;vertical-align:1px}
+.localnote{background:#fff7e0;border:1px dashed #c9a24a;color:#6b4e12;border-radius:9px;padding:9px 12px;font-size:.86em;margin:10px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.localnote button{margin-left:auto;background:#fff;border:1px solid #c9a24a;color:#6b4e12;border-radius:7px;padding:5px 10px;cursor:pointer;font-family:inherit;font-size:.95em}
+/* 身分章 */
+.who{background:var(--gold)!important;display:inline-flex;align-items:center;gap:6px}
 .who svg{width:24px;height:24px;flex:0 0 auto}
-.who.hide{display:none!important}
 /* 品階主卡 */
 .hero{position:relative;overflow:hidden;border-radius:16px;margin:14px 0 4px;background:linear-gradient(140deg,var(--rk-light) 0%,#fff 60%,var(--rk-light) 100%);border:1.5px solid var(--gold);box-shadow:0 6px 22px rgba(0,0,0,.07)}
 .hero::before{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,var(--rk-glow) 0%,transparent 70%);opacity:.55;pointer-events:none}
@@ -182,14 +252,133 @@ h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-
 .pk.nw{box-shadow:0 0 0 2px #ffd98a}
 .pk b{background:#ffd98a;color:#6b4e12;border-radius:6px;font-size:.78em;padding:0 4px;margin-left:4px}
 .rdnote{color:var(--mut);font-size:.88em;margin-top:5px}
+/* 登入畫面 */
+#login{padding:10px 0 30px}
+.lgcard{--lc:#9c7e3a;max-width:520px;margin:18px auto;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 10px 36px rgba(60,40,10,.12);border:1px solid #eadfc8}
+.lghead{background:linear-gradient(135deg,#fbf6ea,#f3e8cf);padding:22px 20px 16px;text-align:center;border-bottom:1px solid #eadfc8}
+.lghead .lgt{font-family:'Noto Serif TC',serif;font-weight:900;font-size:1.45em;color:#6b5220;letter-spacing:3px}
+.lghead .lgs{font-size:.8em;color:#9a8a68;letter-spacing:4px;margin-top:2px}
+#loginBadges{display:flex;justify-content:center;gap:6px;margin-top:12px}
+#loginBadges svg{width:30px;height:30px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.12))}
+.lgbody{padding:16px 18px 20px}
+.lglab{font-size:.85em;color:#8a7a5a;font-weight:700;margin-bottom:8px}
+#loginTiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.lt{--c:#b9ad95;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px 7px;border:1.5px solid color-mix(in srgb,var(--c) 35%,#fff);background:color-mix(in srgb,var(--c) 6%,#fff);border-radius:12px;cursor:pointer;font-family:inherit;color:#2e2820;transition:.15s}
+.lt svg{width:30px;height:30px}
+.lt .ltno{width:30px;height:30px;border-radius:50%;background:#efe8d8;color:#8a7a5a;display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:700}
+.lt .ltn{font-weight:700;font-size:.92em}
+.lt .ltr{font-size:.7em;color:var(--c);font-weight:700}
+.lt.in{opacity:.75}
+.lt.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,#fff);box-shadow:0 0 0 2px var(--c) inset;transform:translateY(-1px)}
+#lgPwBox{max-height:0;overflow:hidden;transition:max-height .3s}
+#lgPwBox.show{max-height:260px}
+#lgWho{display:flex;align-items:center;gap:8px;justify-content:center;font-family:'Noto Serif TC',serif;font-weight:900;font-size:1.15em;color:var(--lc);margin:16px 0 10px}
+#lgWho svg{width:34px;height:34px}#lgWho small{font-size:.7em;font-family:'Noto Sans TC',sans-serif}
+#loginPw{width:100%;border:1.5px solid #e2d6bc;border-radius:12px;padding:13px 14px;font-size:1.05em;font-family:inherit;text-align:center;letter-spacing:4px;background:#fffdf8;color:#2e2820}
+#loginPw:focus{outline:none;border-color:var(--lc)}
+.lgbtn{width:100%;margin-top:10px;background:var(--lc);color:#fff;border:none;border-radius:12px;padding:13px;font-size:1.05em;font-weight:700;font-family:'Noto Serif TC',serif;letter-spacing:4px;cursor:pointer}
+@media (max-width:380px){#loginTiles{grid-template-columns:repeat(2,1fr)}}
 
+.lt{position:relative}.lt .ltnum{position:absolute;top:4px;left:6px;font-size:.72em;font-weight:700;color:var(--c);opacity:.85}
+
+.portalbtn{display:inline-flex;align-items:center;gap:4px;background:var(--panel);border:1px solid var(--gold);color:var(--gold2);border-radius:7px;padding:7px 11px;font-size:.85em;font-weight:700;text-decoration:none}
+.lgportal{display:inline-block;margin-top:10px;font-size:.8em;color:#7a6228;text-decoration:none;border:1px solid #d8c9a4;background:#fff;border-radius:14px;padding:4px 12px}
+
+/* 固定大字；法會項目卡片的移除鈕 */
+#fahuiItems{counter-reset:fi}
+.fitem{counter-increment:fi;padding-top:10px}
+.fi-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.fi-no::before{content:"項目 " counter(fi);font-weight:700;color:var(--gold2);font-size:.85em;letter-spacing:1px}
+.fi-del{position:static!important;display:inline-flex;align-items:center;gap:4px;background:#fff!important;border:1px solid #e6c9c4!important;color:#b3453a!important;border-radius:20px!important;padding:3px 12px!important;font-size:.78em!important;cursor:pointer;font-family:inherit}
+.fi-del::before{content:"";width:11px;height:11px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 3h6l1 2h4v2H4V5h4zm-3 6h12l-1 12H7z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 3h6l1 2h4v2H4V5h4zm-3 6h12l-1 12H7z'/%3E%3C/svg%3E") center/contain no-repeat}
+.fi-del:hover{background:#fbeeec!important}
+#fahuiItems .fitem:only-child .fi-del{visibility:hidden}
+/* 清單的編輯／刪除 */
+.entry .rowbtn{border:1px solid var(--line);border-radius:16px;padding:3px 11px;margin-left:5px;font-size:.8em;background:#fff}
+.entry .rowbtn.e{color:var(--gold2);border-color:var(--gold)}
+.entry .rowbtn.d{color:#b3453a;border-color:#e6c9c4}
+
+/* ================= 精緻化（2026-09-26） ================= */
+body{background:linear-gradient(180deg,var(--bg) 0%,#fff 520px,var(--bg) 100%) fixed;letter-spacing:.2px}
+.wrap{padding:10px 14px 90px}
+/* 頂部：一條精簡列 */
+header.top{border-bottom:none;padding:6px 0 4px;align-items:center;flex-wrap:nowrap}
+header.top h1{font-size:1.05em;letter-spacing:3px;color:var(--gold2);white-space:nowrap}
+header.top h1 small{display:none}
+header.top>div{flex-wrap:nowrap!important;gap:6px!important}
+.who{font-size:.72em!important;padding:5px 10px!important;border-radius:20px!important;white-space:nowrap}
+.who.hide{display:none!important}
+#logoutBtn{border-radius:20px!important;padding:5px 12px!important;font-size:.72em!important;background:#fff!important}
+#adminOpenBtn{border-radius:20px!important;font-size:.72em!important}
+.portalbtn{border-radius:20px;padding:5px 11px;font-size:.72em;white-space:nowrap;border-color:var(--line);box-shadow:0 1px 3px rgba(0,0,0,.05)}
+/* 月份列 */
+.bar{background:transparent;border:none;border-left:none;padding:4px 2px;margin:12px 0 2px;gap:8px}
+.bar label{font-size:.8em;color:var(--mut);font-family:'Noto Sans TC',sans-serif;font-weight:700}
+.bar select#month{border-radius:20px!important;padding:5px 12px!important;font-size:.85em!important;background:#fff!important;border-color:var(--line)!important}
+#status{font-size:.72em;padding:3px 10px;border-radius:20px;background:#fff;border:1px solid var(--line)}
+#status.ok{color:#2f8a57;border-color:#bfe3cc}
+#status.err{color:#b3453a;border-color:#efcfca}
+/* 分類：分段按鈕 */
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:4px;margin:10px 0 12px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.tab{min-width:0;border:none;border-radius:12px;padding:10px 2px;font-size:.88em;background:transparent;color:var(--mut)}
+.tab.active{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff;box-shadow:0 3px 10px color-mix(in srgb,var(--gold) 35%,transparent)}
+/* 卡片 */
+.card{background:#fff;border:1px solid color-mix(in srgb,var(--line) 70%,#fff);border-radius:20px;padding:20px 16px;box-shadow:0 6px 24px rgba(40,30,10,.06)}
+.card h2{font-size:1.05em;color:var(--gold2)}
+.card h2 .n{background:linear-gradient(135deg,var(--gold),var(--gold2));width:24px;height:24px}
+.sub{font-size:.76em}
+.field>label{font-size:.82em;letter-spacing:.5px;margin-bottom:6px}
+.field input,.field select,.fi-item,.fi-wish,.fi-qty,.fi-step{border-radius:12px!important;border:1px solid #e5ddcc!important;background:#fcfbf8!important;transition:border-color .15s,box-shadow .15s}
+.field input:focus,.field select:focus,.fi-item:focus,.fi-wish:focus,.fi-qty:focus{outline:none;border-color:var(--gold)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 18%,transparent);background:#fff!important}
+.grouphd{border-left:none;padding-left:0;font-size:.8em;letter-spacing:1px;color:var(--mut)}
+.grouphd::before{content:"";display:inline-block;width:14px;height:2px;background:var(--gold);vertical-align:middle;margin-right:7px}
+.itembox{background:transparent;border:none;padding:0}
+.fitem{background:#fff;border:1px solid #ece4d3;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
+.fi-step{background:#fff!important;color:var(--gold2)!important}
+.additem{border-radius:14px;padding:11px;background:#fff;font-size:.88em}
+.btn{border-radius:14px;background:linear-gradient(135deg,var(--gold),var(--gold2));box-shadow:0 6px 16px color-mix(in srgb,var(--gold) 30%,transparent);font-size:1em;padding:14px 20px}
+.btn:hover{filter:brightness(1.05);background:linear-gradient(135deg,var(--gold),var(--gold2))}
+.btn.ghost{background:#fff;box-shadow:none;border:1px solid var(--line);color:var(--gold2)}
+/* 已填清單 */
+.listcard{background:#fff;border:1px solid color-mix(in srgb,var(--line) 70%,#fff);border-radius:20px;box-shadow:0 6px 24px rgba(40,30,10,.06);padding:18px 16px}
+.listcard>h2{color:var(--gold2)!important}
+.catgroup h3{font-size:.85em;color:var(--gold2);border-bottom:1px solid #f0eadf;padding-bottom:5px}
+.entry{border:none;border-bottom:1px dashed #efe7d8;border-radius:0;padding:10px 2px;margin:0;background:transparent}
+.entry:last-child{border-bottom:none}
+.entry .info{font-weight:700}
+.totbar{border-radius:16px;background:linear-gradient(135deg,var(--gold2),var(--gold));box-shadow:0 8px 20px color-mix(in srgb,var(--gold) 30%,transparent)}
+.localnote{border-radius:12px;font-size:.78em}
 /* 品階條、客戶提醒一致化 */
 .h2,.crbar{border-radius:18px}
 .crbar{background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.04)}
 .toast{border-radius:20px;background:var(--gold2)}
 
 /* 聘階規則 */
+#rankRules{margin-top:16px}
+.rrhd{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid color-mix(in srgb,var(--line) 70%,#fff);border-radius:18px;padding:13px 16px;cursor:pointer;box-shadow:0 4px 16px rgba(40,30,10,.05);font-weight:700;color:var(--gold2);font-size:.92em}
+.rrarr{font-size:.78em;color:var(--mut);font-weight:400}
+.rrbody{background:#fff;border:1px solid color-mix(in srgb,var(--line) 70%,#fff);border-top:none;border-radius:0 0 18px 18px;margin-top:-10px;padding:18px 14px 12px}
+.rrintro{font-size:.78em;color:var(--mut);line-height:1.6;margin-bottom:10px}
+.rrrow{display:flex;gap:10px;padding:11px 8px;border-bottom:1px dashed #efe7d8;border-radius:12px}
+.rrrow:last-of-type{border-bottom:none}
+.rrrow>svg{width:40px;height:40px;flex:0 0 auto}
+.rrrow.here{background:var(--rk-light,#faf6ec);box-shadow:0 0 0 1.5px var(--gold) inset;border-bottom-color:transparent}
+.rrtx{flex:1;min-width:0}
+.rrname{font-family:'Noto Serif TC',serif;font-weight:900;color:var(--gold2);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rrname small{font-family:'Noto Sans TC',sans-serif;font-weight:400;color:var(--mut);font-size:.68em}
+.rrst{margin-left:auto;font-family:'Noto Sans TC',sans-serif;font-size:.62em;font-weight:700;border-radius:10px;padding:1px 8px;background:#f3eee3;color:var(--mut)}
+.rrst.here{background:var(--gold);color:#fff}.rrst.done{background:#e6f4ec;color:#2f8a57}
+.rrhow{font-size:.8em;margin-top:2px}.rrhow b{color:var(--gold2)}
+.rrpks{margin-top:4px;display:flex;flex-direction:column;gap:2px}
+.rrpk{font-size:.72em;color:var(--txt)}.rrpk em{font-style:normal;color:var(--mut);margin-right:6px}
+.rrnote{font-size:.72em;color:var(--mut);margin-top:10px;line-height:1.6}
+#rankRulesWrap{max-width:520px;margin:0 auto 30px}
+#login[style*="display: none"]~#rankRulesWrap,#login[style*="display:none"]~#rankRulesWrap{display:none}
 
+/* 十階：階梯改 5 欄 */
+.ladder,.h2 .ladder.open,.h2more .ladder{grid-template-columns:repeat(5,1fr)!important}
+@media (max-width:560px){.ladder,.h2 .ladder.open,.h2more .ladder{grid-template-columns:repeat(5,1fr)!important}.h2more .rung .rn{font-size:.66em}.h2more .rung .rp{font-size:.6em}.h2 .rung svg{width:26px;height:26px}}
+/* 升階慶祝 */
 .celebrate{position:fixed;inset:0;z-index:10000;background:rgba(20,15,5,.55);display:flex;align-items:center;justify-content:center;animation:cfade .3s}
 .cbox{background:#fff;border-radius:24px;padding:26px 30px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:cpop .5s cubic-bezier(.2,1.4,.4,1)}
 .cbox svg{width:110px;height:110px;filter:drop-shadow(0 6px 12px rgba(0,0,0,.25))}
@@ -233,59 +422,20 @@ h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-
 .h2.tier9 .h2glow{background-image:linear-gradient(90deg,#4a3405 0%,#4a3405 35%,#fff6d0 50%,#4a3405 65%,#4a3405 100%)}
 .h2.tier6 .h2bar small,.h2.tier7 .h2bar small,.h2.tier8 .h2bar small{white-space:nowrap}
 
-
-
-/* 登入畫面 */
-#login{padding:10px 0 30px}
-.lgcard{--lc:#9c7e3a;max-width:520px;margin:18px auto;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 10px 36px rgba(60,40,10,.12);border:1px solid #eadfc8}
-.lghead{background:linear-gradient(135deg,#fbf6ea,#f3e8cf);padding:22px 20px 16px;text-align:center;border-bottom:1px solid #eadfc8}
-.lghead .lgt{font-family:'Noto Serif TC',serif;font-weight:900;font-size:1.45em;color:#6b5220;letter-spacing:3px}
-.lghead .lgs{font-size:.8em;color:#9a8a68;letter-spacing:4px;margin-top:2px}
-#loginBadges{display:flex;justify-content:center;gap:6px;margin-top:12px}
-#loginBadges svg{width:30px;height:30px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.12))}
-.lgbody{padding:16px 18px 20px}
-.lglab{font-size:.85em;color:#8a7a5a;font-weight:700;margin-bottom:8px}
-#loginTiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.lt{--c:#b9ad95;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px 7px;border:1.5px solid color-mix(in srgb,var(--c) 35%,#fff);background:color-mix(in srgb,var(--c) 6%,#fff);border-radius:12px;cursor:pointer;font-family:inherit;color:#2e2820;transition:.15s}
-.lt svg{width:30px;height:30px}
-.lt .ltno{width:30px;height:30px;border-radius:50%;background:#efe8d8;color:#8a7a5a;display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:700}
-.lt .ltn{font-weight:700;font-size:.92em}
-.lt .ltr{font-size:.7em;color:var(--c);font-weight:700}
-.lt.in{opacity:.75}
-.lt.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 14%,#fff);box-shadow:0 0 0 2px var(--c) inset;transform:translateY(-1px)}
-#lgPwBox{max-height:0;overflow:hidden;transition:max-height .3s}
-#lgPwBox.show{max-height:260px}
-#lgWho{display:flex;align-items:center;gap:8px;justify-content:center;font-family:'Noto Serif TC',serif;font-weight:900;font-size:1.15em;color:var(--lc);margin:16px 0 10px}
-#lgWho svg{width:34px;height:34px}#lgWho small{font-size:.7em;font-family:'Noto Sans TC',sans-serif}
-#loginPw{width:100%;border:1.5px solid #e2d6bc;border-radius:12px;padding:13px 14px;font-size:1.05em;font-family:inherit;text-align:center;letter-spacing:4px;background:#fffdf8;color:#2e2820}
-#loginPw:focus{outline:none;border-color:var(--lc)}
-.lgbtn{width:100%;margin-top:10px;background:var(--lc);color:#fff;border:none;border-radius:12px;padding:13px;font-size:1.05em;font-weight:700;font-family:'Noto Serif TC',serif;letter-spacing:4px;cursor:pointer}
-@media (max-width:380px){#loginTiles{grid-template-columns:repeat(2,1fr)}}
-
-.lt{position:relative}.lt .ltnum{position:absolute;top:4px;left:6px;font-size:.72em;font-weight:700;color:var(--c);opacity:.85}
-
-
-#rankRules{margin-top:16px}
-.rrhd{display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid color-mix(in srgb,var(--line) 70%,#fff);border-radius:18px;padding:13px 16px;cursor:pointer;box-shadow:0 4px 16px rgba(40,30,10,.05);font-weight:700;color:var(--gold2);font-size:.92em}
-.rrarr{font-size:.78em;color:var(--mut);font-weight:400}
-.rrbody{background:#fff;border:1px solid color-mix(in srgb,var(--line) 70%,#fff);border-top:none;border-radius:0 0 18px 18px;margin-top:-10px;padding:18px 14px 12px}
-.rrintro{font-size:.78em;color:var(--mut);line-height:1.6;margin-bottom:10px}
-.rrrow{display:flex;gap:10px;padding:11px 8px;border-bottom:1px dashed #efe7d8;border-radius:12px}
-.rrrow:last-of-type{border-bottom:none}
-.rrrow>svg{width:40px;height:40px;flex:0 0 auto}
-.rrrow.here{background:var(--rk-light,#faf6ec);box-shadow:0 0 0 1.5px var(--gold) inset;border-bottom-color:transparent}
-.rrtx{flex:1;min-width:0}
-.rrname{font-family:'Noto Serif TC',serif;font-weight:900;color:var(--gold2);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.rrname small{font-family:'Noto Sans TC',sans-serif;font-weight:400;color:var(--mut);font-size:.68em}
-.rrst{margin-left:auto;font-family:'Noto Sans TC',sans-serif;font-size:.62em;font-weight:700;border-radius:10px;padding:1px 8px;background:#f3eee3;color:var(--mut)}
-.rrst.here{background:var(--gold);color:#fff}.rrst.done{background:#e6f4ec;color:#2f8a57}
-.rrhow{font-size:.8em;margin-top:2px}.rrhow b{color:var(--gold2)}
-.rrpks{margin-top:4px;display:flex;flex-direction:column;gap:2px}
-.rrpk{font-size:.72em;color:var(--txt)}.rrpk em{font-style:normal;color:var(--mut);margin-right:6px}
-.rrnote{font-size:.72em;color:var(--mut);margin-top:10px;line-height:1.6}
-#rankRulesWrap{max-width:520px;margin:0 auto 30px}
-#rankRulesWrap{max-width:520px;margin:0 auto 30px}
-
+/* 表單閃一下（編輯時） */
+.card.flash{animation:cflash 1.2s ease-out}
+@keyframes cflash{0%{box-shadow:0 0 0 4px var(--gold)}100%{box-shadow:0 6px 24px rgba(40,30,10,.06)}}
+/* 姓名自動帶出 */
+.field{position:relative}
+.acbox{position:absolute;left:0;right:0;top:100%;z-index:60;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.14);margin-top:4px;overflow:hidden;max-height:340px;overflow-y:auto}
+.achd{font-size:.72em;color:var(--mut);padding:7px 12px;background:#faf7f0;border-bottom:1px solid #f0eadf}
+.acitem{display:block;width:100%;text-align:left;border:none;border-bottom:1px solid #f3eee4;background:#fff;padding:9px 12px;cursor:pointer;font-family:inherit}
+.acitem:hover,.acitem:active{background:var(--rk-light,#faf6ec)}
+.acn{display:block;font-weight:700;color:var(--gold2);font-size:.95em}
+.acs{display:block;font-size:.74em;color:var(--mut);margin-top:1px}
+.acs em{font-style:normal;background:#f0ece0;border-radius:6px;padding:0 5px;margin-right:4px;color:#6b5a3a}
+.acvip{font-size:.7em;color:#b8860b;margin-left:6px}
+/* ===== 客人自動完成／常客／帶入上月（正式版） ===== */
 @keyframes cardflash{0%{box-shadow:0 0 0 0 rgba(156,126,58,.75)}100%{box-shadow:0 0 0 14px rgba(156,126,58,0)}}
 .card.flash{animation:cardflash .85s ease-out 2}
 /* ===== 客人自動完成下拉 ===== */
@@ -311,67 +461,22 @@ h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-
 .prow .dup{font-size:.76em;color:#e07b39}
 .panel input[type=text],.panel select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 11px;font-family:inherit;font-size:.98em}
 .panel select{width:auto;min-width:120px}
-.card h2{font-family:'Noto Serif TC',serif;font-size:1.05em;color:var(--cream);font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:3px}
-.card h2 .n{background:var(--gold);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:.7em}
-.sub{color:var(--mut);font-size:.8em;margin:2px 0 14px;line-height:1.5}
-.field{margin-bottom:13px}
-.field>label{display:block;color:var(--gold2);font-weight:700;font-size:.9em;margin-bottom:5px}
-.field .req{color:var(--red);margin-left:3px}
-.field input,.field select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:11px 12px;font-family:inherit;font-size:1.02em}
-.field input:focus,.field select:focus{outline:none;border-color:var(--gold)}
-.field.miss input,.field.miss select{border-color:var(--red);background:rgba(192,57,43,.05)}
-.ymd{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
-.ymd .cal{flex:0 0 78px}.ymd .seg{flex:1;min-width:58px;display:flex;align-items:center;gap:4px}
-.ymd .seg input{text-align:center}.ymd .seg span{color:var(--mut);font-size:.85em}
-.fhint{color:var(--gold2);font-size:.78em;margin-top:4px;background:rgba(156,126,58,.08);border-radius:6px;padding:5px 9px}
-.fhint:empty{display:none}
-.grouphd{font-family:'Noto Serif TC',serif;color:var(--gold2);font-weight:700;font-size:.88em;margin:16px 0 9px;padding-left:8px;border-left:3px solid var(--gold)}
-.itembox{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:13px}
-.fitem{position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:13px 12px 12px;margin-bottom:11px}
-.fi-del{position:absolute;top:8px;right:8px;background:transparent;border:1px solid var(--line);color:var(--red);font-size:.8em;cursor:pointer;padding:5px 9px;border-radius:7px;font-family:inherit}
-.fi-item{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:12px 11px;font-family:inherit;font-size:1.05em;margin-bottom:10px}
-.fi-qrow{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.fi-qlabel{color:var(--gold2);font-weight:700;font-size:.92em;margin-right:auto}
-.fi-step{width:46px;height:46px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--gold2);font-size:24px;font-weight:700;cursor:pointer;line-height:1;font-family:inherit}
-.fi-step:active{background:var(--gold);color:#fff}
-.fi-qty{width:66px;height:46px;text-align:center;font-size:1.2em;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:9px;font-family:inherit}
-.fi-qty:focus{outline:none;border-color:var(--gold)}
-.fi-wish{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:10px 11px;font-family:inherit;font-size:.98em}
-.fi-wish:focus{outline:none;border-color:var(--gold)}
-.fi-partner{margin-top:10px;padding:11px;border:1px dashed var(--gold);border-radius:9px;background:rgba(156,126,58,.05)}
-.fi-partner .fp-hd{margin-bottom:8px}
-.fi-partner .fp-title{font-weight:700;font-size:1.05em;color:var(--gold2)}
-.fi-partner .fp-note{font-size:.82em;color:var(--mut);margin-top:2px}
-.fi-partner input,.fi-partner select{background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px;font-family:inherit;font-size:.95em}
-.fp-name{width:100%;margin-bottom:8px}
-.fp-bd{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.fp-y{width:72px}.fp-m,.fp-d{width:56px}
-.fp-prev{font-size:.82em;color:var(--mut);margin-top:6px}
-.additem{background:transparent;border:1px dashed var(--gold);color:var(--gold);border-radius:8px;padding:8px;width:100%;cursor:pointer;font-family:'Noto Serif TC';font-weight:700;font-size:.92em}
-.actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
-.btn{background:var(--gold);color:#fff;border:none;border-radius:9px;padding:13px 24px;font-size:1.04em;font-weight:700;cursor:pointer;font-family:'Noto Serif TC',serif;letter-spacing:1px;flex:1;min-width:130px}
-.btn:hover{background:var(--gold2)}.btn:disabled{opacity:.5;cursor:not-allowed}
-.btn.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold);flex:0 0 auto;min-width:0;padding:13px 16px}
-.listcard{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px}
-.catgroup{margin-bottom:14px}
-.catgroup h3{font-family:'Noto Serif TC',serif;color:var(--gold2);font-size:.95em;margin-bottom:6px;display:flex;justify-content:space-between}
-.catgroup h3 .c{color:var(--mut);font-weight:400;font-size:.85em}
-.entry{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 12px;margin-bottom:6px}
-.entry .info{flex:1;min-width:0;font-size:.92em}
-.entry .info small{color:var(--mut);display:block;font-size:.82em;margin-top:1px}
-.entry.ed{outline:2px solid var(--gold)}
-.rowbtn{background:transparent;border:none;cursor:pointer;font-size:.9em;padding:3px 6px;font-family:inherit}
-.rowbtn.e{color:var(--gold2)}.rowbtn.d{color:var(--red)}
-.empty{color:var(--mut);text-align:center;padding:18px;font-size:.9em}
-.totbar{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#fff;border-radius:11px;padding:13px 16px;margin-top:12px;font-size:.92em;line-height:1.7}
-.totbar b{font-size:1.15em}
-.totbar .items{font-size:.84em;opacity:.92;margin-top:5px;border-top:1px solid rgba(255,255,255,.25);padding-top:5px}
-.banner{border-radius:9px;padding:11px 14px;margin:8px 0;font-size:.88em;line-height:1.5}
-.banner.info{background:rgba(156,126,58,.12);border-left:3px solid var(--gold);color:var(--gold2)}
-.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(80px);background:var(--gold2);color:#fff;padding:12px 22px;border-radius:30px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.25);opacity:0;transition:.3s;z-index:99;font-size:.92em}
-.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.vipbar2{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+.vipbar2 button{flex:1;min-width:130px;background:#fff;border:1px solid var(--line);color:var(--gold2);border-radius:11px;padding:10px 12px;font-family:inherit;font-weight:700;font-size:.88em;cursor:pointer}
+.vipbar2 button:active{background:var(--rk-light,#faf6ec)}
+/* 常客 */
+.entry .rowbtn.v{color:#9a8a68;border-color:#e8dfcb}
+.entry .rowbtn.v.on{color:#b8860b;border-color:#e2c06a;background:#fffaeb}
+.vipbar{display:flex;align-items:center;justify-content:space-between;gap:8px;background:linear-gradient(135deg,#fffaeb,#fff);border:1px solid #efdca5;border-radius:14px;padding:9px 12px;margin:6px 0 10px;font-size:.84em;color:#6b4e12}
+.vipbar.empty{color:#9a8a68;background:#fbf9f4;border-style:dashed;border-color:#e6dcc6;font-size:.76em}
+.vipbar button{border:none;border-radius:20px;background:linear-gradient(135deg,#c9a24a,#8a6a1e);color:#fff;font-weight:700;padding:7px 14px;font-family:inherit;cursor:pointer;font-size:.95em;white-space:nowrap}
+.viprow{display:flex;gap:10px;align-items:flex-start;border:1px solid #eee4cf;border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
+.viprow input{width:20px;height:20px;margin-top:2px}
+.viprow small{display:block;color:#8a7a5a;font-size:12px;margin-top:2px}
+.viprow.done{opacity:.6}
 </style></head>
 <body>
+
 <div class="wrap">
 <header class="top">
   <h1>香量線上填單<small>MIIRAGIC · 香量回報</small></h1>
@@ -379,7 +484,7 @@ h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-
     <span class="who" id="whoBadge" style="display:none"></span>
     <button id="logoutBtn" onclick="logout()" style="display:none;background:transparent;border:1px solid var(--line);color:var(--mut);border-radius:7px;padding:6px 10px;cursor:pointer;font-family:inherit;font-size:.8em">登出</button>
     <button id="adminOpenBtn" onclick="openAdminPanel()" style="display:none;background:#9c7e3a;border:none;color:#fff;border-radius:7px;padding:6px 12px;cursor:pointer;font-family:inherit;font-size:.8em;margin-left:6px">⚙ 開放設定</button>
-    <span class="toggles"><button onclick="bigfont()">A± 大字</button></span>
+    <a class="portalbtn" href="https://kevin87265-pixel.github.io/portal/" target="_blank" rel="noopener">🏠 入口網站</a>
   </div>
 </header>
 
@@ -397,9 +502,9 @@ h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-
         <div id="loginErr" style="display:none"></div></div>
     </div>
   </div>
-  <div id="rankRulesWrap"><div id="rankRules"></div></div>
 </div>
 
+<div id="rankRulesWrap"><div id="rankRules"></div></div>
 <div id="adminScreen" style="display:none;max-width:760px;margin:18px auto;padding:0 14px"></div>
 
 <div id="app" style="display:none">
@@ -410,7 +515,7 @@ h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-
   <span id="status">—</span>
 </div>
 <div class="tabs" id="tabs"></div>
-<div class="card" id="formCard">
+<div class="card">
   <h2><span class="n">＋</span><span id="formTitle">新增明細</span></h2>
   <p class="sub" id="formSub"></p>
   <div id="formFields"></div>
@@ -418,14 +523,12 @@ h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-
     <button class="btn" id="submitBtn" onclick="submitForm()">加入清單</button>
     <button class="btn ghost" onclick="clearForm()">清空</button>
     <button class="btn ghost" id="cancelBtn" style="display:none" onclick="cancelEdit()">取消編輯</button>
-    <button class="btn ghost" onclick="openCopyPanel()" title="把上個月同樣的客人整批帶進本月，只要改祈願就好">🔁 帶入上月</button>
-    <button class="btn ghost" onclick="openVipPanel()" title="常客名單：每月固定要報的客人">⭐ 常客名單</button>
   </div>
 </div>
 <div class="listcard">
   <h2 style="font-family:'Noto Serif TC';color:var(--cream);font-size:1.05em;margin-bottom:4px">📋 本月已填清單</h2>
   <p class="sub">最底「總計」就是會寫進香量統計總表、被獎金系統抓走的數字，可直接核對。</p>
-  <div id="listArea"><p class="empty">尚未載入。</p></div>
+  <div class="vipbar2"><button onclick="openCopyPanel()">🔁 帶入上月</button><button onclick="openVipPanel()">⭐ 常客名單</button></div><div id="localNote"></div><div id="listArea"><p class="empty">尚未載入。</p></div>
   <div id="totArea"></div>
 </div>
 </div>
@@ -433,674 +536,18 @@ h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-
 <div class="toast" id="toast"></div>
 
 <script>
-/* ====== 後端網址（部署 Apps Script 後貼 /exec 網址） ====== */
-const API_URL = 'https://script.google.com/macros/s/AKfycbwSM81dVKy_ZkFdQneulQKv7m13rfYe8xonhBFPI6T1sASw3A2Q3rBNjJ1oY3MsOPIYZw/exec';
-/* ========================================================= */
-
-/* ★ 老師清單與編號 ★  新增老師：加一行 {name:'姓名',no:22}，密碼自動＝123+編號，後端自動納入 */
-let TEACHERS=[
- {name:'陳捷容',no:1},{name:'羅文勳',no:2},{name:'陳彩綺',no:3},{name:'蕭竣方',no:4},
- {name:'湯雯莉',no:5},{name:'沈佳琪',no:6},{name:'周冠榮',no:7},{name:'蕭鎧峻',no:8},
- {name:'賴素貞',no:9},{name:'張簡玉靖',no:10},{name:'梁凱妍',no:11},{name:'鄭聖勳',no:12},
- {name:'謝欣諭',no:13},{name:'王宥心',no:14},{name:'熊卿妃',no:15},{name:'鐘宥涵',no:16},
- {name:'謝承殷',no:17},{name:'陳昕昀',no:18},{name:'林雅涵',no:19},
- {name:'康瑋齊',no:20},{name:'陳博隆',no:21},{name:'黃宇廷',no:22},
- {name:'公司內部',no:88},{name:'靈應壇',no:99}
-];
-let TBYNAME={}; function rebuildT(){TBYNAME={};TEACHERS.forEach(t=>TBYNAME[t.name]=t);} rebuildT();
-function pwOf(no){return '123'+no;}
-
-/* 各老師收單人(下線)清單；沒列的老師不顯示此欄 */
-let TEACHER_SHOUDAN={'羅文勳':['院長','子瑄','包年','章宴','釧益','旂彰','瑋齊'],'陳彩綺':['彩綺','冠穎','晏蓉','茜茹','豐州'],'湯雯莉':['莫莉','柏雅'],'王宥心':['玥希','宥心']};
-
-const ITEMS=['補財','補庫','補運(消災解厄)','夫妻(金姻緣)','貴人(木姻緣)','單身(水姻緣)','和合(火姻緣)','同性(土姻緣)','冤親(解冤釋結)','化小人','招貴人'];
-const FAHUI_ITEMS=ITEMS.concat(['天赦金']);
-
-/* ★ 項目開放設定（全院共用，行政後台控制） ★ */
-const ADMIN_NAMES=['蕭竣方','公司內部'];        /* 這些帳號登入才看得到「開放設定」 */
-const TOGGLE_CATS=['斗燈','還陰債','祭改','普桌'];              /* 可整類開關的分類 */
-let OPENCFG=null;                                /* null＝全開；{fahui:{項目:bool}, 斗燈:bool, 還陰債:bool} */
-let ITEMLABELS={};                               /* 項目顯示名稱對應 {原始名:顯示名}，計價仍用原始名 */
-let ADMINS=[];                                   /* 後端設定的行政人員名單 */
-function labelOf(it){ return ITEMLABELS[it]||it; }
-function itemOpen(it){ return !(OPENCFG&&OPENCFG.fahui&&OPENCFG.fahui[it]===false); }
-function catOpen(c){ if(TOGGLE_CATS.indexOf(c)<0) return true; return !(OPENCFG&&OPENCFG[c]===false); }
-function loadOpenCfg(cb){ if(!API_URL){cb&&cb();return;} fetch(API_URL+'?action=openItems').then(r=>r.json()).then(d=>{ OPENCFG=(d&&d.config)||null; cb&&cb(); }).catch(()=>{cb&&cb();}); }
-function loadSysCfg(cb){ if(!API_URL){cb&&cb();return;} fetch(API_URL+'?action=sysConfig').then(r=>r.json()).then(d=>{ if(d&&d.ok){ ITEMLABELS=d.itemLabels||{}; ADMINS=d.admins||[]; } cb&&cb(); }).catch(()=>{cb&&cb();}); }
-function fahuiOptions(selected){ return FAHUI_ITEMS.filter(o=>itemOpen(o)||o===selected).map(o=>`<option value="${o}"${o===selected?' selected':''}>${labelOf(o)}</option>`).join(''); }
-const FAHUI_NOBIRTH=['天赦金'];   /* ← 這些法會項目「免填生日」；其餘項目生日必填 */
-const SHICHEN=[{v:'吉',t:'吉（不知時辰就用吉）'},{v:'子',t:'子（23–01時）'},{v:'丑',t:'丑（01–03時）'},{v:'寅',t:'寅（03–05時）'},{v:'卯',t:'卯（05–07時）'},{v:'辰',t:'辰（07–09時）'},{v:'巳',t:'巳（09–11時）'},{v:'午',t:'午（11–13時）'},{v:'未',t:'未（13–15時）'},{v:'申',t:'申（15–17時）'},{v:'酉',t:'酉（17–19時）'},{v:'戌',t:'戌（19–21時）'},{v:'亥',t:'亥（21–23時）'}];
-const CATS_ORDER=['法會','斗燈','還陰債','祭改','普桌'];
-
-/* 後端欄位（與 Code.gs 一致；collect 依此逐欄收集）*/
-const COLS={
- '法會':['收單人','公司行號','項目','份數','姓名','生日別','生日年','生日月','生日日','時辰','居住地址','祈願'],
- '斗燈':['收單人','加購類型','斗種','份數','姓名','生日年','生日月','生日日','時辰','居住地址','令牌字或祈願','祈願'],
- '還陰債':['收單人','牒文類別','份數','陽世報恩人','報恩人居住地址','祈願','亡者生日年','亡者生日月','亡者生日日','時辰','卒于年','卒于月','卒于日','歲數','姓','公姑娘媽','名','考妣','神位地址','先祖名'],
- '祭改':['收單人','公司行號','份數','姓名','生日別','生日年','生日月','生日日','時辰','居住地址','性別','衣服'],
- '普桌':['收單人','公司行號','份數','姓名','居住地址','備註','捐掉或寄回']
-};
-
-/* 法會客戶欄位（項目另由多項目區處理）*/
-const FAHUI_CUST=[
- {sh:1,k:'收單人',type:'select',from:'shoudan'},
- {k:'姓名',type:'text',req:1},
- {type:'ymd',cal:1,conv:1,y:'生日年',m:'生日月',d:'生日日',calk:'生日別',label:'生日',rk:'生日年'},
- {k:'時辰',type:'select',opts:SHICHEN},
- {k:'居住地址',type:'text',req:1},
- {k:'公司行號',type:'text'}
-];
-
-/* 斗燈/祭改/普桌 通用欄位 */
-const FIELDS={
- '祭改':[
-   {sh:1,k:'收單人',label:'收單人/下線老師',type:'select',from:'shoudan'},
-   {k:'份數',type:'num',req:1,def:1},
-   {k:'姓名',type:'text',req:1},
-   {type:'ymd',cal:1,conv:1,y:'生日年',m:'生日月',d:'生日日',calk:'生日別',label:'生日'},
-   {k:'時辰',type:'select',opts:SHICHEN},
-   {k:'居住地址',type:'text',req:1},
-   {k:'性別',type:'select',opts:['','男','女'],req:1},
-   {k:'衣服',type:'select',opts:['','有','無']},
-   {k:'公司行號',type:'text'}
- ],
- '普桌':[
-   {sh:1,k:'收單人',label:'收單人/下線老師',type:'select',from:'shoudan'},
-   {k:'份數',type:'num',req:1,def:1},
-   {k:'姓名',type:'text',req:1},
-   {k:'居住地址',type:'text',req:1},
-   {k:'捐掉或寄回',type:'select',opts:['','捐掉','寄回'],req:1},
-   {k:'公司行號',type:'text',label:'公司行號(公司填名稱+負責人)'},
-   {k:'備註',type:'text',label:'備註(想上疏文的家人姓名)'}
- ]
-};
-
-/* 還陰債：固定欄 + 依牒文類別動態亡者明細 */
-const YIN_TOP=[
- {sh:1,k:'收單人',type:'select',from:'shoudan'},
- {k:'牒文類別',type:'select',opts:['','個人正魂','冤親債主','歷代祖先','地基主','嬰靈','獸魂','辭祖'],req:1,onchg:'renderYinDetail'},
- {k:'份數',type:'num',req:1,def:1},
- {k:'陽世報恩人',label:'陽世報恩人(報名者)',type:'text',req:1,oninp:'yinAuto'},
- {k:'報恩人居住地址',type:'text',req:1}
-];
-const YDEF={
- '生日':{type:'ymd',y:'亡者生日年',m:'亡者生日月',d:'亡者生日日',label:'亡者生日(國曆)',eg:'國曆，例：45 6 3（不知可空白）'},
- '時辰':{k:'時辰',type:'select',opts:SHICHEN,label:'時辰',eg:'不知道就選「吉」'},
- '卒於':{type:'ymd',y:'卒于年',m:'卒于月',d:'卒于日',label:'亡者卒於(國曆)',eg:'國曆，例：98 3 12'},
- '歲數':{k:'歲數',type:'num',label:'歲數(國曆計算)',eg:'例：78'},
- '姓':{k:'姓',type:'text',eg:'例：謝'},
- '稱':{k:'公姑娘媽',type:'select',opts:['','公','姑娘','媽'],label:'公/姑娘/媽',eg:'男性填「公」；女性未婚「姑娘」、已婚「媽」'},
- '名':{k:'名',type:'text',eg:'例：志明'},
- '考妣':{k:'考妣',type:'select',opts:['','考','妣'],label:'考/妣',eg:'男性填「考」、女性填「妣」'},
- '神位':{k:'神位地址',type:'text',hint:'神'},
- '祖名':{k:'先祖名',type:'text',hint:'祖'}
-};
-const YINCAT={
- '個人正魂':{order:['生日','時辰','卒於','姓','稱','名','神位','祖名'],allReq:true,noReqZu:true},
- '冤親債主':{order:['祖名'],req:['先祖名']},
- '歷代祖先':{order:['神位','祖名'],req:['神位地址','先祖名']},
- '地基主':{order:['神位','祖名'],req:['神位地址','先祖名']},
- '嬰靈':{order:['祖名'],req:['先祖名']},
- '獸魂':{order:['祖名'],req:['先祖名']},
- '辭祖':{order:['神位','祖名'],req:['神位地址','先祖名']}
-};
-const YINHINT_TXT={
- '個人正魂':{神:'填牌位或塔位地址',祖:'系統依上面「姓＋公/姑娘/媽＋名」自動帶入，免填'},
- '冤親債主':{祖:'姓氏+前世今生之冤親債主'},
- '歷代祖先':{神:'祖先牌位地址',祖:'只填姓氏即可，系統自動組成「○氏九玄七祖歷代祖先」（夫家或自家姓氏皆可）'},
- '地基主':{神:'要施作的地址',祖:'直接填「地基主」'},
- '嬰靈':{祖:'只填媽媽姓氏即可，系統自動組成「○氏嬰靈」'},
- '獸魂':{祖:'獸魂（知道名字則填名字）'},
- '辭祖':{神:'前夫祖先牌位地址',祖:'只填前夫姓氏即可，系統自動組成「○氏歷代祖先」'}
-};
-const CATDESC={'法會':'先勾選項目與份數（可多個），再填一次客戶資料。','斗燈':'選加購類型後，下方跳出對應欄位。令牌加購也要選「斗種」（令牌放哪個斗）；令牌／五行需選令牌字（天干地支）。','還陰債':'選牒文類別後，下方會跳出該類別要填的欄位（各有必填）。','祭改':'','普桌':'公司請於公司行號填名稱+負責人。'};
-
-/* 斗燈：依加購類型動態（令牌字用下拉選天干地支且必填；令牌加購也要選斗種＝放哪個斗）*/
-const GANZHI=['','甲','乙','丙','丁','戊','己','庚','辛','壬','癸','子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-const DOU_TOP=[
- {sh:1,k:'收單人',type:'select',from:'shoudan'},
- {k:'加購類型',type:'select',opts:['','單筆加購','季斗加購','令牌加購','五行年斗','五行季斗'],req:1,onchg:'renderDouDetail'},
- {k:'份數',type:'num',req:1,def:1},
- {k:'姓名',type:'text',req:1},
- {type:'ymd',cal:1,conv:1,calk:'生日別',y:'生日年',m:'生日月',d:'生日日',label:'生日'},
- {k:'時辰',type:'select',opts:SHICHEN},
- {k:'居住地址',type:'text',req:1},
- {k:'祈願',type:'text',max:50}
-];
-const DOUDEF={
- '斗種':{k:'斗種',type:'select',opts:['','月老斗','財神斗','貴人斗','化煞斗','開運斗']},
- '令牌':{k:'令牌字或祈願',type:'select',opts:GANZHI,label:'令牌字（必選，十天干／十二地支）'}
-};
-const DOUCONF={
- '單筆加購':{order:['斗種'],req:['斗種']},
- '季斗加購':{order:['斗種'],req:['斗種']},
- '五行年斗':{order:['斗種','令牌'],req:['斗種','令牌字或祈願']},
- '五行季斗':{order:['斗種','令牌'],req:['斗種','令牌字或祈願']},
- '令牌加購':{order:['斗種','令牌'],req:['斗種','令牌字或祈願']}
-};
-
-let TEACHER=null,MONTH,CURCAT='法會',EDIT={cat:null,id:null},DATA={},TOTALS={};
-/* 後端為了加速，新增/修改/刪除後只回傳「當前分類」的資料(partial)，其他分類要保留原本的 */
-function mergeData(d){
-  if(!d) return;
-  if(d.partial && d.cat){ DATA[d.cat]=(d.data&&d.data[d.cat])||[]; }
-  else if(d.data){ DATA=d.data; }
-  if(d.totals){
-    if(d.partial){ Object.keys(d.totals).forEach(k=>{ if(d.totals[k]) TOTALS[k]=d.totals[k]; }); }
-    else TOTALS=d.totals;
-  }
-}
-
-function applyTheme(){document.documentElement.classList.remove('dark');document.body.classList.remove('dark');}
-function theme(m){applyTheme();}
-function bigfont(){const big=!document.body.classList.contains('big');document.documentElement.classList.toggle('big',big);document.body.classList.toggle('big',big);try{localStorage.xlbig=big?1:''}catch(e){}}
-try{applyTheme();try{localStorage.xltheme='light'}catch(e){}if(localStorage.xlbig){document.documentElement.classList.add('big');document.body.classList.add('big');}}catch(e){}
-function defMonth(){const d=new Date();return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0');}
-
-/* ===== 國曆→農曆換算（1900–2100） ===== */
-const lunarInfo=[0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b5a0,0x195a6,0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x055c0,0x0ab60,0x096d5,0x092e0,0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,0x05aa0,0x076a3,0x096d0,0x04afb,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0,0x14b63,0x09370,0x049f8,0x04970,0x064b0,0x168a6,0x0ea50,0x06b20,0x1a6c4,0x0aae0,0x0a2e0,0x0d2e3,0x0c960,0x0d557,0x0d4a0,0x0da50,0x05d55,0x056a0,0x0a6d0,0x055d4,0x052d0,0x0a9b8,0x0a950,0x0b4a0,0x0b6a6,0x0ad50,0x055a0,0x0aba4,0x0a5b0,0x052b0,0x0b273,0x06930,0x07337,0x06aa0,0x0ad50,0x14b55,0x04b60,0x0a570,0x054e4,0x0d160,0x0e968,0x0d520,0x0daa0,0x16aa6,0x056d0,0x04ae0,0x0a9d4,0x0a2d0,0x0d150,0x0f252,0x0d520];
-function lLeapMonth(y){return lunarInfo[y-1900]&0xf;}
-function lLeapDays(y){return lLeapMonth(y)?((lunarInfo[y-1900]&0x10000)?30:29):0;}
-function lMonthDays(y,m){return (lunarInfo[y-1900]&(0x10000>>m))?30:29;}
-function lYearDays(y){let s=348;for(let i=0x8000;i>0x8;i>>=1)s+=(lunarInfo[y-1900]&i)?1:0;return s+lLeapDays(y);}
-function solar2lunar(y,m,d){
-  if(y<1900||y>2100)return null;
-  let offset=Math.floor((Date.UTC(y,m-1,d)-Date.UTC(1900,0,31))/86400000);
-  let i,temp=0,ly;
-  for(i=1900;i<2101&&offset>0;i++){temp=lYearDays(i);offset-=temp;}
-  if(offset<0){offset+=temp;i--;}
-  ly=i;const leap=lLeapMonth(i);let isLeap=false;
-  for(i=1;i<13&&offset>0;i++){
-    if(leap>0&&i===leap+1&&!isLeap){--i;isLeap=true;temp=lLeapDays(ly);}
-    else temp=lMonthDays(ly,i);
-    if(isLeap&&i===leap+1)isLeap=false;
-    offset-=temp;
-  }
-  if(offset===0&&leap>0&&i===leap+1){if(isLeap)isLeap=false;else{isLeap=true;--i;}}
-  if(offset<0){offset+=temp;--i;}
-  return {lYear:ly,lMonth:i,lDay:offset+1,isLeap:isLeap};
-}
-/* 民國國曆 → 民國農曆字串 */
-function s2lMinguo(my,mm,dd){
-  my=parseInt(my);mm=parseInt(mm);dd=parseInt(dd);
-  if(!my||!mm||!dd)return null;
-  const greg = my>=1000 ? my : my+1911;   // 4位數視為西元，其餘視為民國
-  const r=solar2lunar(greg,mm,dd);if(!r)return null;
-  return {y:r.lYear-1911,m:(r.isLeap?'閏':'')+r.lMonth,d:r.lDay};
-}
-/* 收集時：若選國曆則換算成農曆存入 */
-function applyLunar(cat,o){
-  if(['法會','祭改','斗燈'].indexOf(cat)<0)return;
-  if(val('生日別')==='國'){
-    const r=s2lMinguo(o['生日年'],o['生日月'],o['生日日']);
-    if(r){o['生日年']=r.y;o['生日月']=r.m;o['生日日']=r.d;}
-  }else{
-    const lp=document.getElementById('leap_生日年');
-    if(lp&&lp.checked&&o['生日月']&&(''+o['生日月']).indexOf('閏')<0) o['生日月']='閏'+o['生日月'];
-  }
-  if('生日別' in o)o['生日別']='農';
-}
-function toggleLeap(calk,y){
-  const c=document.getElementById('leap_'+y);
-  if(c && val(calk)==='國') c.checked=false;   // 國曆自動判斷閏月，取消手動勾選
-}
-/* 即時換算預覽 */
-function birthPrev(yk,mk,dk,ck){
-  const el=document.getElementById('prev_'+yk);if(!el)return;
-  if((ck?val(ck):'農')!=='國'){el.textContent='';return;}
-  const r=s2lMinguo(val(yk),val(mk),val(dk));
-  el.textContent=r?('→ 換算農曆：'+r.y+'年'+r.m+'月'+r.d+'日（將以此存入疏文）'):'';
-}
-
-/* 登入 */
-function fillMonths(){
-  const sel=document.getElementById('month');if(!sel||sel.tagName!=='SELECT')return;
-  const d=new Date();let h='';
-  for(let i=1;i>=-17;i--){const dt=new Date(d.getFullYear(),d.getMonth()+i,1);const v=dt.getFullYear()+'.'+String(dt.getMonth()+1).padStart(2,'0');h+=`<option${i===0?' selected':''}>${v}</option>`;}
-  sel.innerHTML=h;
-}
-function loadTeachers(cb){
-  if(!API_URL){cb();return;}
-  fetch(API_URL+'?action=teachers').then(r=>r.json()).then(d=>{
-    if(d&&d.ok&&Array.isArray(d.teachers)&&d.teachers.length){
-      TEACHERS=d.teachers.map(t=>({name:t.name,no:t.no,hasPw:!!t.hasPw,shoudan:t.shoudan||[]}));rebuildT();
-      const sd={};d.teachers.forEach(t=>{if(t.shoudan&&t.shoudan.length)sd[t.name]=t.shoudan;});TEACHER_SHOUDAN=sd;
-    }
-  }).catch(()=>{}).then(()=>cb());
-}
-function init(){
-  if(!API_URL)document.getElementById('setupNote').innerHTML='<div class="banner info">⚙ 尚未設定後端網址：請先部署 Code.gs，把 /exec 網址貼到本檔 API_URL。</div>';
-  fillMonths();
-  loadOpenCfg();
-  loadSysCfg();
-  loadTeachers(function(){
-    document.getElementById('loginTeacher').innerHTML='<option value=""></option>'+TEACHERS.map(t=>`<option value="${t.name}">${t.no}　${t.name}</option>`).join('');
-    renderLoginTiles(); renderRankRules();
-    let saved=null;try{saved=localStorage.xlUser}catch(e){}
-    if(saved&&TBYNAME[saved])enterApp(saved);
-    else document.getElementById('login').style.display='';
-  });
-}
-function doLogin(){
-  const name=document.getElementById('loginTeacher').value;
-  const pw=document.getElementById('loginPw').value.trim();
-  const err=document.getElementById('loginErr');
-  const bad=function(){err.style.cssText='display:block;background:rgba(192,57,43,.12);border-left:3px solid var(--red);color:var(--red);border-radius:9px;padding:11px 14px;margin-top:10px;font-size:.88em';err.textContent='密碼不正確，請重新輸入。';};
-  const good=function(){err.style.display='none';try{localStorage.xlUser=name}catch(e){}document.getElementById('login').style.display='none';enterApp(name);};
-  if(pw==='123123'){ err.style.display='none'; try{localStorage.removeItem('xlUser')}catch(e){} document.getElementById('login').style.display='none'; enterAdmin(); return; }
-  const t=TBYNAME[name];
-  if(!t)return;
-  if(!t.hasPw){ if(pw===pwOf(t.no))good(); else bad(); return; }   // 沒設自訂密碼：用預設 123+編號
-  if(!API_URL){ bad(); return; }
-  err.style.display='none'; err.textContent='';
-  fetch(API_URL+'?action=checkPw&name='+encodeURIComponent(name)+'&pw='+encodeURIComponent(pw))
-    .then(r=>r.json()).then(d=>{ if(d&&d.ok&&d.pass)good(); else bad(); })
-    .catch(()=>{ if(pw===pwOf(t.no))good(); else bad(); });        // 連線失敗：退回預設密碼判斷
-}
-function enterApp(name){
-  TEACHER=name;const t=TBYNAME[name];
-  document.getElementById('app').style.display='';
-  document.getElementById('whoBadge').style.display='';
-  document.getElementById('whoBadge').textContent='👤 '+(t?t.no+'　':'')+name;
-  document.getElementById('logoutBtn').style.display='';
-  document.getElementById('month').value=defMonth();MONTH=defMonth();
-  const adm=document.getElementById('adminOpenBtn'); if(adm) adm.style.display=(ADMIN_NAMES.indexOf(name)>=0)?'':'none';
-  loadOpenCfg(function(){ buildTabs();selectCat('法會');loadList(); });
-  try{ rankEnter(name); }catch(e){ console.warn('rank',e); }
-  if(typeof loadContacts==='function') loadContacts();
-}
-function logout(){try{localStorage.removeItem('xlUser')}catch(e){}location.reload();}
-
-function buildTabs(){document.getElementById('tabs').innerHTML=CATS_ORDER.filter(c=>catOpen(c)).map(c=>`<button class="tab" data-c="${c}" onclick="selectCat('${c}')">${c}</button>`).join('');}
-function selectCat(c){if(EDIT.id&&EDIT.cat!==c)cancelEdit(true);CURCAT=c;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.c===c));document.getElementById('formSub').textContent=CATDESC[c]||'';renderForm();}
-
-/* 通用欄位 HTML */
-function fieldHTML(f,reqOverride){
-  if(f.group)return `<div class="grouphd">${f.group}</div>`;
-  const req=(reqOverride!=null?reqOverride:f.req);
-  const egHTML=f.eg?`<div class="fhint" style="color:var(--mut)">例如：${f.eg}</div>`:'';
-  const lab=(f.label||f.k)+(req?'<span class="req">*</span>':'');
-  if(f.type==='ymd'){
-    const oi=f.conv?` oninput="birthPrev('${f.y}','${f.m}','${f.d}','${f.calk}')"`:'';
-    const calChange=f.cal?` onchange="${f.conv?`birthPrev('${f.y}','${f.m}','${f.d}','${f.calk}');`:''}toggleLeap('${f.calk}','${f.y}')"`:'';
-    let seg='';
-    if(f.cal)seg+=`<select class="cal" id="in_${f.calk}"${calChange}><option value="國">國曆</option><option value="農">農曆</option></select>`;
-    seg+=`<span class="seg"><input type="number" id="in_${f.y}" placeholder="年"${oi}><span>年</span></span>`;
-    seg+=`<span class="seg"><input type="number" id="in_${f.m}" placeholder="月"${oi}><span>月</span></span>`;
-    seg+=`<span class="seg"><input type="number" id="in_${f.d}" placeholder="日"${oi}><span>日</span></span>`;
-    let h=`<div class="field" data-k="${f.rk||f.y}"><label>${f.label}${req?'<span class="req">*</span>':''}${f.conv?'<span style="font-weight:400;color:var(--mut);font-size:.82em">　西元或民國皆可，不知農曆填國曆自動換算</span>':''}</label><div class="ymd">${seg}</div>`;
-    if(f.cal)h+=`<label id="leapwrap_${f.y}" style="display:flex;align-items:center;gap:5px;font-weight:400;font-size:.9em;margin-top:6px;color:var(--mut)"><input type="checkbox" id="leap_${f.y}" style="width:auto;margin:0 4px 0 0">此生日為農曆閏月（直接填農曆、且為閏月才勾）</label>`;
-    if(f.conv)h+=`<div class="fhint" id="prev_${f.y}"></div>`;
-    return h+egHTML+`</div>`;
-  }
-  if(f.type==='select'){
-    const opts=(f.from==='shoudan'
-        ? [{v:'',t:'— 未指定'},{v:TEACHER,t:TEACHER+'（本人）'}].concat((TEACHER_SHOUDAN[TEACHER]||[]).map(x=>({v:x,t:x}))).concat([{v:'__add__',t:'＋ 新增收單人…'}])
-        : f.opts)||[];
-    const optHTML=opts.map(o=>{const v=(o&&typeof o==='object')?o.v:o;const t=(o&&typeof o==='object')?o.t:(o||'—');return `<option value="${v}">${t}</option>`;}).join('');
-    const onchg=f.onchg?` onchange="${f.onchg}()"`:(f.from==='shoudan'?` onchange="shoudanPick(this)"`:'');
-    let h=`<div class="field" data-k="${f.k}"><label>${lab}</label><select id="in_${f.k}"${onchg}>${optHTML}</select>`;
-    if(f.hint)h+=`<div class="fhint" id="hint_${f.hint}"></div>`;
-    return h+egHTML+`</div>`;
-  }
-  const labx=lab+(f.max?`<span style="font-weight:400;color:var(--mut);font-size:.8em">（限${f.max}字，最好30字內）</span>`:'');
-  let h=`<div class="field" data-k="${f.k}"><label>${labx}</label><input type="${f.type==='num'?'number':'text'}" id="in_${f.k}"${f.def!=null?` value="${f.def}"`:''}${f.max?` maxlength="${f.max}"`:''}${f.oninp?` oninput="${f.oninp}()"`:''}>`;
-  if(f.hint)h+=`<div class="fhint" id="hint_${f.hint}"></div>`;
-  return h+egHTML+`</div>`;
-}
-
-/* 渲染表單 */
-function renderForm(){
-  const wrap=document.getElementById('formFields');
-  if(CURCAT==='法會'){renderFahui(wrap);acAttach();return;}
-  if(CURCAT==='斗燈'){renderDou(wrap);acAttach();return;}
-  if(CURCAT==='還陰債'){renderYin(wrap);acAttach();return;}
-  wrap.innerHTML=FIELDS[CURCAT].map(f=>fieldHTML(f)).join('');
-  acAttach();
-}
-function acAttach(){ if(typeof acAttachReal==='function')acAttachReal(); }
-/* 法會：多項目 + 客戶資料 */
-function renderFahui(wrap){
-  let h='';
-  const shf=FAHUI_CUST[0];
-  h+=fieldHTML(shf);
-  if(EDIT.id){ // 編輯單筆
-    h+=`<div class="field" data-k="項目"><label>項目<span class="req">*</span></label><select id="in_項目" onchange="fahuiEditWish()">${fahuiOptions('')}</select></div>`;
-    h+=`<div class="field" data-k="份數"><label>份數<span class="req">*</span></label><input type="number" id="in_份數" value="1"></div>`;
-    h+=`<div class="field" data-k="祈願" id="fahuiWishField"><label>祈願／願望<span style="font-weight:400;color:var(--mut);font-size:.8em">（限50字）</span></label><input type="text" id="in_祈願" maxlength="80"><div id="editWishHelper" style="margin-top:6px"></div></div>`;
-  }else{ // 新增多項目
-    h+=`<div class="grouphd">項目（可加多個）</div><div class="itembox" id="fahuiItems"></div><button class="additem" onclick="addItemRow()">＋ 再加一個項目</button>`;
-  }
-  FAHUI_CUST.slice(1).forEach(f=>h+=fieldHTML(f));
-  wrap.innerHTML=h;
-  if(!EDIT.id){document.getElementById('fahuiItems').innerHTML='';addItemRow();}
-}
-/* ===== 法會祈願公版 ===== */
-const WISH_SIMPLE={
- '補財':'修復天庫、地庫的破損，守住本命正財，事業順利，財源廣進。',
- '補庫':'增財補庫，減少不必要的開支，事業順利，財源廣進。',
- '補運(消災解厄)':'提升整體運勢，事事順心。',
- '冤親(解冤釋結)':'迴向給自身討報之冤親債主，因果業力，化惡緣轉善緣',
- '招貴人':'提升工作上的貴人運勢，工作有狀況時有貴人相助',
- '化小人':'化解身邊所有的男女小人，轉為貴人相助，化惡緣轉善緣',
- '貴人(木姻緣)':'廣結善緣，讓跟自己有善緣的人顯化出來，貴人相助。'
-};
-const WISH_WATER=[['求自我提升','提升個人魅力與自信'],['求對象','天賜良緣，感情上能遇到好的桃花，合適的對象']];
-function fireWishText(scen,name,bstr){ const b=name+(bstr?'（'+bstr+'）':'');
- if(scen==='求在一起')return '化解和'+b+'之間的感情阻礙，有良好的互動及聯繫，感情越來越甜蜜，牽緣在一起';
- if(scen==='求復合')return '化解和'+b+'之間的感情阻礙，有良好的互動及聯繫，重新牽緣在一起';
- return '化解和'+b+'之間的感情阻礙，有良好的互動及溝通，感情越來越甜蜜熱絡'; }
-function wishMode(item){
- if(item==='天赦金')return 'none';
- if(/金姻緣/.test(item))return 'jin';
- if(/[火土]姻緣/.test(item))return 'fire';
- if(/水姻緣/.test(item))return 'water';
- if(WISH_SIMPLE[item])return 'simple';
- return 'free';
-}
-function partnerBlockHTML(){ return `<input class="fp-name" type="text" placeholder="對方姓名（XXX）" oninput="wishPartnerChg(this)">
- <div class="fp-bd fp-bday">
-  <select class="fp-cal" onchange="wishPartnerChg(this)"><option value="國">國曆</option><option value="農">農曆</option></select>
-  <input class="fp-y" type="number" placeholder="年" oninput="wishPartnerChg(this)">
-  <input class="fp-m" type="number" placeholder="月" oninput="wishPartnerChg(this)">
-  <input class="fp-d" type="number" placeholder="日" oninput="wishPartnerChg(this)">
- </div>`; }
-function pubBox(txt){ return `<div style="margin-top:5px;font-size:12px;color:#8a7a4a;line-height:1.6;background:rgba(156,126,58,.06);border-radius:7px;padding:7px 9px">公版參考：${txt}</div>`; }
-function scBtn(label,onclick){ return `<button type="button" onclick="${onclick}" style="padding:6px 11px;border:1px solid #9c7e3a;background:#fff;color:#9c7e3a;border-radius:15px;font-size:13px;cursor:pointer">${label}</button>`; }
-
-function itemRowHTML(item,qty,wish){
- return `<div class="fitem">
- <button type="button" class="fi-del" onclick="this.closest('.fitem').remove()">✕ 刪除</button>
- <select class="fi-item" onchange="fiItemChange(this)">${fahuiOptions(item)}</select>
- <div class="fi-qrow"><span class="fi-qlabel">份數</span>
-  <button type="button" class="fi-step" onclick="fiBump(this,-1)">−</button>
-  <input class="fi-qty" type="number" min="1" inputmode="numeric" value="${qty||1}">
-  <button type="button" class="fi-step" onclick="fiBump(this,1)">＋</button></div>
- <div class="fi-wisharea"></div></div>`;
-}
-function renderWishArea(card,item,initWish){
- const box=card.querySelector('.fi-wisharea'); if(!box)return;
- const mode=wishMode(item); card.dataset.scen='';
- const wishInput=`<input class="fi-wish" type="text" maxlength="80" placeholder="此項目的祈願／願望（最好30字內）" value="${initWish||''}">`;
- if(mode==='none'){ box.innerHTML=''; return; }
- if(mode==='free'){ box.innerHTML=wishInput; return; }
- if(mode==='simple'){ box.innerHTML=wishInput
-   +`<button type="button" onclick="fillPub(this,'${item}')" style="margin-top:6px;padding:6px 10px;border:1px solid #9c7e3a;background:#fff;color:#9c7e3a;border-radius:6px;font-size:13px;cursor:pointer">📋 複製公版到祈願欄</button>`
-   +pubBox(WISH_SIMPLE[item]); return; }
- if(mode==='water'){ box.innerHTML=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">${scBtn('求自我提升',"waterScen(this,0)")}${scBtn('求對象',"waterScen(this,1)")}</div>`
-   +wishInput+pubBox('求自我提升 → '+WISH_WATER[0][1]+'<br>求對象 → '+WISH_WATER[1][1]); return; }
- if(mode==='jin'){ box.innerHTML=`<div class="fi-partner" style="display:block">
-   <div class="fp-hd"><div class="fp-title">祈願</div><div class="fp-note">先填對方姓名＋生日，再點「複製公版」帶入祈願欄（可再自行修改）</div></div>
-   ${partnerBlockHTML()}
-   <div style="margin:8px 0">${scBtn('📋 複製公版到祈願欄',"jinFill(this)")}</div>
-   ${wishInput}
-   ${pubBox('祈求和○○○（農曆○年○月○日）之間的感情更好，有良好的互動及溝通，感情越來越甜蜜熱絡')}</div>`; return; }
- if(mode==='fire'){ box.innerHTML=`<div class="fi-partner" style="display:block">
-   <div class="fp-hd"><div class="fp-title">祈願</div><div class="fp-note">先填對方姓名＋生日，再點下方情境帶入完整句（可再自行修改）</div></div>
-   ${partnerBlockHTML()}
-   <div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0">${scBtn('求在一起',"fireScen(this,'求在一起')")}${scBtn('求復合',"fireScen(this,'求復合')")}${scBtn('情侶求增溫',"fireScen(this,'情侶求增溫')")}</div>
-   ${wishInput}</div>`; return; }
-}
-function fiItemChange(sel){ const card=sel.closest('.fitem'); renderWishArea(card,sel.value,''); }
-function fillPub(btn,item){ const card=btn.closest('.fitem'); const w=card.querySelector('.fi-wish'); if(w&&WISH_SIMPLE[item]){w.value=WISH_SIMPLE[item];w.focus();} }
-function waterScen(btn,i){ const card=btn.closest('.fitem'); const w=card.querySelector('.fi-wish'); if(w){w.value=WISH_WATER[i][1];w.focus();} }
-function fireScen(btn,scen){ const card=btn.closest('.fitem'); card.dataset.scen=scen; const name=(card.querySelector('.fp-name').value||'').trim(); const w=card.querySelector('.fi-wish'); if(w){w.value=fireWishText(scen,name,fpBstr(card));w.focus();} }
-function jinFill(btn){ const card=btn.closest('.fitem'); card.dataset.scen='jin'; const name=(card.querySelector('.fp-name').value||'').trim(); const w=card.querySelector('.fi-wish'); if(w){w.value=partnerWish('金',name,fpBstr(card));w.focus();} }
-function wishPartnerChg(el){ const card=el.closest('.fitem'); const item=card.querySelector('.fi-item').value; const mode=wishMode(item);
- const name=(card.querySelector('.fp-name').value||'').trim();
- if(mode==='jin'){ if(card.dataset.scen==='jin'){ const w=card.querySelector('.fi-wish'); if(w)w.value=partnerWish('金',name,fpBstr(card)); } }
- else if(mode==='fire'){ const scen=card.dataset.scen; if(scen){ const w=card.querySelector('.fi-wish'); if(w)w.value=fireWishText(scen,name,fpBstr(card)); } }
-}
-function partnerWish(item,name,bstr){ if(!name)return ''; return '祈求和'+name+(bstr?'（'+bstr+'）':'')+'感情更好，有良好的互動及溝通，感情越來越甜蜜熱絡'; }
-function fpBstr(card){ let y=card.querySelector('.fp-y').value,m=card.querySelector('.fp-m').value,d=card.querySelector('.fp-d').value; if(!(y&&m&&d))return ''; if(card.querySelector('.fp-cal').value==='國'){const cv=s2lMinguo(y,m,d);if(cv){y=cv.y;m=cv.m;d=cv.d;}} return '農曆'+y+'年'+m+'月'+d+'日'; }
-function fiBump(btn,d){const inp=btn.closest('.fitem').querySelector('.fi-qty');inp.value=Math.max(1,(parseInt(inp.value)||1)+d);}
-function shoudanPick(sel){
-  if(sel.value!=='__add__')return;
-  const nm=(prompt('新增收單人（業務／客服）姓名：')||'').trim();
-  sel.value='';
-  if(!nm)return;
-  TEACHER_SHOUDAN[TEACHER]=TEACHER_SHOUDAN[TEACHER]||[];
-  if(TEACHER_SHOUDAN[TEACHER].indexOf(nm)<0){
-    TEACHER_SHOUDAN[TEACHER].push(nm);
-    const opt=document.createElement('option');opt.value=nm;opt.textContent=nm;
-    sel.insertBefore(opt, sel.querySelector('option[value="__add__"]'));
-  }
-  sel.value=nm;
-  if(API_URL) fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addShoudan',teacher:TEACHER,name:nm})}).then(r=>r.json()).catch(()=>{});
-}
-function fahuiEditWish(){
-  const f=document.getElementById('fahuiWishField');if(!f)return;
-  const item=val('項目');
-  const help=document.getElementById('editWishHelper');
-  if(item==='天赦金'){f.style.display='none';const w=document.getElementById('in_祈願');if(w)w.value='';if(help)help.innerHTML='';return;}
-  f.style.display='';
-  if(!help)return;
-  const mode=wishMode(item); const bs='padding:6px 10px;border:1px solid #9c7e3a;background:#fff;color:#9c7e3a;border-radius:6px;font-size:13px;cursor:pointer';
-  let h='';
-  if(mode==='simple'){ h=`<button type="button" onclick="editFillWish(WISH_SIMPLE['${item}'])" style="${bs}">📋 複製公版到祈願欄</button>`+pubBox(WISH_SIMPLE[item]); }
-  else if(mode==='water'){ h=`<div style="display:flex;gap:6px;flex-wrap:wrap">${scBtn('求自我提升',"editFillWish(WISH_WATER[0][1])")}${scBtn('求對象',"editFillWish(WISH_WATER[1][1])")}</div>`+pubBox('求自我提升 → '+WISH_WATER[0][1]+'<br>求對象 → '+WISH_WATER[1][1]); }
-  else if(mode==='fire'){ h=`<div style="display:flex;gap:6px;flex-wrap:wrap">${scBtn('求在一起',"editFillWish(fireWishText('求在一起','○○○','農曆○年○月○日'))")}${scBtn('求復合',"editFillWish(fireWishText('求復合','○○○','農曆○年○月○日'))")}${scBtn('情侶求增溫',"editFillWish(fireWishText('情侶求增溫','○○○','農曆○年○月○日'))")}</div>`+pubBox('點情境帶入公版後，把 ○○○ 與生日改成對方的'); }
-  else if(mode==='jin'){ h=`<button type="button" onclick="editFillWish(partnerWish('金','○○○','農曆○年○月○日'))" style="${bs}">📋 複製公版到祈願欄</button>`+pubBox('帶入後把 ○○○ 與生日改成對方的：'+partnerWish('金','○○○','農曆○年○月○日')); }
-  else { h=''; }
-  help.innerHTML=h;
-}
-function editFillWish(t){ const w=document.getElementById('in_祈願'); if(w){ w.value=t; w.focus(); } }
-function addItemRow(){const box=document.getElementById('fahuiItems');box.insertAdjacentHTML('beforeend',itemRowHTML('',1,''));const row=box.lastElementChild;renderWishArea(row,row.querySelector('.fi-item').value,'');}
-function getItemRows(){return [...document.querySelectorAll('#fahuiItems .fitem')].map(r=>{
-  const item=r.querySelector('.fi-item').value;
-  const qty=parseInt(r.querySelector('.fi-qty').value)||0;
-  const mode=wishMode(item);
-  let wish='';
-  if(mode==='none'){ wish=''; }
-  else { const w=r.querySelector('.fi-wish'); wish=w?w.value.trim():''; }
-  return {項目:item,份數:qty,祈願:wish};
-});}
-
-/* 斗燈 */
-function renderDou(wrap){
-  let h=DOU_TOP.map(f=>fieldHTML(f)).join('');
-  h+=`<div class="grouphd">加購內容</div><div id="douDetail"></div>`;
-  wrap.innerHTML=h;renderDouDetail();
-}
-function renderDouDetail(){
-  const sel=document.getElementById('in_加購類型');const box=document.getElementById('douDetail');if(!box)return;
-  const cfg=DOUCONF[sel?sel.value:''];
-  if(!cfg){box.innerHTML='<p class="sub" style="margin:0">請先選加購類型。</p>';return;}
-  box.innerHTML=cfg.order.map(nm=>{const def=DOUDEF[nm];const req=def.k&&cfg.req.indexOf(def.k)>=0?1:0;return fieldHTML(def,req);}).join('');
-}
-/* 還陰債 */
-function renderYin(wrap){
-  let h=YIN_TOP.map(f=>fieldHTML(f)).join('');
-  h+=`<div class="grouphd">亡者明細（依牒文類別）</div><div id="yinDetail"></div>`;
-  wrap.innerHTML=h;renderYinDetail();
-}
-function renderYinDetail(){
-  const sel=document.getElementById('in_牒文類別');const box=document.getElementById('yinDetail');if(!box)return;
-  const cat=sel?sel.value:'';const cfg=YINCAT[cat];
-  if(!cfg){box.innerHTML='<p class="sub" style="margin:0">請先選牒文類別。</p>';return;}
-  box.innerHTML=cfg.order.map(nm=>{const def=YDEF[nm];const req=cfg.allReq?1:(def.k&&cfg.req&&cfg.req.indexOf(def.k)>=0?1:0);return fieldHTML(def,req);}).join('');
-  const ht=YINHINT_TXT[cat]||{};
-  const hn=document.getElementById('hint_神'),hz=document.getElementById('hint_祖');
-  if(hn)hn.textContent=ht.神?('神位地址：'+ht.神):'';
-  if(hz)hz.textContent=ht.祖?('先祖名：'+ht.祖):'';
-  yinAuto();
-}
-function yinAuto(){
-  const sel=document.getElementById('in_牒文類別');if(!sel)return;const cat=sel.value;
-  const zu=document.getElementById('in_先祖名');if(!zu)return;
-  if(cat==='地基主'){zu.value='地基主';zu.readOnly=true;zu.style.background='var(--bg2)';}
-  else if(cat==='冤親債主'){const n=val('陽世報恩人');zu.value=n?(n.charAt(0)+'氏前世今生之冤親債主'):'';zu.readOnly=true;zu.style.background='var(--bg2)';}
-  else if(cat==='個人正魂'){zu.value='';zu.readOnly=true;zu.placeholder='送出時自動帶入：姓＋公/姑娘/媽＋名';zu.style.background='var(--bg2)';}
-  else {zu.readOnly=false;zu.style.background='';}
-}
-
-function val(id){const e=document.getElementById('in_'+id);return e?(''+e.value).trim():'';}
-function clearMiss(){document.querySelectorAll('.field').forEach(el=>el.classList.remove('miss'));}
-function markMiss(k){const el=document.querySelector(`.field[data-k="${k}"]`);if(el)el.classList.add('miss');}
-
-/* 收集單筆（斗燈/祭改/普桌/還陰債/法會編輯）*/
-function collectSingle(){
-  const o={category:CURCAT,month:MONTH,teacher:TEACHER};
-  COLS[CURCAT].forEach(c=>o[c]=val(c));
-  if(CURCAT==='還陰債'){
-    const cat=o['牒文類別'];
-    // 只填姓氏、後面自動補：歷代祖先/嬰靈/辭祖
-    const SUF={'歷代祖先':'氏九玄七祖歷代祖先','嬰靈':'氏嬰靈','辭祖':'氏歷代祖先'};
-    if(SUF[cat]){ const s=(''+(o['先祖名']||'')).trim(); const tail=SUF[cat].slice(1);
-      if(s && s.indexOf(tail)<0) o['先祖名']=s+SUF[cat]; }
-    // 個人正魂：先祖名＝姓＋公/姑娘/媽＋名（自動組，不用重填）
-    if(cat==='個人正魂'){ o['先祖名']=(o['姓']||'')+(o['公姑娘媽']||'')+(o['名']||''); }
-    // 冤親債主：陽世報恩人姓氏 → ○氏前世今生之冤親債主
-    if(cat==='冤親債主'){ const n=(''+(o['陽世報恩人']||'')).trim(); if(n) o['先祖名']=n.charAt(0)+'氏前世今生之冤親債主'; }
-  }
-  applyLunar(CURCAT,o);
-  return o;
-}
-/* 驗證；回傳缺漏欄位陣列 */
-function validateSingle(o){
-  clearMiss();let miss=[];
-  const need=requiredOf(CURCAT,o);
-  need.forEach(k=>{if(!(''+(o[k]||'')).trim()){miss.push(k);markMiss(k);}});
-  return miss;
-}
-function requiredOf(cat,o){
-  if(cat==='還陰債'){const base=['牒文類別','份數','陽世報恩人','報恩人居住地址'];const cfg=YINCAT[o['牒文類別']];if(!cfg)return base;
-    if(cfg.allReq){let r=base.slice();cfg.order.forEach(nm=>{const def=YDEF[nm];if(def.k)r.push(def.k);if(def.type==='ymd')r.push(def.y,def.m,def.d);});return r;}
-    return base.concat(cfg.req||[]);}
-  if(cat==='斗燈'){let r=['加購類型','份數','姓名','居住地址'];const cf=DOUCONF[o['加購類型']];if(cf)r=r.concat(cf.req);return r;}
-  if(cat==='祭改')return ['份數','姓名','居住地址','性別'];
-  if(cat==='普桌')return ['份數','姓名','居住地址','捐掉或寄回'];
-  if(cat==='法會'){ // 編輯單筆
-    let r=['項目','份數','姓名','居住地址'];
-    if(FAHUI_NOBIRTH.indexOf(o['項目'])<0)r=r.concat(['生日年','生日月','生日日']);
-    return r;
-  }
-  return [];
-}
-
-function submitForm(){
-  if(!API_URL){toast('尚未設定 API_URL');return;}
-  if(CURCAT==='法會'&&!EDIT.id)return submitFahui();
-  const o=collectSingle();const miss=validateSingle(o);
-  if(miss.length){toast('必填：'+miss.join('、'));return;}
-  const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='送出中…';
-  const payload=Object.assign({action:EDIT.id?'update':'add'},o);
-  if(EDIT.id){payload['編號']=EDIT.id;payload.category=EDIT.cat;}
-  fetch(API_URL,{method:'POST',body:JSON.stringify(payload)}).then(r=>r.json()).then(d=>{
-    if(d.ok){mergeData(d);toast(EDIT.id?'已更新 ✓':'已加入 ✓');cancelEdit(true);clearForm();renderList();setStatus('已連線','ok');}
-    else toast('失敗：'+(d.error||'未知'));
-  }).catch(e=>toast('連線失敗')).finally(()=>{btn.disabled=false;btn.textContent=EDIT.id?'更新':'加入清單';});
-}
-/* 法會多項目送出 */
-function submitFahui(){
-  clearMiss();
-  const cust={};FAHUI_CUST.forEach(f=>{if(f.type==='ymd'){cust[f.y]=val(f.y);cust[f.m]=val(f.m);cust[f.d]=val(f.d);if(f.cal)cust[f.calk]=val(f.calk);}else cust[f.k]=val(f.k);});
-  let items=getItemRows().filter(it=>it.項目&&it.份數>0);
-  let miss=[];
-  if(!items.length){toast('請至少選一個項目（份數≥1）');return;}
-  if(!cust['姓名']){miss.push('姓名');markMiss('姓名');}
-  if(!cust['居住地址']){miss.push('居住地址');markMiss('居住地址');}
-  const needBirth=items.some(it=>FAHUI_NOBIRTH.indexOf(it.項目)<0);
-  if(needBirth&&!(val('生日年')&&val('生日月')&&val('生日日'))){miss.push('生日');markMiss('生日年');}
-  if(miss.length){toast('必填：'+miss.join('、'));return;}
-  applyLunar('法會',cust);
-  const rows=items.map(it=>Object.assign({},cust,{項目:it.項目,份數:it.份數,祈願:it.祈願||''}));
-  const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='送出中…';
-  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addBatch',category:'法會',month:MONTH,teacher:TEACHER,rows:rows})}).then(r=>r.json()).then(d=>{
-    if(d.ok){mergeData(d);toast('已加入 '+rows.length+' 筆 ✓');clearForm();renderList();setStatus('已連線','ok');}
-    else toast('失敗：'+(d.error||'未知'));
-  }).catch(e=>toast('連線失敗')).finally(()=>{btn.disabled=false;btn.textContent='加入清單';});
-}
-function clearForm(){renderForm();const fn=document.getElementById('in_姓名')||document.getElementById('in_陽世報恩人');if(fn)fn.focus();}
-
-function startEdit(cat,id){
-  const e=(DATA[cat]||[]).find(x=>String(x.編號)===String(id));if(!e)return;
-  selectCat(cat);EDIT={cat,id};renderForm();
-  COLS[cat].forEach(c=>setv(c,e[c]));
-  if(cat==='還陰債')renderYinDetail(),COLS[cat].forEach(c=>setv(c,e[c]));
-  if(cat==='斗燈')renderDouDetail(),COLS[cat].forEach(c=>setv(c,e[c]));
-  const cb=document.getElementById('in_生日別');if(cb)cb.value='農';
-  const lpwrap=document.getElementById('leapwrap_生日年');
-  if(lpwrap){ const lp=document.getElementById('leap_生日年'); const mv=''+(e['生日月']||'');
-    if(mv.indexOf('閏')===0){ if(lp)lp.checked=true; setv('生日月',mv.replace('閏','')); }
-    else if(lp){ lp.checked=false; }
-    lpwrap.style.display='flex';
-  }
-  const pv=document.getElementById('prev_生日年');if(pv)pv.textContent='';
-  if(cat==='法會')fahuiEditWish();
-  document.getElementById('formTitle').textContent='編輯：'+(e.姓名||e.陽世報恩人||'');
-  document.getElementById('submitBtn').textContent='更新';
-  document.getElementById('cancelBtn').style.display='';
-  focusForm();
-  renderList();
-}
-/* 按「編輯」後自動捲回最上面的填寫區，並閃一下讓人知道跳到哪 */
-function focusForm(){
-  const c=document.getElementById('formCard'); if(!c)return;
-  try{ c.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){ c.scrollIntoView(); }
-  c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash');
-  setTimeout(function(){
-    const fn=document.getElementById('in_姓名')||document.getElementById('in_陽世報恩人');
-    if(fn){ try{ fn.focus({preventScroll:true}); }catch(e){} }
-  },420);
-}
-function setv(id,v){const e=document.getElementById('in_'+id);if(e)e.value=(v==null?'':v);}
-function cancelEdit(silent){EDIT={cat:null,id:null};document.getElementById('formTitle').textContent='新增明細';document.getElementById('submitBtn').textContent='加入清單';document.getElementById('cancelBtn').style.display='none';if(!silent){renderForm();renderList();}}
-
-function delEntry(cat,id,name){
-  if(!confirm('確定刪除「'+(name||'這一筆')+'」？無法復原。\n\n※ 若這筆行政已產生疏文，刪除後請主動通知行政（系統會自動記到「異動記錄」）。'))return;
-  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'delete',category:cat,'編號':id,month:MONTH,teacher:TEACHER})}).then(r=>r.json()).then(d=>{
-    if(d.ok){mergeData(d);if(EDIT.id===id)cancelEdit(true);renderList();toast('已刪除');}
-    else toast('刪除失敗：'+(d.error||''));
-  }).catch(e=>toast('連線失敗'));
-}
-
-function onMonth(){MONTH=document.getElementById('month').value.trim();cancelEdit(true);loadList();}
-function setStatus(t,c){const s=document.getElementById('status');s.textContent=t;s.className=c||'';}
-function loadList(){
-  if(!API_URL){renderList();return;}
-  setStatus('讀取中…','');
-  fetch(`${API_URL}?action=list&teacher=${encodeURIComponent(TEACHER)}&month=${encodeURIComponent(MONTH)}`).then(r=>r.json()).then(d=>{
-    if(d.ok){DATA=d.data||{};TOTALS=d.totals||{};renderList();try{renderHero();renderCR();}catch(e){}const n=CATS_ORDER.reduce((s,c)=>s+((DATA[c]||[]).length),0);setStatus('已連線 · '+n+' 筆','ok');}
-    else setStatus('讀取失敗','err');
-  }).catch(e=>setStatus('連線失敗（檢查 API 網址/部署權限）','err'));
-}
-function esc(s){return (''+(s==null?'':s)).replace(/'/g,'').replace(/</g,'');}
-function entryLabel(cat,e){
-  if(cat==='法會')return [e.姓名||'(未填)', `${e.項目||''} ×${e.份數||0}${e.祈願?' · 祈願:'+e.祈願:''}`];
-  if(cat==='斗燈')return [e.姓名||'(未填)', `${e.斗種||''}（${e.加購類型||''}）×${e.份數||0}`];
-  if(cat==='還陰債')return [e.陽世報恩人||'(未填)', `${e.牒文類別||''} ×${e.份數||0}`];
-  if(cat==='祭改')return [e.姓名||'(未填)', `祭改 ×${e.份數||0} ${e.性別||''}`];
-  if(cat==='普桌')return [e.姓名||'(未填)', `普桌 ×${e.份數||0} ${e.捐掉或寄回||''}`];
-  return [e.姓名||'',''];
-}
-function renderList(){
-  const area=document.getElementById('listArea');let h='';let total=0;
-  CATS_ORDER.forEach(cat=>{const rows=DATA[cat]||[];if(!rows.length)return;total+=rows.length;
-    const sum=rows.reduce((s,e)=>s+(parseFloat(e.份數)||0),0);
-    h+=`<div class="catgroup"><h3>${cat}<span class="c">${rows.length} 筆 · 共 ${sum} 份</span></h3>`;
-    rows.forEach(e=>{const lb=entryLabel(cat,e);const chg=e.異動?' <span style="color:var(--red);font-size:.78em">●已改</span>':'';
-      h+=`<div class="entry${EDIT.id===e.編號?' ed':''}"><div class="info">${lb[0]}${chg}<small>${lb[1]}</small></div>
-      <div><button class="rowbtn e" onclick="startEdit('${cat}','${e.編號}')">編輯</button><button class="rowbtn d" onclick="delEntry('${cat}','${e.編號}','${esc(lb[0])}')">刪</button></div></div>`;});
-    h+=`</div>`;
-  });
-  area.innerHTML= total?h:'<p class="empty">本月尚無資料，從上面選類別新增第一筆。</p>';
-  renderTotals();
-}
-function renderTotals(){
-  const t=TOTALS||{};const ta=document.getElementById('totArea');
-  if(!Object.keys(t).length){ta.innerHTML='';return;}
-  const itline=ITEMS.map(i=>`${i.replace(/\(.*\)/,'')} ${t[i]||0}`).join('　');
-  ta.innerHTML=`<div class="totbar">本月彙總（寫進統計總表）<br>
-  萬寶小計 <b>${t['萬寶小計']||0}</b>　天赦 <b>${t['天赦金']||0}</b>　還陰債 <b>${t['還陰債']||0}</b>　年斗 <b>${t['年斗']||0}</b>　季斗 <b>${t['季斗']||0}</b>　令牌 <b>${t['令牌']||0}</b>　祭改 <b>${t['祭改']||0}</b>　普桌 <b>${t['普桌']||0}</b>
-  <div class="items">萬寶金11項：${itline}</div></div>`;
-}
-let tt;function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2300);}
-
 
 /* =====================================================================
-   品階登入畫面（2026-10-01 自品階內測版移植；資料唯讀、不影響業績計算）
+   品階內測版（2026-09-25）
+   - 這份是獨立檔案，原本的 香量填單_8.html 完全沒動
+   - 內測模式：讀取正式資料（唯讀），任何新增／修改／刪除只存在這台電腦，
+     不會寫進正式試算表；「重置」即回到正式資料
+   - 老師專屬設定（品階、累積業績、稱號、標語、主色、本月目標）存在這台電腦，
+     可按「匯出設定」存成檔案，之後搬進正式後台
    ===================================================================== */
+const BETA = false;   /* 正式版：填單直接寫進試算表 */
+
+/* ---------- 六階設定（門檻＝累積業績；% ＝聘階獎金，與獎金計算系統一致） ---------- */
 const RANKS = [
   {k:'銀階', th:0,       pct:60, main:'#7d8a99', dark:'#4a5663', light:'#eef1f5', glow:'#c9d3de', frame:'circle', sym:'star',    tag:'啟明', motto:'初心點燈，照亮第一位有緣人'},
   {k:'黃金', th:630000,  pct:68, main:'#b3862a', dark:'#7a5a14', light:'#fbf4e2', glow:'#f1d58f', frame:'sun',    sym:'sun',     tag:'耀光', motto:'光耀有緣，福氣越做越旺'},
@@ -1114,12 +561,137 @@ const RANKS = [
   {k:'皇冠總裁', th:6930000, pct:120, need:3, main:'#2e2a24', dark:'#000000', light:'#f4f1ea', glow:'#e2c06a', frame:'imperial', sym:'crowngold', tag:'冠冕', motto:'以德服眾，冠冕加身'},
   {k:'至尊總裁', th:8190000, pct:127, need:4, main:'#a8801e', dark:'#6e520c', light:'#fbf5e3', glow:'#f3d98a', frame:'imperial', sym:'supreme',   tag:'至尊', motto:'至高傳承，萬燈同輝'}
 ];
+/* ---------- 主題（K 幫個別老師套用；標章仍依品階，尊榮感不變） ---------- */
+const THEMES = {
+  '海底粉星':{main:'#e2587f',dark:'#a8345a',light:'#e6f5fa',glow:'#ffc2d4',pat:'ocean', deco:'starfish'},
+  '櫻花':    {main:'#d56d8c',dark:'#963c59',light:'#fdf0f3',glow:'#f8c9d6',pat:'petal', deco:'flower'},
+  '星空':    {main:'#4b4fb5',dark:'#2b2d78',light:'#eef0fc',glow:'#c3c6f5',pat:'stars', deco:'star'},
+  '祥雲金':  {main:'#b8892b',dark:'#6f4f10',light:'#fbf5e6',glow:'#f1d58f',pat:'cloud', deco:'cloud'},
+  '森林':    {main:'#3f8a4a',dark:'#245a2d',light:'#eef7ef',glow:'#bfe3c4',pat:'leaf',  deco:'leaf'},
+  '黑金':    {main:'#2e2a24',dark:'#000000',light:'#f5f1e6',glow:'#e2c06a',pat:'lines', deco:'spark'}
+};
+function decoSVG(k,c){
+  const S=b=>`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">${b}</svg>`;
+  switch(k){
+    case 'starfish': return S(`<path d="M12 2.5c1 0 1.6 3.6 2.6 5.2 1.3.4 5.8.4 6.1 1.3.3 1-3.5 3.2-4.3 4.4.1 1.6 1.8 5.6 1 6.2-.8.6-4-2.3-5.4-2.7-1.4.4-4.6 3.3-5.4 2.7-.8-.6.9-4.6 1-6.2-.8-1.2-4.6-3.4-4.3-4.4.3-.9 4.8-.9 6.1-1.3C10.4 6.1 11 2.5 12 2.5z" fill="${c}"/><circle cx="12" cy="11.5" r="1" fill="#fff"/><circle cx="9" cy="10.5" r=".7" fill="#fff"/><circle cx="15" cy="10.5" r=".7" fill="#fff"/><circle cx="10.3" cy="14" r=".7" fill="#fff"/><circle cx="13.7" cy="14" r=".7" fill="#fff"/>`);
+    case 'flower': { let p=''; for(let i=0;i<5;i++){p+=`<ellipse cx="12" cy="6.5" rx="3.4" ry="5" fill="${c}" transform="rotate(${i*72} 12 12)"/>`;} return S(p+`<circle cx="12" cy="12" r="2.4" fill="#ffe08a"/>`); }
+    case 'star': return S(`<polygon points="${starPts(5,10,4.2,12,12.5)}" fill="${c}"/>`);
+    case 'cloud': return S(`<path d="M6 17a4 4 0 0 1 .6-8 5 5 0 0 1 9.6 1.2A3.5 3.5 0 1 1 17.5 17z" fill="${c}"/>`);
+    case 'leaf': return S(`<path d="M4 20C4 9 11 4 20 4c0 9-5 16-16 16z" fill="${c}"/><path d="M5 19 16 8" stroke="#fff" stroke-width="1.3"/>`);
+    case 'spark': return S(`<path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z" fill="#c9a24a"/>`);
+  }
+  return '';
+}
+function patternURL(k,c){
+  const e=encodeURIComponent; let b='';
+  switch(k){
+    case 'ocean': b=`<circle cx="12" cy="14" r="4" fill="none" stroke="${c}" stroke-width="1.2"/><circle cx="50" cy="40" r="2.5" fill="none" stroke="${c}" stroke-width="1"/><circle cx="30" cy="58" r="1.6" fill="${c}"/><polygon points="${starPts(5,6,2.6,56,12)}" fill="${c}"/>`; break;
+    case 'petal': b=`<ellipse cx="14" cy="16" rx="3" ry="5" fill="${c}" transform="rotate(30 14 16)"/><ellipse cx="48" cy="46" rx="2.4" ry="4" fill="${c}" transform="rotate(-40 48 46)"/>`; break;
+    case 'stars': b=`<polygon points="${starPts(5,3.5,1.5,12,14)}" fill="${c}"/><circle cx="44" cy="30" r="1.2" fill="${c}"/><polygon points="${starPts(4,3,1,34,54)}" fill="${c}"/>`; break;
+    case 'cloud': b=`<path d="M8 30a6 6 0 0 1 11-3 5 5 0 0 1 9 4H8z" fill="${c}"/><path d="M38 58a5 5 0 0 1 9-2 4 4 0 0 1 7 3H38z" fill="${c}"/>`; break;
+    case 'leaf': b=`<path d="M10 26c0-8 5-12 12-12 0 7-4 12-12 12z" fill="${c}"/><path d="M42 58c0-6 4-9 9-9 0 5-3 9-9 9z" fill="${c}"/>`; break;
+    case 'lines': b=`<path d="M0 64L64 0" stroke="${c}" stroke-width="1"/>`; break;
+  }
+  return `url("data:image/svg+xml,${e(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" opacity=".22">${b}</svg>`)}")`;
+}
+/* ---------- 聘階福利（頁面上看得到的特權；賺錢工具人人都有） ---------- */
+const PERKS=[
+  {honor:['專屬填單頁','品階標章'],        face:['群組公告歡迎轉正'],            gift:['手寫轉正小卡','加持平安符']},
+  {honor:['專屬主題／顏色'],              face:['菁英宴會受獎'],                gift:[]},
+  {honor:['個人稱號＋標語'],              face:['名片印上品階與稱號'],          gift:['鑽石獎狀']},
+  {honor:['名字流光特效'],                face:['菁英宴會固定席次'],            gift:[]},
+  {honor:['個人大頭照'],                  face:['宴會上台分享'],                gift:[]},
+  {honor:['金框尊榮頁面','量身訂製主題'],  face:['宴會主桌＋擔任頒獎人'],        gift:['總裁大獎杯']},
+  {honor:['紫金尊榮頁面'],                face:['菁英宴會領航席'],              gift:[]},
+  {honor:['環球專屬標章'],                face:['年度表揚壓軸登場'],            gift:[]},
+  {honor:['皇冠黑金頁面'],                face:['公司年度策略會議席次'],        gift:[]},
+  {honor:['至尊專屬主題'],                face:['官網首頁至尊表揚'],            gift:[]}
+];
+const PERK_CAT=[['honor','👑 尊榮'],['face','🎖 禮遇'],['gift','🏆 獎項']];
+function perkChips(list,lock){return PERK_CAT.map(([k,lab])=>{const xs=[];list.forEach(p=>xs.push(...(p[k]||[])));return xs.length?`<div class="pkrow"><em>${lab}</em>${xs.map(x=>`<span class="pk${lock?' lk':''}">${x}</span>`).join('')}</div>`:'';}).join('');}
+function can(name,lv){const r=rankOfName(name);if(!r)return false;return r.i>=lv||!!profileOf(name).vip;}
+const RBY = {}; RANKS.forEach((r,i)=>{RBY[r.k]=Object.assign({i},r);});
+const INTERNAL_ACCTS = ['公司內部','靈應壇'];
+const CORE4 = ['陳捷容','羅文勳','蕭竣方','陳彩綺'];
 
-function polyPts(n,r,cx,cy,rot){let s=[];for(let i=0;i<n;i++){const a=(rot||0)+i*2*Math.PI/n;s.push((cx+r*Math.cos(a)).toFixed(2)+','+(cy+r*Math.sin(a)).toFixed(2));}return s.join(' ');}
-function starPts(n,r1,r2,cx,cy,rot){let s=[];for(let i=0;i<n*2;i++){const r=i%2?r2:r1;const a=(rot==null?-Math.PI/2:rot)+i*Math.PI/n;s.push((cx+r*Math.cos(a)).toFixed(2)+','+(cy+r*Math.sin(a)).toFixed(2));}return s.join(' ');}
+/* ---------- 預設老師資料（品階取自獎金計算系統；累積業績先用 2026 年 1-8 月加總示範；目標＝1-8月平均×1.1） ---------- */
+/* 累積業績＝獎金計算系統的歷年累積（到 2026.04，已扣掉 4 月令牌多算與梁凱妍 1-2 月重複）＋ 5–8 月每月匯總表「全部總業績」
+   → 截至 2026.08 月結。每月月結後更新 CUM_ASOF 與數字即可，品階會自動重算。 */
+const CUM_ASOF='2026.08';
+const CUM={'陳捷容':9309540,'陳彩綺':7332882,'沈佳琪':6230191,'羅文勳':5858613,'湯雯莉':4218763,'周冠榮':3146236,'蕭鎧峻':1622118,'謝承殷':1539500,'蕭竣方':1478817,'賴素貞':1374600,'熊卿妃':1103850,'鐘宥涵':632120,'鄭聖勳':606173,'陳昕昀':601060,'梁凱妍':377660,'張簡玉靖':314980,'林雅涵':252160,'謝欣諭':136323,'王宥心':100000};
+/* 推薦關係（取自獎金計算系統）：誰的上線是誰 */
+const SPONSOR={'陳彩綺':'陳捷容','湯雯莉':'陳捷容','熊卿妃':'陳捷容','鐘宥涵':'陳捷容','沈佳琪':'羅文勳','周冠榮':'羅文勳','鄭聖勳':'羅文勳','王宥心':'羅文勳','謝欣諭':'湯雯莉','賴素貞':'湯雯莉','張簡玉靖':'賴素貞','梁凱妍':'陳彩綺','謝承殷':'蕭鎧峻','陳昕昀':'蕭鎧峻','林雅涵':'蕭鎧峻'};
+/* 正式老師＋目前系統上的品階（只升不降的底線） */
+const OFFICIAL={'陳捷容':'總裁','羅文勳':'總裁','陳彩綺':'總裁','沈佳琪':'總裁','湯雯莉':'翡翠','周冠榮':'翡翠','蕭竣方':'鑽石','蕭鎧峻':'鑽石','熊卿妃':'黃金','張簡玉靖':'黃金','鐘宥涵':'黃金','謝欣諭':'銀階','賴素貞':'銀階','鄭聖勳':'銀階','梁凱妍':'銀階','王宥心':'銀階','謝承殷':'銀階','陳昕昀':'銀階','林雅涵':'銀階'};
+const GOAL_DEFAULT={'陳捷容':450000,'羅文勳':300000,'陳彩綺':360000,'沈佳琪':180000,'湯雯莉':290000,'周冠榮':80000,'蕭竣方':30000,'蕭鎧峻':60000,'熊卿妃':50000,'張簡玉靖':50000,'鐘宥涵':30000,'謝欣諭':40000,'賴素貞':160000,'鄭聖勳':70000,'梁凱妍':70000,'王宥心':30000,'謝承殷':30000,'陳昕昀':30000,'林雅涵':30000};
+const PROFILE_DEFAULT={};
+Object.keys(GOAL_DEFAULT).forEach(n=>{ PROFILE_DEFAULT[n]={formal:!!OFFICIAL[n], cum:CUM[n]||0, goal:GOAL_DEFAULT[n]}; });
+const PROFILE_KEY='rankBeta_profiles_v2';
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function lsDel(k){try{localStorage.removeItem(k)}catch(e){}}
+function loadProfiles(){let o={};try{o=JSON.parse(lsGet(PROFILE_KEY)||'null')}catch(e){o=null}
+  if(!o){ o={}; try{ const old=JSON.parse(lsGet('rankBeta_profiles_v1')||'{}')||{};   // 舊設定：只搬外觀與目標，不搬舊的品階和累積業績
+      Object.keys(old).forEach(n=>{ const x=old[n]||{}; o[n]={}; ['title','slogan','color','theme','avatar','vip','gift','goal'].forEach(k=>{ if(x[k]!==undefined) o[n][k]=x[k]; }); });
+      lsSet(PROFILE_KEY,JSON.stringify(o)); }catch(e){} }
+  return o||{};}
+let PROFILES = loadProfiles();
+function profileOf(name){
+  const d=PROFILE_DEFAULT[name]||{formal:false,cum:0,goal:30000};
+  const saved=Object.assign({},PROFILES[name]||{}); delete saved.rank;   // 舊版手動品階不再沿用，改自動計算
+  const p=Object.assign({title:'',slogan:'',color:'',theme:'',avatar:'',vip:false,gift:'',rankManual:''},d,saved);
+  p.cum=+p.cum||0; p.goal=+p.goal||0; p.formal=!!p.formal;
+  return p;
+}
+/* ---------- 自動品階：業績到就升；總裁以上還要看團隊裡有幾位總裁；只升不降 ---------- */
+function downline(name){ const out=[]; const walk=n=>{ Object.keys(SPONSOR).forEach(c=>{ if(SPONSOR[c]===n&&out.indexOf(c)<0){ out.push(c); walk(c); } }); }; walk(name); return out; }
+function cumRankIdx(cum){ let i=-1; RANKS.forEach((x,k)=>{ if(!x.need && cum>=x.th) i=k; }); return i; }   // 只看業績能到的最高「一般階」（總裁為止）
+function presCount(name){ return downline(name).filter(c=>{ const q=profileOf(c); return q.formal && cumRankIdx(q.cum)>=RBY['總裁'].i; }).length; }
+function autoRankIdx(name){
+  const p=profileOf(name); if(!p.formal) return -1;
+  let i=Math.max(0,cumRankIdx(p.cum));
+  const pc=presCount(name);
+  RANKS.forEach((x,k)=>{ if(x.need && p.cum>=x.th && pc>=x.need && k>i) i=k; });
+  const off=OFFICIAL[name]&&RBY[OFFICIAL[name]]?RBY[OFFICIAL[name]].i:-1;
+  return Math.max(i,off);
+}
+function rankOfName(name){
+  const p=profileOf(name);
+  if(p.rankManual==='__none__') return null;
+  if(p.rankManual&&RBY[p.rankManual]) return RBY[p.rankManual];
+  const i=autoRankIdx(name); return i>=0?RBY[RANKS[i].k]:null;
+}
+function fmt$(n){return Math.round(+n||0).toLocaleString('en-US');}
+
+/* ---------- 顏色工具 ---------- */
 function hex2rgb(h){h=(h||'').replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h,16);return [(n>>16)&255,(n>>8)&255,n&255];}
 function rgb2hex(r){return '#'+r.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');}
 function mix(a,b,t){const x=hex2rgb(a),y=hex2rgb(b);return rgb2hex(x.map((v,i)=>v+(y[i]-v)*t));}
+function paletteOf(name){
+  const r=rankOfName(name); const p=profileOf(name);
+  if(!r) return null;
+  if(!can(name,1)) return {main:r.main,dark:r.dark,light:r.light,glow:r.glow};
+  if(p.theme&&THEMES[p.theme]){const T=THEMES[p.theme];return {main:T.main,dark:T.dark,light:T.light,glow:T.glow};}
+  if(p.color && /^#[0-9a-f]{6}$/i.test(p.color)){
+    const m=p.color; return {main:m,dark:mix(m,'#000000',.35),light:mix(m,'#ffffff',.9),glow:mix(m,'#ffffff',.55)};
+  }
+  return {main:r.main,dark:r.dark,light:r.light,glow:r.glow};
+}
+function applyRankTheme(name){
+  const root=document.documentElement.style; const pal=paletteOf(name);
+  if(!pal){ ['--gold','--gold2','--bg','--bg2','--line','--rk-light','--rk-glow'].forEach(v=>root.removeProperty(v)); setMetaColor('#f6f2ea'); return; }
+  root.setProperty('--gold',pal.main); root.setProperty('--gold2',pal.dark);
+  root.setProperty('--bg',mix(pal.light,'#ffffff',.35)); root.setProperty('--bg2',mix(pal.light,'#ffffff',.6));
+  root.setProperty('--line',mix(pal.main,'#ffffff',.72));
+  root.setProperty('--rk-light',pal.light); root.setProperty('--rk-glow',pal.glow);
+  setMetaColor(mix(pal.light,'#ffffff',.35));
+}
+function setMetaColor(c){const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',c);}
+
+/* ---------- 標章 SVG（每階不同外框＋不同圖騰） ---------- */
+let _bid=0;
+function polyPts(n,r,cx,cy,rot){let s=[];for(let i=0;i<n;i++){const a=(rot||0)+i*2*Math.PI/n;s.push((cx+r*Math.cos(a)).toFixed(2)+','+(cy+r*Math.sin(a)).toFixed(2));}return s.join(' ');}
+function starPts(n,r1,r2,cx,cy,rot){let s=[];for(let i=0;i<n*2;i++){const r=i%2?r2:r1;const a=(rot==null?-Math.PI/2:rot)+i*Math.PI/n;s.push((cx+r*Math.cos(a)).toFixed(2)+','+(cy+r*Math.sin(a)).toFixed(2));}return s.join(' ');}
 function badgeSVG(rk,pal){
   const r=RBY[rk]; if(!r) return '';
   pal=pal||r; const id='bg'+(++_bid); const M=pal.main,D=pal.dark,L=pal.light;
@@ -1153,59 +725,15 @@ function badgeSVG(rk,pal){
   }
   return `<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-label="${rk}標章">${grad}${frame}${inner}${sym}</svg>`;
 }
-function fmt$(n){return Math.round(+n||0).toLocaleString('en-US');}
-const PERKS=[
-  {honor:['專屬填單頁','品階標章'],        face:['群組公告歡迎轉正'],            gift:['手寫轉正小卡','加持平安符']},
-  {honor:['專屬主題／顏色'],              face:['菁英宴會受獎'],                gift:[]},
-  {honor:['個人稱號＋標語'],              face:['名片印上品階與稱號'],          gift:['鑽石獎狀']},
-  {honor:['名字流光特效'],                face:['菁英宴會固定席次'],            gift:[]},
-  {honor:['個人大頭照'],                  face:['宴會上台分享'],                gift:[]},
-  {honor:['金框尊榮頁面','量身訂製主題'],  face:['宴會主桌＋擔任頒獎人'],        gift:['總裁大獎杯']},
-  {honor:['紫金尊榮頁面'],                face:['菁英宴會領航席'],              gift:[]},
-  {honor:['環球專屬標章'],                face:['年度表揚壓軸登場'],            gift:[]},
-  {honor:['皇冠黑金頁面'],                face:['公司年度策略會議席次'],        gift:[]},
-  {honor:['至尊專屬主題'],                face:['官網首頁至尊表揚'],            gift:[]}
-];
 
-const PERK_CAT=[['honor','👑 尊榮'],['face','🎖 禮遇'],['gift','🏆 獎項']];
-const CUM_ASOF='2026.08';
-const CUM={'陳捷容':9309540,'陳彩綺':7332882,'沈佳琪':6230191,'羅文勳':5858613,'湯雯莉':4218763,'周冠榮':3146236,'蕭鎧峻':1622118,'謝承殷':1539500,'蕭竣方':1478817,'賴素貞':1374600,'熊卿妃':1103850,'鐘宥涵':632120,'鄭聖勳':606173,'陳昕昀':601060,'梁凱妍':377660,'張簡玉靖':314980,'林雅涵':252160,'謝欣諭':136323,'王宥心':100000};
-/* 推薦關係（取自獎金計算系統）：誰的上線是誰 */
-const SPONSOR={'陳彩綺':'陳捷容','湯雯莉':'陳捷容','熊卿妃':'陳捷容','鐘宥涵':'陳捷容','沈佳琪':'羅文勳','周冠榮':'羅文勳','鄭聖勳':'羅文勳','王宥心':'羅文勳','謝欣諭':'湯雯莉','賴素貞':'湯雯莉','張簡玉靖':'賴素貞','梁凱妍':'陳彩綺','謝承殷':'蕭鎧峻','陳昕昀':'蕭鎧峻','林雅涵':'蕭鎧峻'};
-/* 正式老師＋目前系統上的品階（只升不降的底線） */
-const OFFICIAL={'陳捷容':'總裁','羅文勳':'總裁','陳彩綺':'總裁','沈佳琪':'總裁','湯雯莉':'翡翠','周冠榮':'翡翠','蕭竣方':'鑽石','蕭鎧峻':'鑽石','熊卿妃':'黃金','張簡玉靖':'黃金','鐘宥涵':'黃金','謝欣諭':'銀階','賴素貞':'銀階','鄭聖勳':'銀階','梁凱妍':'銀階','王宥心':'銀階','謝承殷':'銀階','陳昕昀':'銀階','林雅涵':'銀階'};
-
-function downline(name){ const out=[]; const walk=n=>{ Object.keys(SPONSOR).forEach(c=>{ if(SPONSOR[c]===n&&out.indexOf(c)<0){ out.push(c); walk(c); } }); }; walk(name); return out; }
-function cumRankIdx(cum){ let i=-1; RANKS.forEach((x,k)=>{ if(!x.need && cum>=x.th) i=k; }); return i; }
-
-/* ---------- 品階衍生（正式版：只從上面的固定資料算，不存任何本機設定） ---------- */
-const RBY={}; RANKS.forEach((r,i)=>{RBY[r.k]=Object.assign({i},r);});
-const INTERNAL_ACCTS=['公司內部','靈應壇'];
-const INTERNS=['康瑋齊','陳博隆','黃宇廷'];
-let _bid=0;
-function isIntern(n){return INTERNS.indexOf(n)>=0;}
-function isFormal(n){return !!OFFICIAL[n];}
-function cumOf(n){return +CUM[n]||0;}
-function presCount(name){ return downline(name).filter(c=>isFormal(c)&&cumRankIdx(cumOf(c))>=RBY['總裁'].i).length; }
-function autoRankIdx(name){
-  if(!isFormal(name)) return -1;
-  const cum=cumOf(name);
-  let i=Math.max(0,cumRankIdx(cum));
-  const pc=presCount(name);
-  RANKS.forEach((x,k)=>{ if(x.need && cum>=x.th && pc>=x.need && k>i) i=k; });
-  const off=OFFICIAL[name]&&RBY[OFFICIAL[name]]?RBY[OFFICIAL[name]].i:-1;   // 只升不降
-  return Math.max(i,off);
-}
-function rankOfName(name){ const i=autoRankIdx(name); return i>=0?RBY[RANKS[i].k]:null; }
-function paletteOf(name){ const r=rankOfName(name); return r?{main:r.main,dark:r.dark,light:r.light,glow:r.glow}:null; }
-function hx(s){return (''+(s==null?'':s)).replace(/[&<>"'`]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));}
-function escH(s){return hx(s);}
-
+/* ---------- 本月業績估算（只算香量；單價同獎金系統） ---------- */
 function monthEstimate(name,t){
   t=t||{}; const wb=CORE4.indexOf(name)>=0?1050:1260; const n=k=>+t[k]||0;
   return n('萬寶小計')*wb + n('天赦金')*580 + n('還陰債')*2160 + n('年斗')*5200 + n('季斗')*2160
        + n('五行年斗')*5860 + n('五行季斗')*2820 + n('令牌')*660;
 }
+
+/* ---------- 品階主卡 ---------- */
 function fmtW(n){n=Math.round(+n||0);return n>=10000?(Math.round(n/1000)/10)+'萬':fmt$(n);}
 function renderHero(){
   const box=document.getElementById('rankHero'); if(!box||!TEACHER) return;
@@ -1247,13 +775,169 @@ function renderHero(){
     <div class="h2more" id="h2lad"><div class="ladder open">${ladder}</div>${perkHTML}</div>
   </div>`;
 }
+function escH(s){return (''+(s==null?'':s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function rankEnter(name){
+  applyRankTheme(name);
+  const r=rankOfName(name); const wb=document.getElementById('whoBadge');
+  const t=(typeof TBYNAME!=='undefined')?TBYNAME[name]:null;
+  if(wb) wb.innerHTML=(r?badgeSVG(r.k,paletteOf(name)):'👤')+' '+(t?t.no+'　':'')+escH(name)+(r?'　·　'+r.k:'');
+  const bs=document.getElementById('betaWho'); if(bs) bs.value=name;
+  renderHero();
+  CR_OPEN=false;CR_MORE=false;CR_TAB='bday';renderCR();setTimeout(function(){histLoad(name);},1200);
+  const r2=rankOfName(name); if(r2){ const k='lastRank_'+name; let prev=''; try{prev=localStorage.getItem(k)||''}catch(e){}
+    if(prev&&RBY[prev]&&RBY[prev].i<r2.i) setTimeout(()=>celebrate(r2),600);
+    try{localStorage.setItem(k,r2.k)}catch(e){} }
+  landingScroll(name);
+}
 function celebrate(r){
   const d=document.createElement('div'); d.className='celebrate';
   d.innerHTML=`<div class="cbox">${badgeSVG(r.k)}<div class="ct">恭喜升上</div><div class="cr">${r.k}</div><div class="cs">聘階獎金 ${r.pct}%</div><button onclick="this.closest('.celebrate').remove()">太棒了！</button></div>`;
   document.body.appendChild(d);
 }
+
+/* ---------- 內測：攔截寫入，只存在這台電腦 ---------- */
+const SBX_PREFIX='rankBeta_data_';
+function sbxKey(t,m){return SBX_PREFIX+t+'|'+m;}
+function sbxLoad(t,m){try{const v=lsGet(sbxKey(t,m));return v?JSON.parse(v):null}catch(e){return null}}
+function sbxSave(t,m,d){lsSet(sbxKey(t,m),JSON.stringify(d));}
+let SBX_LOCAL=false;
+function nnum(v){const n=parseFloat((''+(v==null?'':v)).replace(/[,\s]/g,''));return isNaN(n)?0:n;}
+function sbxAgg(data){
+  const a={}; ITEMS.forEach(i=>a[i]=0); ['天赦金','還陰債','年斗','季斗','五行年斗','五行季斗','令牌','祭改','普桌','化煞水'].forEach(k=>a[k]=0);
+  const dt=t=>{t=(''+t).trim();if(t==='令牌加購')return'令牌';if(t==='五行年斗')return'五行年斗';if(t==='五行季斗')return'五行季斗';if(t==='季斗加購')return'季斗';return'年斗';};
+  (data['法會']||[]).forEach(r=>{const it=(''+r['項目']).trim(),q=nnum(r['份數']);if(it==='天赦金')a['天赦金']+=q;else if(ITEMS.indexOf(it)>=0)a[it]+=q;});
+  (data['斗燈']||[]).forEach(r=>{a[dt(r['加購類型'])]+=nnum(r['份數']);});
+  ['還陰債','祭改','普桌'].forEach(c=>(data[c]||[]).forEach(r=>{a[c]+=nnum(r['份數']);}));
+  a['萬寶小計']=ITEMS.reduce((s,i)=>s+nnum(a[i]),0);
+  return a;
+}
+function sbxHandle(b){
+  const act=b.action; const W=['add','addBatch','update','delete'];
+  if(W.indexOf(act)<0) return {ok:false,error:'內測版不會改動正式設定（這個動作要在正式版做）'};
+  const t=b.teacher||TEACHER, m=b.month||MONTH;
+  const data=sbxLoad(t,m)||JSON.parse(JSON.stringify(DATA||{}));
+  const cat=b.category; data[cat]=data[cat]||[];
+  const strip=o=>{const r=Object.assign({},o);['action','category','month','teacher','rows'].forEach(k=>delete r[k]);return r;};
+  const newId=()=>'內測'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  if(act==='add'){ const r=strip(b); r.編號=newId(); r._beta=1; data[cat].push(r); }
+  if(act==='addBatch'){ (b.rows||[]).forEach(x=>{const r=Object.assign({},x);r.編號=newId();r._beta=1;data[cat].push(r);}); }
+  if(act==='update'){ const id=String(b['編號']); const i=data[cat].findIndex(x=>String(x.編號)===id); if(i>=0){ data[cat][i]=Object.assign({},data[cat][i],strip(b),{編號:data[cat][i].編號,_beta:1,異動:'已修改'}); } }
+  if(act==='delete'){ const id=String(b['編號']); data[cat]=data[cat].filter(x=>String(x.編號)!==id); }
+  sbxSave(t,m,data); SBX_LOCAL=true;
+  return {ok:true,data:data,totals:sbxAgg(data)};
+}
+const _realFetch=window.fetch.bind(window);
+const fakeRes=o=>Promise.resolve({json:()=>Promise.resolve(o)});
+window.fetch=function(url,opt){
+  const isApi=BETA&&typeof url==='string'&&typeof API_URL!=='undefined'&&API_URL&&url.indexOf(API_URL)===0;
+  if(isApi&&!(opt&&String(opt.method||'').toUpperCase()==='POST')&&url.indexOf('?')>0) url=secAttachUrl(url);
+  if(isApi&&/action=(teachers|sysConfig)(&|$)/.test(url)){
+    return _realFetch(url,opt).then(r=>r.json()).then(d=>{ d=cleanDeep(d);
+      if(d&&Array.isArray(d.teachers)){ SERVER_NAMES=d.teachers.map(t=>t.name); d.teachers=fixTeacherList(d.teachers); }
+      return {json:()=>Promise.resolve(d)}; });
+  }
+  if(isApi&&url.indexOf('action=list')>=0){   // 後台還沒有的老師（實習老師）：不去碰正式後台，免得替他自動開新表
+    const q0=new URLSearchParams(url.split('?')[1]||''); const tn=q0.get('teacher');
+    if(isIntern(tn)&&(!SERVER_NAMES||SERVER_NAMES.indexOf(tn)<0)){
+      { const loc=sbxLoad(tn,q0.get('month')); const data=loc||{}; SBX_LOCAL=!!loc; return fakeRes({ok:true,data:data,totals:sbxAgg(data)}); }
+    }
+  }
+  if(isApi&&opt&&String(opt.method||'').toUpperCase()==='POST'){
+    let b={};try{b=JSON.parse(opt.body)}catch(e){}
+    return fakeRes(sbxHandle(b));
+  }
+  if(isApi&&url.indexOf('action=list')>=0){
+    const q=new URLSearchParams(url.split('?')[1]||''); const t=q.get('teacher'),m=q.get('month');
+    const loc=sbxLoad(t,m);
+    return _realFetch(url,opt).then(r=>r.json()).then(d=>{
+      if(d&&d.needLogin){ secSet('sec_tok',''); try{localStorage.removeItem('xlUser')}catch(e){} alert('登入已過期，請重新登入'); location.reload(); return {json:()=>Promise.resolve({ok:false})}; }
+      if(loc){d={ok:true,data:loc,totals:sbxAgg(loc)};SBX_LOCAL=true;} else SBX_LOCAL=false;
+      return {json:()=>Promise.resolve(d)};
+    }).catch(err=>{ if(loc){SBX_LOCAL=true;return {json:()=>Promise.resolve({ok:true,data:loc,totals:sbxAgg(loc)})};} throw err; });
+  }
+  return _realFetch(url,opt);
+};
+function sbxReset(){ if(!confirm('把這位老師這個月的內測資料清掉，回到正式資料？'))return; lsDel(sbxKey(TEACHER,MONTH)); SBX_LOCAL=false; loadList(); toast('已回到正式資料'); }
+function localNoteHTML(){ return SBX_LOCAL?`<div class="localnote">🧪 你看到的是<b>內測資料</b>（含你在這台電腦試填的內容），正式試算表沒有被改動。<button onclick="sbxReset()">重置回正式資料</button></div>`:''; }
+
+/* ---------- 內測條：直接切換預覽身分 ---------- */
+function betaFillSelect(){
+  const s=document.getElementById('betaWho'); if(!s) return;
+  s.innerHTML='<option value="">— 選老師預覽 —</option>'+TEACHERS.map(t=>{const r=rankOfName(t.name);return `<option value="${hx(t.name)}">${t.no}　${hx(t.name)}${r?'（'+r.k+'）':INTERNAL_ACCTS.indexOf(t.name)>=0?'':'（未解鎖）'}</option>`;}).join('');
+  if(TEACHER) s.value=TEACHER;
+}
+function betaSwitch(name){
+  if(!name) return;
+  document.getElementById('login').style.display='none';
+  document.getElementById('adminScreen').style.display='none';
+  if(typeof EDIT!=='undefined'&&EDIT.id) cancelEdit(true);
+  if(TEACHER){ TEACHER=name; rankEnter(name); document.getElementById('adminOpenBtn').style.display=(ADMIN_NAMES.indexOf(name)>=0)?'':'none'; loadList(); }
+  else enterApp(name);
+}
+
+/* ---------- 專屬設定面板（K 客製化每位老師） ---------- */
+function openRankPanel(){
+  const list=TEACHERS.filter(t=>INTERNAL_ACCTS.indexOf(t.name)<0);
+  let h=`<div class="rkmask" id="rkMask" onclick="if(event.target===this)closeRankPanel()"><div class="rkpanel">
+  <h3>🎨 老師專屬設定（內測）</h3>
+  <div class="hint">只有你看得到這裡，老師不能自己改。欄位旁邊寫「○○起」＝升到那一階才會顯示；想破例就勾「破例全開」。標章永遠跟品階走；主題或專屬主色只換顏色和底紋。優先順序：主題 → 專屬主色 → 品階色。</div>`;
+  list.forEach(t=>{
+    const p=profileOf(t.name); const r=rankOfName(t.name);
+    h+=`<div class="rkrow" data-n="${t.name}"><div>${r?badgeSVG(r.k,paletteOf(t.name)):'<div style="font-size:34px;text-align:center">🔒</div>'}</div><div>
+      <div class="nm">${t.no}　${t.name}</div>
+      <div class="rkf">
+        <div><label>品階 <em>自動＝${(()=>{const i=autoRankIdx(t.name);return i>=0?RANKS[i].k:'未解鎖';})()}</em></label><select data-f="rankManual"><option value="">自動（依業績與團隊）</option><option value="__none__"${p.rankManual==='__none__'?' selected':''}>強制未解鎖</option>${RANKS.map(x=>`<option value="${x.k}"${x.k===p.rankManual?' selected':''}>手動：${x.k}</option>`).join('')}</select><label class="vipl" style="margin-top:4px"><input type="checkbox" data-f="formal" ${p.formal?'checked':''}> 正式老師</label></div>
+        <div><label>累積業績</label><input type="number" data-f="cum" value="${p.cum||''}"></div>
+        <div><label>本月目標</label><input type="number" data-f="goal" value="${p.goal||''}"></div>
+        <div><label>主題 <em>黃金起</em></label><select data-f="theme"><option value="">（品階色）</option>${Object.keys(THEMES).map(k=>`<option${k===p.theme?' selected':''}>${k}</option>`).join('')}</select></div>
+        <div class="w2"><label>個人稱號 <em>鑽石起</em>（留白＝${r?r.k+'・'+r.tag:'品階預設'}）</label><input data-f="title" value="${escH(p.title)}" maxlength="16"></div>
+        <div><label>專屬主色 <em>黃金起</em></label><div style="display:flex;gap:4px"><input type="color" data-f="color" value="${p.color||(r?r.main:'#9c7e3a')}" data-set="${p.color?1:0}" oninput="this.dataset.set=1"><button type="button" onclick="const c=this.previousElementSibling;c.dataset.set=0;c.value='${r?r.main:'#9c7e3a'}'" style="border:1px solid #d8cca8;background:#fff;border-radius:7px;padding:0 8px;cursor:pointer;font-size:12px;white-space:nowrap">還原</button></div></div>
+        <div class="w2"><label>標語 <em>鑽石起</em>（可留白）</label><input data-f="slogan" value="${escH(p.slogan)}" maxlength="30"></div>
+        <div><label>大頭照 <em>翡翠起</em></label><div class="avpick"><img data-f="avatar" data-v="${p.avatar||''}" src="${p.avatar||''}" style="${p.avatar?'':'display:none'}"><input type="file" accept="image/*" onchange="pickAvatar(this)"><button type="button" onclick="const im=this.parentNode.querySelector('img');im.dataset.v='';im.style.display='none'">清除</button></div></div>
+        <div class="wide"><label>🎁 禮物待領通知（有填就會在老師頁面顯示，領完清空）</label><input data-f="gift" value="${escH(p.gift||'')}" maxlength="40" placeholder="例：恭喜升上黃金！平安符和別針在行政櫃台等你"></div>
+        <div class="wide"><label class="vipl"><input type="checkbox" data-f="vip" ${p.vip?'checked':''}> 破例全開（不看品階，所有福利都給他）</label></div>
+      </div></div></div>`;
+  });
+  h+=`<div class="rkbtns"><button onclick="saveRankPanel()" style="background:#7a6228;color:#fff;font-weight:700;flex:1">儲存並套用</button><button onclick="exportProfiles()" style="background:#f0ece0;color:#5a4a2a">⬇ 匯出設定</button><button onclick="closeRankPanel()" style="background:#f0ece0;color:#5a4a2a">取消</button></div></div></div>`;
+  const d=document.createElement('div'); d.id='rkWrap'; d.innerHTML=h; document.body.appendChild(d);
+}
+function pickAvatar(inp){
+  const f=inp.files&&inp.files[0]; if(!f) return; const im=inp.parentNode.querySelector('img');
+  const rd=new FileReader(); rd.onload=()=>{const img=new Image();img.onload=()=>{const c=document.createElement('canvas');const S=120;c.width=S;c.height=S;const g=c.getContext('2d');const m=Math.min(img.width,img.height);g.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,S,S);const u=c.toDataURL('image/jpeg',.82);im.dataset.v=u;im.src=u;im.style.display='';};img.src=rd.result;}; rd.readAsDataURL(f);
+}
+function closeRankPanel(){const w=document.getElementById('rkWrap');if(w)w.remove();}
+function saveRankPanel(){
+  const out={};
+  document.querySelectorAll('.rkrow').forEach(row=>{
+    const n=row.dataset.n; const o={};
+    row.querySelectorAll('[data-f]').forEach(el=>{const f=el.dataset.f;
+      if(f==='avatar'){ o.avatar=el.dataset.v||''; }
+      else if(f==='vip'){ o.vip=el.checked; }
+      else if(f==='formal'){ o.formal=el.checked; }
+      else if(f==='color'){ o.color=el.dataset.set==='1'?el.value:''; }
+      else if(f==='cum'||f==='goal'){ o[f]=+el.value||0; }
+      else o[f]=(el.value||'').trim();
+    });
+    out[n]=o;
+  });
+  PROFILES=out; lsSet(PROFILE_KEY,JSON.stringify(out));
+  closeRankPanel(); betaFillSelect(); if(TEACHER) rankEnter(TEACHER);
+  toast('已儲存 ✓');
+}
+function exportProfiles(){
+  const all={}; TEACHERS.forEach(t=>{ if(INTERNAL_ACCTS.indexOf(t.name)<0) all[t.name]=profileOf(t.name); });
+  const blob=new Blob([JSON.stringify({exported:new Date().toISOString(),ranks:RANKS.map(r=>({品階:r.k,門檻:r.th,聘階:r.pct,主色:r.main})),teachers:all},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='老師專屬設定_'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+}
+try{document.documentElement.style.colorScheme='light';}catch(e){}
+
+/* =====================================================================
+   獎金即時試算（規則同獎金計算系統：業績達標 10萬2%／20萬5%／30萬8%／40萬10%；核心四人走1%池）
+   ===================================================================== */
 function tierAwardPct(pv){return pv>=400000?10:pv>=300000?8:pv>=200000?5:pv>=100000?2:0;}
 function nextTier(pv){const T=[[100000,2],[200000,5],[300000,8],[400000,10]];for(const t of T){if(pv<t[0])return t;}return null;}
+const LAST_BONUS={};
 function bonusLineHTML(name,est){
   if(CORE4.indexOf(name)>=0) return `<div class="h2money">💰 本月香量業績約 <b>${fmt$(est)}</b><small>　核心 1% 獎金池月結另算</small></div>`;
   const pct=tierAwardPct(est), bonus=Math.round(est*pct/100), nt=nextTier(est);
@@ -1262,13 +946,20 @@ function bonusLineHTML(name,est){
   const tip=nt?`再 <b>${fmtW(nt[0]-est)}</b> 獎金升到 <b>${nt[1]}%</b>`:'已是最高 10%';
   return `<div class="h2money">💰 業績獎金約 <b>${fmt$(bonus)}</b>${up}<small>（${pct}%）</small><span class="h2tip">${tip}</span></div>`;
 }
+
+/* =====================================================================
+   客戶提醒：從老師自己過去 12 個月填過的單整理出
+   🎂 本月生日（依農曆生日換算成這個月的日期）　🔁 上個月做過、這個月還沒續　💤 半年以上沒回來
+   ===================================================================== */
+const HIST={};            // HIST[teacher] = {months:{'2026.08':DATA,...}, demo:bool, loading:bool}
+let CR_TAB='bday', CR_OPEN=false, CR_MORE=false;
 function monthsBack(n){const d=new Date();const out=[];for(let i=0;i<n;i++){const dt=new Date(d.getFullYear(),d.getMonth()-i,1);out.push(dt.getFullYear()+'.'+String(dt.getMonth()+1).padStart(2,'0'));}return out;}
 function histLoad(name,force){
   if(!name||INTERNAL_ACCTS.indexOf(name)>=0) return;
   if(HIST[name]&&!force&&(HIST[name].loading||HIST[name].done)) return;
   const H=HIST[name]={months:{},loading:true,demo:false};
   renderCR();
-  const ms=monthsBack(12);
+  const ms=monthsBack(6);
   let ok=0;
   Promise.all(ms.map(m=>{
     if(!API_URL) return Promise.resolve();
@@ -1278,6 +969,7 @@ function histLoad(name,force){
     H.loading=false;H.done=true; if(TEACHER===name) renderCR();
   });
 }
+/* 連不到後台時才用的示範資料（畫面會標示） */
 function demoHistory(ms){
   const nm=['王美玲','林志明','陳怡君','張家豪','黃淑芬','李建宏','吳佩珊','劉俊傑','蔡雅婷','楊文彬','許惠如','鄭宇翔'];
   const it=['補財','補庫','補運(消災解厄)','貴人(木姻緣)','冤親(解冤釋結)','招貴人','天赦金'];
@@ -1312,6 +1004,7 @@ function custIndex(name){
   return Object.values(C);
 }
 function mDiff(a,b){const [ay,am]=a.split('.').map(Number),[by,bm]=b.split('.').map(Number);return (ay-by)*12+(am-bm);}
+const WK='日一二三四五六';
 function crLists(name){
   const cs=custIndex(name)||[]; const cur=monthsBack(1)[0], prev=monthsBack(2)[1];
   // 生日：今天起 7 天
@@ -1337,6 +1030,7 @@ function crMsg(type,o){
   if(type==='renew') return `${n}您好～上個月幫您做的${o.items.join('、')}，最近感覺還好嗎？這個月的法會也在進行中，有需要再跟我說一聲，我幫您安排 🙏`;
   return `${n}您好～好久沒聯絡了，最近一切都還好嗎？有什麼想問的或需要幫忙的，隨時跟我說 😊`;
 }
+let CR_CACHE={};
 function renderCR(){
   const box=document.getElementById('crBox'); if(!box) return;
   const name=TEACHER;
@@ -1359,7 +1053,7 @@ function renderCR(){
       h+=`<div class="crrow"><div class="info">${escH(o.c.name)}<small>${sub}</small></div><button onclick="crCopy('${CR_TAB}',${list.indexOf(o)})">複製問候</button></div>`;
     });
     if(list.length>8&&!CR_MORE) h+=`<button class="crmore" onclick="CR_MORE=true;renderCR()">顯示全部 ${list.length} 位</button>`;
-    h+=`<div class="crfoot">整理自你過去 12 個月填過的單・<a href="javascript:void(0)" onclick="histLoad(TEACHER,true)">重新整理</a></div></div>`;
+    h+=`<div class="crfoot">整理自你過去 6 個月填過的單・<a href="javascript:void(0)" onclick="histLoad(TEACHER,true)">重新整理</a></div></div>`;
   }
   box.innerHTML=h;
 }
@@ -1369,6 +1063,8 @@ function crCopy(type,i){
   if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done).catch(()=>{prompt('複製這段文字：',t);});
   else prompt('複製這段文字：',t);
 }
+
+/* ---------- 點每個品階標章：看到那一階累積的尊榮＋禮遇＋獎項 ---------- */
 function rankDetailHTML(name,i){
   const x=RANKS[i]; const r=rankOfName(name); const p=profileOf(name);
   const own=r&&i<=r.i;
@@ -1387,81 +1083,15 @@ function showRankPerks(i){
   d.innerHTML=rankDetailHTML(TEACHER,i);
   document.querySelectorAll('#h2lad .rung').forEach(el=>el.classList.toggle('sel',+el.dataset.i===i));
 }
-function applyRankTheme(name){
-  const root=document.documentElement.style; const pal=paletteOf(name);
-  if(!pal){ ['--gold','--gold2','--bg','--bg2','--line','--rk-light','--rk-glow'].forEach(v=>root.removeProperty(v)); setMetaColor('#f6f2ea'); return; }
-  root.setProperty('--gold',pal.main); root.setProperty('--gold2',pal.dark);
-  root.setProperty('--bg',mix(pal.light,'#ffffff',.35)); root.setProperty('--bg2',mix(pal.light,'#ffffff',.6));
-  root.setProperty('--line',mix(pal.main,'#ffffff',.72));
-  root.setProperty('--rk-light',pal.light); root.setProperty('--rk-glow',pal.glow);
-  setMetaColor(mix(pal.light,'#ffffff',.35));
-}
-function setMetaColor(c){const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',c);}
-function perkChips(list,lock){return PERK_CAT.map(([k,lab])=>{const xs=[];list.forEach(p=>xs.push(...(p[k]||[])));return xs.length?`<div class="pkrow"><em>${lab}</em>${xs.map(x=>`<span class="pk${lock?' lk':''}">${x}</span>`).join('')}</div>`:'';}).join('');}
-function patternURL(k,c){
-  const e=encodeURIComponent; let b='';
-  switch(k){
-    case 'ocean': b=`<circle cx="12" cy="14" r="4" fill="none" stroke="${c}" stroke-width="1.2"/><circle cx="50" cy="40" r="2.5" fill="none" stroke="${c}" stroke-width="1"/><circle cx="30" cy="58" r="1.6" fill="${c}"/><polygon points="${starPts(5,6,2.6,56,12)}" fill="${c}"/>`; break;
-    case 'petal': b=`<ellipse cx="14" cy="16" rx="3" ry="5" fill="${c}" transform="rotate(30 14 16)"/><ellipse cx="48" cy="46" rx="2.4" ry="4" fill="${c}" transform="rotate(-40 48 46)"/>`; break;
-    case 'stars': b=`<polygon points="${starPts(5,3.5,1.5,12,14)}" fill="${c}"/><circle cx="44" cy="30" r="1.2" fill="${c}"/><polygon points="${starPts(4,3,1,34,54)}" fill="${c}"/>`; break;
-    case 'cloud': b=`<path d="M8 30a6 6 0 0 1 11-3 5 5 0 0 1 9 4H8z" fill="${c}"/><path d="M38 58a5 5 0 0 1 9-2 4 4 0 0 1 7 3H38z" fill="${c}"/>`; break;
-    case 'leaf': b=`<path d="M10 26c0-8 5-12 12-12 0 7-4 12-12 12z" fill="${c}"/><path d="M42 58c0-6 4-9 9-9 0 5-3 9-9 9z" fill="${c}"/>`; break;
-    case 'lines': b=`<path d="M0 64L64 0" stroke="${c}" stroke-width="1"/>`; break;
-  }
-  return `url("data:image/svg+xml,${e(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" opacity=".22">${b}</svg>`)}")`;
-}
-function decoSVG(k,c){
-  const S=b=>`<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">${b}</svg>`;
-  switch(k){
-    case 'starfish': return S(`<path d="M12 2.5c1 0 1.6 3.6 2.6 5.2 1.3.4 5.8.4 6.1 1.3.3 1-3.5 3.2-4.3 4.4.1 1.6 1.8 5.6 1 6.2-.8.6-4-2.3-5.4-2.7-1.4.4-4.6 3.3-5.4 2.7-.8-.6.9-4.6 1-6.2-.8-1.2-4.6-3.4-4.3-4.4.3-.9 4.8-.9 6.1-1.3C10.4 6.1 11 2.5 12 2.5z" fill="${c}"/><circle cx="12" cy="11.5" r="1" fill="#fff"/><circle cx="9" cy="10.5" r=".7" fill="#fff"/><circle cx="15" cy="10.5" r=".7" fill="#fff"/><circle cx="10.3" cy="14" r=".7" fill="#fff"/><circle cx="13.7" cy="14" r=".7" fill="#fff"/>`);
-    case 'flower': { let p=''; for(let i=0;i<5;i++){p+=`<ellipse cx="12" cy="6.5" rx="3.4" ry="5" fill="${c}" transform="rotate(${i*72} 12 12)"/>`;} return S(p+`<circle cx="12" cy="12" r="2.4" fill="#ffe08a"/>`); }
-    case 'star': return S(`<polygon points="${starPts(5,10,4.2,12,12.5)}" fill="${c}"/>`);
-    case 'cloud': return S(`<path d="M6 17a4 4 0 0 1 .6-8 5 5 0 0 1 9.6 1.2A3.5 3.5 0 1 1 17.5 17z" fill="${c}"/>`);
-    case 'leaf': return S(`<path d="M4 20C4 9 11 4 20 4c0 9-5 16-16 16z" fill="${c}"/><path d="M5 19 16 8" stroke="#fff" stroke-width="1.3"/>`);
-    case 'spark': return S(`<path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z" fill="#c9a24a"/>`);
-  }
-  return '';
-}
 
-/* ---------- 正式版精簡版 profile（只讀固定資料，不存本機設定） ---------- */
-const GOAL_DEFAULT={'陳捷容':450000,'羅文勳':300000,'陳彩綺':360000,'沈佳琪':180000,'湯雯莉':290000,'周冠榮':80000,'蕭竣方':30000,'蕭鎧峻':60000,'熊卿妃':50000,'張簡玉靖':50000,'鐘宥涵':30000,'謝欣諭':40000,'賴素貞':160000,'鄭聖勳':70000,'梁凱妍':70000,'王宥心':30000,'謝承殷':30000,'陳昕昀':30000,'林雅涵':30000};
-const CORE4=['陳捷容','羅文勳','蕭竣方','陳彩綺'];
-const THEMES={};                      /* 正式版暫不開放個別主題 */
-const LAST_BONUS={};
-const HIST={};
-let CR_CACHE={};
-const WK='日一二三四五六';
-let CR_TAB='bday', CR_OPEN=false, CR_MORE=false;
-function profileOf(name){
-  const r=RBY[OFFICIAL[name]];
-  return {cum:cumOf(name), goal:+GOAL_DEFAULT[name]||0, formal:isFormal(name),
-          title:'', slogan:'', color:'', theme:'', avatar:'', vip:false, gift:'', rankManual:''};
-}
-function can(name,lv){ const r=rankOfName(name); return !!r && r.i>=lv; }
-
-/* ---------- 進入填單頁時：套色、畫品階條、整理客戶提醒、升階恭喜 ---------- */
-function rankEnter(name){
-  applyRankTheme(name);
-  const r=rankOfName(name); const wb=document.getElementById('whoBadge');
-  const t=(typeof TBYNAME!=='undefined')?TBYNAME[name]:null;
-  if(wb) wb.innerHTML=(r?badgeSVG(r.k,paletteOf(name)):'👤')+' '+(t?t.no+'　':'')+escH(name)+(r?'　·　'+r.k:'');
-  renderHero();
-  CR_OPEN=false;CR_MORE=false;CR_TAB='bday';histLoad(name);renderCR();
-  if(r){ const k='lastRank_'+name; let prev=''; try{prev=localStorage.getItem(k)||''}catch(e){}
-    if(prev&&RBY[prev]&&RBY[prev].i<r.i) setTimeout(()=>celebrate(r),600);
-    try{localStorage.setItem(k,r.k)}catch(e){} }
-}
-
-/* ---------- 登入畫面：老師名牌 ---------- */
+/* ---------- 登入畫面：老師名牌選擇 ---------- */
 function renderLoginTiles(){
   const box=document.getElementById('loginTiles'); if(!box) return;
   const bar=document.getElementById('loginBadges'); if(bar) bar.innerHTML=RANKS.map(x=>badgeSVG(x.k)).join('');
   box.innerHTML=TEACHERS.map(t=>{
     const r=rankOfName(t.name); const internal=INTERNAL_ACCTS.indexOf(t.name)>=0;
     const col=r?(paletteOf(t.name)||r).main:'#b9ad95';
-    const mark=r?badgeSVG(r.k,paletteOf(t.name)):`<span class="ltno">${internal?'🏛':isIntern(t.name)?'🌱':'🔒'}</span>`;
-    const sub=r?`<span class="ltr">${r.k}</span>`:(isIntern(t.name)?'<span class="ltr" style="color:#9a8a68">實習</span>':'');
-    return `<button type="button" class="lt${internal?' in':''}" data-n="${hx(t.name)}" style="--c:${col}" onclick="pickLogin(this.dataset.n)"><span class="ltnum">${t.no}</span>${mark}<span class="ltn">${hx(t.name)}</span>${sub}</button>`;
+    return `<button type="button" class="lt${internal?' in':''}" data-n="${hx(t.name)}" style="--c:${col}" onclick="pickLogin(this.dataset.n)"><span class="ltnum">${t.no}</span>${r?badgeSVG(r.k,paletteOf(t.name)):`<span class="ltno">${internal?'🏛':isIntern(t.name)?'🌱':'🔒'}</span>`}<span class="ltn">${hx(t.name)}</span>${r?`<span class="ltr">${r.k}</span>`:isIntern(t.name)?'<span class="ltr" style="color:#9a8a68">實習</span>':''}</button>`;
   }).join('');
 }
 function pickLogin(n){
@@ -1470,35 +1100,114 @@ function pickLogin(n){
   const r=rankOfName(n); const pal=r?paletteOf(n):null;
   const card=document.querySelector('.lgcard'); if(card) card.style.setProperty('--lc',pal?pal.main:'#9c7e3a');
   const t=TBYNAME[n]; const no=t?t.no+'　':'';
-  const who=document.getElementById('lgWho');
-  if(who) who.innerHTML=r?`${badgeSVG(r.k,pal)}<span>${no}${hx(n)}　<small>${r.k}</small></span>`:`<span>${no}${hx(n)}</span>`;
-  const bx=document.getElementById('lgPwBox'); if(bx) bx.classList.add('show');
-  const pw=document.getElementById('loginPw'); if(pw){pw.value='';setTimeout(()=>pw.focus(),50);}
-  const er=document.getElementById('loginErr'); if(er) er.style.display='none';
+  const who=document.getElementById('lgWho'); if(who) who.innerHTML=r?`${badgeSVG(r.k,pal)}<span>${no}${escH(n)}　<small>${r.k}</small></span>`:`<span>${no}${escH(n)}</span>`;
+  document.getElementById('lgPwBox').classList.add('show');
+  const pw=document.getElementById('loginPw');
+  setTimeout(function(){ const bx=document.getElementById('lgPwBox');
+    if(bx&&bx.scrollIntoView) bx.scrollIntoView({behavior:'smooth',block:'center'});
+    if(pw){ pw.value=''; try{pw.focus({preventScroll:true});}catch(e){pw.focus();} }
+  },260);
 }
 
-/* ---------- 聘階規則（登入頁下方，大家看到的都一樣） ---------- */
-let RR_OPEN=false;
+/* =====================================================================
+   安全補強（2026-09-25）
+   ===================================================================== */
+/* 1) 顯示用跳脫：客戶資料一律當文字顯示，不讓人塞程式碼進來 */
+function hx(s){return (''+(s==null?'':s)).replace(/[&<>"'`]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));}
+/* 名字類（老師、收單人、行政）不可能有這些符號，進來就先清掉 */
+function cleanName(s){return (''+(s==null?'':s)).replace(/[<>"'`&\\]/g,'').slice(0,40);}
+function cleanDeep(o){ if(typeof o==='string') return cleanName(o); if(Array.isArray(o)) return o.map(cleanDeep); if(o&&typeof o==='object'){const r={};Object.keys(o).forEach(k=>r[k]=cleanDeep(o[k]));return r;} return o; }
+
+/* 2) 登入憑證：後台升級成「強制模式」後，每次讀寫都要帶憑證；舊後台會忽略，不影響現在使用 */
+function secGet(k){try{return sessionStorage.getItem(k)||''}catch(e){return ''}}
+function secSet(k,v){try{v?sessionStorage.setItem(k,v):sessionStorage.removeItem(k)}catch(e){}}
+function secLogin(name,pw){
+  if(!API_URL) return Promise.resolve();
+  return _realFetch(API_URL+'?action=login&name='+encodeURIComponent(name)+'&pw='+encodeURIComponent(pw))
+    .then(r=>r.json()).then(d=>{ if(d&&d.ok&&d.token) secSet('sec_tok',d.token); }).catch(()=>{});
+}
+function secAttachUrl(url){
+  const tok=secGet('sec_tok'), key=secGet('sec_key');
+  if(tok) url+='&token='+encodeURIComponent(tok);
+  if(key) url+='&key='+encodeURIComponent(key);
+  return url;
+}
+
+/* 3) 內測管理條上鎖：要先用蕭竣方的密碼（後台驗證）解鎖，才能切換老師、開專屬設定 */
+const BETA_OWNER='蕭竣方';
+function betaUnlocked(){return secGet('beta_ok')==='1';}
+function betaLockUI(){
+  const bar=document.querySelector('.betabar'); if(!bar) return;
+  const ok=betaUnlocked();
+  bar.querySelectorAll('select,button.hl').forEach(el=>el.style.display=ok?'':'none');
+  let b=document.getElementById('betaUnlockBtn');
+  if(!ok&&!b){ b=document.createElement('button'); b.id='betaUnlockBtn'; b.className='hl'; b.textContent='🔒 管理者解鎖'; b.onclick=betaUnlock; bar.appendChild(b); }
+  if(ok&&b) b.remove();
+}
+function betaUnlock(){
+  const pw=prompt('請輸入「'+BETA_OWNER+'」的登入密碼：'); if(!pw) return;
+  const t=TBYNAME[BETA_OWNER]; const fb=()=>{ if(t&&!t.hasPw&&pw==='123'+t.no) done(); else alert('密碼不正確'); };
+  const done=()=>{ secSet('beta_ok','1'); secLogin(BETA_OWNER,pw); betaLockUI(); toast('已解鎖管理功能'); };
+  if(!API_URL||!t||!t.hasPw) return fb();
+  _realFetch(API_URL+'?action=checkPw&name='+encodeURIComponent(BETA_OWNER)+'&pw='+encodeURIComponent(pw)).then(r=>r.json())
+    .then(d=>{ if(d&&d.ok&&d.pass) done(); else alert('密碼不正確'); }).catch(fb);
+}
+const _openRankPanel=openRankPanel; openRankPanel=function(){ if(!betaUnlocked()){betaUnlock();return;} _openRankPanel(); };
+const _betaSwitch=betaSwitch; betaSwitch=function(n){ if(!betaUnlocked()){betaUnlock();return;} _betaSwitch(n); };
+document.addEventListener('DOMContentLoaded',betaLockUI);
+
+/* 法會項目移除：只剩一個時不能移除 */
+function fiRemove(btn){ const box=btn.closest('#fahuiItems')||document; const n=box.querySelectorAll('.fitem').length; if(n<=1){ toast('至少要保留一個項目'); return; } btn.closest('.fitem').remove(); }
+
+/* ===== 老師名單補充（2026-09-26）=====
+   - 實習老師康瑋齊、陳博隆、黃宇廷補進來（編號 20–22）
+   - 公司內部固定 88、靈應壇固定 99，永遠排最後（密碼＝123＋編號 → 12388、12399） */
+const EXTRA_TEACHERS=[{name:'康瑋齊',no:20,intern:1},{name:'陳博隆',no:21,intern:1},{name:'黃宇廷',no:22,intern:1}];
+const FIXED_NO={'公司內部':88,'靈應壇':99};
+let SERVER_NAMES=null;
+function isIntern(n){return EXTRA_TEACHERS.some(t=>t.name===n&&t.intern);}
+function fixTeacherList(list){
+  const out=(list||[]).map(t=>Object.assign({},t,FIXED_NO[t.name]?{no:FIXED_NO[t.name],hasPw:false}:{}));
+  EXTRA_TEACHERS.forEach(x=>{ if(!out.some(t=>t.name===x.name)) out.push({name:x.name,no:x.no,hasPw:false,shoudan:[]}); });
+  return out.sort((a,b)=>a.no-b.no);
+}
+function fixTeachers(){ if(typeof TEACHERS==='undefined') return; TEACHERS=fixTeacherList(TEACHERS); rebuildT(); }
+
+/* ===== 每天第一次登入：停在最上面看狀況（並打開客戶提醒）；同一天再登入：直接跳到填單 ===== */
+function landingScroll(name){
+  const k='seen_'+name, today=new Date().toDateString();
+  let seen=''; try{seen=localStorage.getItem(k)||''}catch(e){}
+  try{localStorage.setItem(k,today)}catch(e){}
+  if(seen!==today){
+    if(INTERNAL_ACCTS.indexOf(name)<0){ CR_OPEN=true; renderCR(); }
+    setTimeout(()=>window.scrollTo({top:0,behavior:'smooth'}),150);
+  } else {
+    setTimeout(()=>{ const t=document.getElementById('tabs'); if(!t) return; const bb=document.querySelector('.betabar'); const off=(bb?bb.offsetHeight:0)+10; window.scrollTo({top:t.getBoundingClientRect().top+window.scrollY-off,behavior:'smooth'}); },450);
+  }
+}
+
+/* ===== 首頁最下面：聘階規則（每一階如何達到）===== */
+let RR_OPEN=true;
 function renderRankRules(){
   const box=document.getElementById('rankRules'); if(!box) return;
+  const me=null, p={cum:0};   // 放在登入頁：大家看到的都是同一份規則
   let h=`<div class="rrhd" onclick="RR_OPEN=!RR_OPEN;renderRankRules()"><span>📜 聘階規則・每一階如何達到</span><span class="rrarr">${RR_OPEN?'收起 ▴':'展開 ▾'}</span></div>`;
   if(RR_OPEN){
-    h+=`<div class="rrbody"><div class="rrintro">每個月的「全部總業績」（金紙類＋斗燈類＋商品＋課程分潤）會一直往上累加，累積到門檻就升上那一階。升階在月結後依「上個月為止的累積業績」自動判定，只升不降。</div>`;
+    h+=`<div class="rrbody"><div class="rrintro">每個月的「全部總業績」（金紙類＋斗燈類＋商品＋課程分潤）會一直往上累加，累積到門檻就升上那一階。升階在月結後依「上個月為止的累積業績」自動判定。</div>`;
     RANKS.forEach((x,i)=>{
+      const here=me&&me.i===i, done=me&&i<me.i;
       const how=i===0?'轉為正式老師即為銀階':`累積業績達 <b>${fmt$(x.th)}</b> 元（${x.th/10000} 萬）`+(x.need?`，<b>而且團隊裡有 ${x.need} 位總裁以上</b>`:'');
       const perks=PERK_CAT.map(([k,lab])=>(PERKS[i][k]||[]).length?`<span class="rrpk"><em>${lab.split(' ')[1]}</em>${PERKS[i][k].join('、')}</span>`:'').join('');
-      h+=`<div class="rrrow">${badgeSVG(x.k)}<div class="rrtx"><div class="rrname">${x.k}<small>聘階獎金 ${x.pct}%</small></div><div class="rrhow">${how}</div><div class="rrpks">${perks}</div></div></div>`;
+      let st='';
+      if(here) st='<span class="rrst here">你在這裡</span>';
+      else if(done) st='<span class="rrst done">已達成</span>';
+      h+=`<div class="rrrow${here?' here':''}${done?' done':''}">${badgeSVG(x.k)}<div class="rrtx"><div class="rrname">${x.k}<small>聘階獎金 ${x.pct}%</small>${st}</div><div class="rrhow">${how}</div><div class="rrpks">${perks}</div></div></div>`;
     });
-    h+=`<div class="rrnote">※ 往上每一階都保有前面各階的全部禮遇與尊榮。業績達標獎金另計：當月業績 10 萬 2%、20 萬 5%、30 萬 8%、40 萬 10%。<br>※ 累積業績結算至 ${CUM_ASOF} 月結；超級總裁以上四階的名稱、門檻與 % 為暫定。</div></div>`;
+    h+=`<div class="rrnote">※ 往上每一階都保有前面各階的全部禮遇與尊榮。業績達標獎金另計：當月業績 10 萬 2%、20 萬 5%、30 萬 8%、40 萬 10%。</div></div>`;
   }
   box.innerHTML=h;
 }
-function showRankRules(on){ const w=document.getElementById('rankRulesWrap'); if(w) w.style.display=on?'':'none'; }
 
-
-init();
-</script>
-<script>
 /* ==========================================================================
    【新增 A】客人通訊錄自動完成 — 打名字就跳出以前報過的客人，選了自動帶資料
    【新增 B】⭐常客名單
@@ -1516,6 +1225,24 @@ function loadContacts(cb){
       if(d&&d.ok){ CONTACTS=d.contacts||[]; CONTACTS_READY=true; }
       if(cb)cb();
     }).catch(()=>{ CONTACTS_BUSY=false; if(cb)cb(); });
+}
+
+function mergeData(d){
+  if(!d) return;
+  if(d.partial && d.cat){ DATA[d.cat]=(d.data&&d.data[d.cat])||[]; }
+  else if(d.data){ DATA=d.data; }
+  if(d.totals){
+    if(d.partial){ Object.keys(d.totals).forEach(k=>{ if(d.totals[k]) TOTALS[k]=d.totals[k]; }); }
+    else TOTALS=d.totals;
+  }
+}
+
+function focusForm(){
+  const c=document.querySelector('#app .card'); if(!c)return;
+  try{ c.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){ c.scrollIntoView(); }
+  c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash');
+  setTimeout(function(){ const fn=document.getElementById('in_姓名')||document.getElementById('in_陽世報恩人');
+    if(fn){ try{fn.focus({preventScroll:true});}catch(e){} } },420);
 }
 
 /* ---------- 自動完成 ---------- */
@@ -1751,8 +1478,656 @@ function copyGo(){
       else { toast('帶入失敗：'+((d&&d.error)||'')); if(btn){btn.disabled=false;btn.textContent='帶入本月';} }
     }).catch(()=>{ toast('連線失敗'); if(btn){btn.disabled=false;btn.textContent='帶入本月';} });
 }
-</script>
 
+</script>
+<script>
+/* ====== 後端網址（部署 Apps Script 後貼 /exec 網址） ====== */
+const API_URL = 'https://script.google.com/macros/s/AKfycbwSM81dVKy_ZkFdQneulQKv7m13rfYe8xonhBFPI6T1sASw3A2Q3rBNjJ1oY3MsOPIYZw/exec';
+/* ========================================================= */
+
+/* ★ 老師清單與編號 ★  新增老師：加一行 {name:'姓名',no:22}，密碼自動＝123+編號，後端自動納入 */
+let TEACHERS=[
+ {name:'陳捷容',no:1},{name:'羅文勳',no:2},{name:'陳彩綺',no:3},{name:'蕭竣方',no:4},
+ {name:'湯雯莉',no:5},{name:'沈佳琪',no:6},{name:'周冠榮',no:7},{name:'蕭鎧峻',no:8},
+ {name:'賴素貞',no:9},{name:'張簡玉靖',no:10},{name:'梁凱妍',no:11},{name:'鄭聖勳',no:12},
+ {name:'謝欣諭',no:13},{name:'王宥心',no:14},{name:'熊卿妃',no:15},{name:'鐘宥涵',no:16},
+ {name:'謝承殷',no:17},{name:'陳昕昀',no:18},{name:'林雅涵',no:19},{name:'公司內部',no:20},
+ {name:'靈應壇',no:21}
+];
+let TBYNAME={}; function rebuildT(){TBYNAME={};TEACHERS.forEach(t=>TBYNAME[t.name]=t);} rebuildT();
+function pwOf(no){return '123'+no;}
+
+/* 各老師收單人(下線)清單；沒列的老師不顯示此欄 */
+let TEACHER_SHOUDAN={'羅文勳':['院長','子瑄','包年','章宴','釧益','旂彰','瑋齊'],'陳彩綺':['彩綺','冠穎','晏蓉','茜茹','豐州'],'湯雯莉':['莫莉','柏雅'],'王宥心':['玥希','宥心']};
+
+const ITEMS=['補財','補庫','補運(消災解厄)','夫妻(金姻緣)','貴人(木姻緣)','單身(水姻緣)','和合(火姻緣)','同性(土姻緣)','冤親(解冤釋結)','化小人','招貴人'];
+const FAHUI_ITEMS=ITEMS.concat(['天赦金']);
+
+/* ★ 項目開放設定（全院共用，行政後台控制） ★ */
+const ADMIN_NAMES=['蕭竣方','公司內部'];        /* 這些帳號登入才看得到「開放設定」 */
+const TOGGLE_CATS=['斗燈','還陰債','祭改','普桌'];              /* 可整類開關的分類 */
+let OPENCFG=null;                                /* null＝全開；{fahui:{項目:bool}, 斗燈:bool, 還陰債:bool} */
+let ITEMLABELS={};                               /* 項目顯示名稱對應 {原始名:顯示名}，計價仍用原始名 */
+let ADMINS=[];                                   /* 後端設定的行政人員名單 */
+function labelOf(it){ return ITEMLABELS[it]||it; }
+function itemOpen(it){ return !(OPENCFG&&OPENCFG.fahui&&OPENCFG.fahui[it]===false); }
+function catOpen(c){ if(TOGGLE_CATS.indexOf(c)<0) return true; return !(OPENCFG&&OPENCFG[c]===false); }
+function loadOpenCfg(cb){ if(!API_URL){cb&&cb();return;} fetch(API_URL+'?action=openItems').then(r=>r.json()).then(d=>{ OPENCFG=(d&&d.config)||null; cb&&cb(); }).catch(()=>{cb&&cb();}); }
+function loadSysCfg(cb){ if(!API_URL){cb&&cb();return;} fetch(API_URL+'?action=sysConfig').then(r=>r.json()).then(d=>{ if(d&&d.ok){ ITEMLABELS=d.itemLabels||{}; ADMINS=d.admins||[]; } cb&&cb(); }).catch(()=>{cb&&cb();}); }
+function fahuiOptions(selected){ return FAHUI_ITEMS.filter(o=>itemOpen(o)||o===selected).map(o=>`<option value="${o}"${o===selected?' selected':''}>${labelOf(o)}</option>`).join(''); }
+const FAHUI_NOBIRTH=['天赦金'];   /* ← 這些法會項目「免填生日」；其餘項目生日必填 */
+const SHICHEN=[{v:'吉',t:'吉（不知時辰就用吉）'},{v:'子',t:'子（23–01時）'},{v:'丑',t:'丑（01–03時）'},{v:'寅',t:'寅（03–05時）'},{v:'卯',t:'卯（05–07時）'},{v:'辰',t:'辰（07–09時）'},{v:'巳',t:'巳（09–11時）'},{v:'午',t:'午（11–13時）'},{v:'未',t:'未（13–15時）'},{v:'申',t:'申（15–17時）'},{v:'酉',t:'酉（17–19時）'},{v:'戌',t:'戌（19–21時）'},{v:'亥',t:'亥（21–23時）'}];
+const CATS_ORDER=['法會','斗燈','還陰債','祭改','普桌'];
+
+/* 後端欄位（與 Code.gs 一致；collect 依此逐欄收集）*/
+const COLS={
+ '法會':['收單人','公司行號','項目','份數','姓名','生日別','生日年','生日月','生日日','時辰','居住地址','祈願'],
+ '斗燈':['收單人','加購類型','斗種','份數','姓名','生日年','生日月','生日日','時辰','居住地址','令牌字或祈願','祈願'],
+ '還陰債':['收單人','牒文類別','份數','陽世報恩人','報恩人居住地址','祈願','亡者生日年','亡者生日月','亡者生日日','時辰','卒于年','卒于月','卒于日','歲數','姓','公姑娘媽','名','考妣','神位地址','先祖名'],
+ '祭改':['收單人','公司行號','份數','姓名','生日別','生日年','生日月','生日日','時辰','居住地址','性別','衣服'],
+ '普桌':['收單人','公司行號','份數','姓名','居住地址','備註','捐掉或寄回']
+};
+
+/* 法會客戶欄位（項目另由多項目區處理）*/
+const FAHUI_CUST=[
+ {sh:1,k:'收單人',type:'select',from:'shoudan'},
+ {k:'姓名',type:'text',req:1},
+ {type:'ymd',cal:1,conv:1,y:'生日年',m:'生日月',d:'生日日',calk:'生日別',label:'生日',rk:'生日年'},
+ {k:'時辰',type:'select',opts:SHICHEN},
+ {k:'居住地址',type:'text',req:1},
+ {k:'公司行號',type:'text'}
+];
+
+/* 斗燈/祭改/普桌 通用欄位 */
+const FIELDS={
+ '祭改':[
+   {sh:1,k:'收單人',label:'收單人/下線老師',type:'select',from:'shoudan'},
+   {k:'份數',type:'num',req:1,def:1},
+   {k:'姓名',type:'text',req:1},
+   {type:'ymd',cal:1,conv:1,y:'生日年',m:'生日月',d:'生日日',calk:'生日別',label:'生日'},
+   {k:'時辰',type:'select',opts:SHICHEN},
+   {k:'居住地址',type:'text',req:1},
+   {k:'性別',type:'select',opts:['','男','女'],req:1},
+   {k:'衣服',type:'select',opts:['','有','無']},
+   {k:'公司行號',type:'text'}
+ ],
+ '普桌':[
+   {sh:1,k:'收單人',label:'收單人/下線老師',type:'select',from:'shoudan'},
+   {k:'份數',type:'num',req:1,def:1},
+   {k:'姓名',type:'text',req:1},
+   {k:'居住地址',type:'text',req:1},
+   {k:'捐掉或寄回',type:'select',opts:['','捐掉','寄回'],req:1},
+   {k:'公司行號',type:'text',label:'公司行號(公司填名稱+負責人)'},
+   {k:'備註',type:'text',label:'備註(想上疏文的家人姓名)'}
+ ]
+};
+
+/* 還陰債：固定欄 + 依牒文類別動態亡者明細 */
+const YIN_TOP=[
+ {sh:1,k:'收單人',type:'select',from:'shoudan'},
+ {k:'牒文類別',type:'select',opts:['','個人正魂','冤親債主','歷代祖先','地基主','嬰靈','獸魂','辭祖'],req:1,onchg:'renderYinDetail'},
+ {k:'份數',type:'num',req:1,def:1},
+ {k:'陽世報恩人',label:'陽世報恩人(報名者)',type:'text',req:1,oninp:'yinAuto'},
+ {k:'報恩人居住地址',type:'text',req:1}
+];
+const YDEF={
+ '生日':{type:'ymd',y:'亡者生日年',m:'亡者生日月',d:'亡者生日日',label:'亡者生日(國曆)',eg:'國曆，例：45 6 3（不知可空白）'},
+ '時辰':{k:'時辰',type:'select',opts:SHICHEN,label:'時辰',eg:'不知道就選「吉」'},
+ '卒於':{type:'ymd',y:'卒于年',m:'卒于月',d:'卒于日',label:'亡者卒於(國曆)',eg:'國曆，例：98 3 12'},
+ '歲數':{k:'歲數',type:'num',label:'歲數(國曆計算)',eg:'例：78'},
+ '姓':{k:'姓',type:'text',eg:'例：謝'},
+ '稱':{k:'公姑娘媽',type:'select',opts:['','公','姑娘','媽'],label:'公/姑娘/媽',eg:'男性填「公」；女性未婚「姑娘」、已婚「媽」'},
+ '名':{k:'名',type:'text',eg:'例：志明'},
+ '考妣':{k:'考妣',type:'select',opts:['','考','妣'],label:'考/妣',eg:'男性填「考」、女性填「妣」'},
+ '神位':{k:'神位地址',type:'text',hint:'神'},
+ '祖名':{k:'先祖名',type:'text',hint:'祖'}
+};
+const YINCAT={
+ '個人正魂':{order:['生日','時辰','卒於','姓','稱','名','神位','祖名'],allReq:true,noReqZu:true},
+ '冤親債主':{order:['祖名'],req:['先祖名']},
+ '歷代祖先':{order:['神位','祖名'],req:['神位地址','先祖名']},
+ '地基主':{order:['神位','祖名'],req:['神位地址','先祖名']},
+ '嬰靈':{order:['祖名'],req:['先祖名']},
+ '獸魂':{order:['祖名'],req:['先祖名']},
+ '辭祖':{order:['神位','祖名'],req:['神位地址','先祖名']}
+};
+const YINHINT_TXT={
+ '個人正魂':{神:'填牌位或塔位地址',祖:'系統依上面「姓＋公/姑娘/媽＋名」自動帶入，免填'},
+ '冤親債主':{祖:'姓氏+前世今生之冤親債主'},
+ '歷代祖先':{神:'祖先牌位地址',祖:'只填姓氏即可，系統自動組成「○氏九玄七祖歷代祖先」（夫家或自家姓氏皆可）'},
+ '地基主':{神:'要施作的地址',祖:'直接填「地基主」'},
+ '嬰靈':{祖:'只填媽媽姓氏即可，系統自動組成「○氏嬰靈」'},
+ '獸魂':{祖:'獸魂（知道名字則填名字）'},
+ '辭祖':{神:'前夫祖先牌位地址',祖:'只填前夫姓氏即可，系統自動組成「○氏歷代祖先」'}
+};
+const CATDESC={'法會':'先勾選項目與份數（可多個），再填一次客戶資料。','斗燈':'選加購類型後，下方跳出對應欄位。令牌加購也要選「斗種」（令牌放哪個斗）；令牌／五行需選令牌字（天干地支）。','還陰債':'選牒文類別後，下方會跳出該類別要填的欄位（各有必填）。','祭改':'','普桌':'公司請於公司行號填名稱+負責人。'};
+
+/* 斗燈：依加購類型動態（令牌字用下拉選天干地支且必填；令牌加購也要選斗種＝放哪個斗）*/
+const GANZHI=['','甲','乙','丙','丁','戊','己','庚','辛','壬','癸','子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const DOU_TOP=[
+ {sh:1,k:'收單人',type:'select',from:'shoudan'},
+ {k:'加購類型',type:'select',opts:['','單筆加購','季斗加購','令牌加購','五行年斗','五行季斗'],req:1,onchg:'renderDouDetail'},
+ {k:'份數',type:'num',req:1,def:1},
+ {k:'姓名',type:'text',req:1},
+ {type:'ymd',cal:1,conv:1,calk:'生日別',y:'生日年',m:'生日月',d:'生日日',label:'生日'},
+ {k:'時辰',type:'select',opts:SHICHEN},
+ {k:'居住地址',type:'text',req:1},
+ {k:'祈願',type:'text',max:50}
+];
+const DOUDEF={
+ '斗種':{k:'斗種',type:'select',opts:['','月老斗','財神斗','貴人斗','化煞斗','開運斗']},
+ '令牌':{k:'令牌字或祈願',type:'select',opts:GANZHI,label:'令牌字（必選，十天干／十二地支）'}
+};
+const DOUCONF={
+ '單筆加購':{order:['斗種'],req:['斗種']},
+ '季斗加購':{order:['斗種'],req:['斗種']},
+ '五行年斗':{order:['斗種','令牌'],req:['斗種','令牌字或祈願']},
+ '五行季斗':{order:['斗種','令牌'],req:['斗種','令牌字或祈願']},
+ '令牌加購':{order:['斗種','令牌'],req:['斗種','令牌字或祈願']}
+};
+
+let TEACHER=null,MONTH,CURCAT='法會',EDIT={cat:null,id:null},DATA={},TOTALS={};
+
+function applyTheme(){document.documentElement.classList.remove('dark');document.body.classList.remove('dark');}
+function theme(m){applyTheme();}
+function bigfont(){const big=!document.body.classList.contains('big');document.documentElement.classList.toggle('big',big);document.body.classList.toggle('big',big);try{localStorage.xlbig=big?1:''}catch(e){}}
+try{applyTheme();try{localStorage.xltheme='light'}catch(e){}}catch(e){}document.documentElement.classList.add('big');document.body.classList.add('big');
+function defMonth(){const d=new Date();return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0');}
+
+/* ===== 國曆→農曆換算（1900–2100） ===== */
+const lunarInfo=[0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b5a0,0x195a6,0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x055c0,0x0ab60,0x096d5,0x092e0,0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,0x05aa0,0x076a3,0x096d0,0x04afb,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0,0x14b63,0x09370,0x049f8,0x04970,0x064b0,0x168a6,0x0ea50,0x06b20,0x1a6c4,0x0aae0,0x0a2e0,0x0d2e3,0x0c960,0x0d557,0x0d4a0,0x0da50,0x05d55,0x056a0,0x0a6d0,0x055d4,0x052d0,0x0a9b8,0x0a950,0x0b4a0,0x0b6a6,0x0ad50,0x055a0,0x0aba4,0x0a5b0,0x052b0,0x0b273,0x06930,0x07337,0x06aa0,0x0ad50,0x14b55,0x04b60,0x0a570,0x054e4,0x0d160,0x0e968,0x0d520,0x0daa0,0x16aa6,0x056d0,0x04ae0,0x0a9d4,0x0a2d0,0x0d150,0x0f252,0x0d520];
+function lLeapMonth(y){return lunarInfo[y-1900]&0xf;}
+function lLeapDays(y){return lLeapMonth(y)?((lunarInfo[y-1900]&0x10000)?30:29):0;}
+function lMonthDays(y,m){return (lunarInfo[y-1900]&(0x10000>>m))?30:29;}
+function lYearDays(y){let s=348;for(let i=0x8000;i>0x8;i>>=1)s+=(lunarInfo[y-1900]&i)?1:0;return s+lLeapDays(y);}
+function solar2lunar(y,m,d){
+  if(y<1900||y>2100)return null;
+  let offset=Math.floor((Date.UTC(y,m-1,d)-Date.UTC(1900,0,31))/86400000);
+  let i,temp=0,ly;
+  for(i=1900;i<2101&&offset>0;i++){temp=lYearDays(i);offset-=temp;}
+  if(offset<0){offset+=temp;i--;}
+  ly=i;const leap=lLeapMonth(i);let isLeap=false;
+  for(i=1;i<13&&offset>0;i++){
+    if(leap>0&&i===leap+1&&!isLeap){--i;isLeap=true;temp=lLeapDays(ly);}
+    else temp=lMonthDays(ly,i);
+    if(isLeap&&i===leap+1)isLeap=false;
+    offset-=temp;
+  }
+  if(offset===0&&leap>0&&i===leap+1){if(isLeap)isLeap=false;else{isLeap=true;--i;}}
+  if(offset<0){offset+=temp;--i;}
+  return {lYear:ly,lMonth:i,lDay:offset+1,isLeap:isLeap};
+}
+/* 民國國曆 → 民國農曆字串 */
+function s2lMinguo(my,mm,dd){
+  my=parseInt(my);mm=parseInt(mm);dd=parseInt(dd);
+  if(!my||!mm||!dd)return null;
+  const greg = my>=1000 ? my : my+1911;   // 4位數視為西元，其餘視為民國
+  const r=solar2lunar(greg,mm,dd);if(!r)return null;
+  return {y:r.lYear-1911,m:(r.isLeap?'閏':'')+r.lMonth,d:r.lDay};
+}
+/* 收集時：若選國曆則換算成農曆存入 */
+function applyLunar(cat,o){
+  if(['法會','祭改','斗燈'].indexOf(cat)<0)return;
+  if(val('生日別')==='國'){
+    const r=s2lMinguo(o['生日年'],o['生日月'],o['生日日']);
+    if(r){o['生日年']=r.y;o['生日月']=r.m;o['生日日']=r.d;}
+  }else{
+    const lp=document.getElementById('leap_生日年');
+    if(lp&&lp.checked&&o['生日月']&&(''+o['生日月']).indexOf('閏')<0) o['生日月']='閏'+o['生日月'];
+  }
+  if('生日別' in o)o['生日別']='農';
+}
+function toggleLeap(calk,y){
+  const c=document.getElementById('leap_'+y);
+  if(c && val(calk)==='國') c.checked=false;   // 國曆自動判斷閏月，取消手動勾選
+}
+/* 即時換算預覽 */
+function birthPrev(yk,mk,dk,ck){
+  const el=document.getElementById('prev_'+yk);if(!el)return;
+  if((ck?val(ck):'農')!=='國'){el.textContent='';return;}
+  const r=s2lMinguo(val(yk),val(mk),val(dk));
+  el.textContent=r?('→ 換算農曆：'+r.y+'年'+r.m+'月'+r.d+'日（將以此存入疏文）'):'';
+}
+
+/* 登入 */
+function fillMonths(){
+  const sel=document.getElementById('month');if(!sel||sel.tagName!=='SELECT')return;
+  const d=new Date();let h='';
+  for(let i=1;i>=-17;i--){const dt=new Date(d.getFullYear(),d.getMonth()+i,1);const v=dt.getFullYear()+'.'+String(dt.getMonth()+1).padStart(2,'0');h+=`<option${i===0?' selected':''}>${v}</option>`;}
+  sel.innerHTML=h;
+}
+function loadTeachers(cb){
+  if(!API_URL){cb();return;}
+  fetch(API_URL+'?action=teachers').then(r=>r.json()).then(d=>{
+    if(d&&d.ok&&Array.isArray(d.teachers)&&d.teachers.length){
+      TEACHERS=d.teachers.map(t=>({name:t.name,no:t.no,hasPw:!!t.hasPw,shoudan:t.shoudan||[]}));rebuildT();
+      const sd={};d.teachers.forEach(t=>{if(t.shoudan&&t.shoudan.length)sd[t.name]=t.shoudan;});TEACHER_SHOUDAN=sd;
+    }
+  }).catch(()=>{}).then(()=>cb());
+}
+function init(){
+  if(!API_URL)document.getElementById('setupNote').innerHTML='<div class="banner info">⚙ 尚未設定後端網址：請先部署 Code.gs，把 /exec 網址貼到本檔 API_URL。</div>';
+  fillMonths();
+  loadOpenCfg();
+  loadSysCfg();
+  loadTeachers(function(){
+    fixTeachers();renderLoginTiles();renderRankRules();
+    document.getElementById('loginTeacher').innerHTML=TEACHERS.map(t=>`<option value="${t.name}">${t.no}　${t.name}</option>`).join('');
+    let saved=null;try{saved=localStorage.xlUser}catch(e){}
+    if(saved&&TBYNAME[saved])enterApp(saved);
+    else document.getElementById('login').style.display='';
+  });
+}
+function doLogin(){
+  const name=document.getElementById('loginTeacher').value;
+  const pw=document.getElementById('loginPw').value.trim();
+  const err=document.getElementById('loginErr');
+  const bad=function(){err.style.cssText='display:block;background:rgba(192,57,43,.12);border-left:3px solid var(--red);color:var(--red);border-radius:9px;padding:11px 14px;margin-top:10px;font-size:.88em';err.textContent='密碼不正確，請重新輸入。';};
+  const good=function(){secLogin(name,pw);err.style.display='none';try{localStorage.xlUser=name}catch(e){}document.getElementById('login').style.display='none';enterApp(name);};
+  if(pw==='123123'){ err.style.display='none'; try{localStorage.removeItem('xlUser')}catch(e){} document.getElementById('login').style.display='none'; enterAdmin(); return; }
+  const t=TBYNAME[name];
+  if(!t)return;
+  if(!t.hasPw){ if(pw===pwOf(t.no))good(); else bad(); return; }   // 沒設自訂密碼：用預設 123+編號
+  if(!API_URL){ bad(); return; }
+  err.style.display='none'; err.textContent='';
+  fetch(API_URL+'?action=checkPw&name='+encodeURIComponent(name)+'&pw='+encodeURIComponent(pw))
+    .then(r=>r.json()).then(d=>{ if(d&&d.ok&&d.pass)good(); else bad(); })
+    .catch(()=>{ if(pw===pwOf(t.no))good(); else bad(); });        // 連線失敗：退回預設密碼判斷
+}
+function enterApp(name){
+  TEACHER=name;const t=TBYNAME[name];
+  document.getElementById('app').style.display='';
+  document.getElementById('whoBadge').style.display='';
+  document.getElementById('whoBadge').textContent='👤 '+(t?t.no+'　':'')+name;
+  rankEnter(name);
+  document.getElementById('logoutBtn').style.display='';
+  document.getElementById('month').value=defMonth();MONTH=defMonth();
+  const adm=document.getElementById('adminOpenBtn'); if(adm) adm.style.display=(ADMIN_NAMES.indexOf(name)>=0)?'':'none';
+  loadOpenCfg(function(){ buildTabs();selectCat('法會');loadList(); });
+  if(typeof loadContacts==='function') setTimeout(function(){loadContacts();},600);
+}
+function logout(){secSet('sec_tok','');try{localStorage.removeItem('xlUser')}catch(e){}location.reload();}
+
+function buildTabs(){document.getElementById('tabs').innerHTML=CATS_ORDER.filter(c=>catOpen(c)).map(c=>`<button class="tab" data-c="${c}" onclick="selectCat('${c}')">${c}</button>`).join('');}
+function selectCat(c){if(EDIT.id&&EDIT.cat!==c)cancelEdit(true);CURCAT=c;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.c===c));document.getElementById('formSub').textContent=CATDESC[c]||'';renderForm();}
+
+/* 通用欄位 HTML */
+function fieldHTML(f,reqOverride){
+  if(f.group)return `<div class="grouphd">${f.group}</div>`;
+  const req=(reqOverride!=null?reqOverride:f.req);
+  const egHTML=f.eg?`<div class="fhint" style="color:var(--mut)">例如：${f.eg}</div>`:'';
+  const lab=(f.label||f.k)+(req?'<span class="req">*</span>':'');
+  if(f.type==='ymd'){
+    const oi=f.conv?` oninput="birthPrev('${f.y}','${f.m}','${f.d}','${f.calk}')"`:'';
+    const calChange=f.cal?` onchange="${f.conv?`birthPrev('${f.y}','${f.m}','${f.d}','${f.calk}');`:''}toggleLeap('${f.calk}','${f.y}')"`:'';
+    let seg='';
+    if(f.cal)seg+=`<select class="cal" id="in_${f.calk}"${calChange}><option value="國">國曆</option><option value="農">農曆</option></select>`;
+    seg+=`<span class="seg"><input type="number" id="in_${f.y}" placeholder="年"${oi}><span>年</span></span>`;
+    seg+=`<span class="seg"><input type="number" id="in_${f.m}" placeholder="月"${oi}><span>月</span></span>`;
+    seg+=`<span class="seg"><input type="number" id="in_${f.d}" placeholder="日"${oi}><span>日</span></span>`;
+    let h=`<div class="field" data-k="${f.rk||f.y}"><label>${f.label}${req?'<span class="req">*</span>':''}${f.conv?'<span style="font-weight:400;color:var(--mut);font-size:.82em">　西元或民國皆可，不知農曆填國曆自動換算</span>':''}</label><div class="ymd">${seg}</div>`;
+    if(f.cal)h+=`<label id="leapwrap_${f.y}" style="display:flex;align-items:center;gap:5px;font-weight:400;font-size:.9em;margin-top:6px;color:var(--mut)"><input type="checkbox" id="leap_${f.y}" style="width:auto;margin:0 4px 0 0">此生日為農曆閏月（直接填農曆、且為閏月才勾）</label>`;
+    if(f.conv)h+=`<div class="fhint" id="prev_${f.y}"></div>`;
+    return h+egHTML+`</div>`;
+  }
+  if(f.type==='select'){
+    const opts=(f.from==='shoudan'
+        ? [{v:'',t:'— 未指定'},{v:TEACHER,t:TEACHER+'（本人）'}].concat((TEACHER_SHOUDAN[TEACHER]||[]).map(x=>({v:x,t:x}))).concat([{v:'__add__',t:'＋ 新增收單人…'}])
+        : f.opts)||[];
+    const optHTML=opts.map(o=>{const v=(o&&typeof o==='object')?o.v:o;const t=(o&&typeof o==='object')?o.t:(o||'—');return `<option value="${hx(v)}">${hx(t)}</option>`;}).join('');
+    const onchg=f.onchg?` onchange="${f.onchg}()"`:(f.from==='shoudan'?` onchange="shoudanPick(this)"`:'');
+    let h=`<div class="field" data-k="${f.k}"><label>${lab}</label><select id="in_${f.k}"${onchg}>${optHTML}</select>`;
+    if(f.hint)h+=`<div class="fhint" id="hint_${f.hint}"></div>`;
+    return h+egHTML+`</div>`;
+  }
+  const labx=lab+(f.max?`<span style="font-weight:400;color:var(--mut);font-size:.8em">（限${f.max}字，最好30字內）</span>`:'');
+  let h=`<div class="field" data-k="${f.k}"><label>${labx}</label><input type="${f.type==='num'?'number':'text'}" id="in_${f.k}"${f.def!=null?` value="${f.def}"`:''}${f.max?` maxlength="${f.max}"`:''}${f.oninp?` oninput="${f.oninp}()"`:''}>`;
+  if(f.hint)h+=`<div class="fhint" id="hint_${f.hint}"></div>`;
+  return h+egHTML+`</div>`;
+}
+
+/* 渲染表單 */
+function renderForm(){
+  const wrap=document.getElementById('formFields');
+  if(CURCAT==='法會'){renderFahui(wrap);acAttach();return;}
+  if(CURCAT==='斗燈'){renderDou(wrap);acAttach();return;}
+  if(CURCAT==='還陰債'){renderYin(wrap);acAttach();return;}
+  wrap.innerHTML=FIELDS[CURCAT].map(f=>fieldHTML(f)).join('');
+  acAttach();
+}
+function acAttach(){ if(typeof acAttachReal==='function')acAttachReal(); }
+/* 法會：多項目 + 客戶資料 */
+function renderFahui(wrap){
+  let h='';
+  const shf=FAHUI_CUST[0];
+  h+=fieldHTML(shf);
+  if(EDIT.id){ // 編輯單筆
+    h+=`<div class="field" data-k="項目"><label>項目<span class="req">*</span></label><select id="in_項目" onchange="fahuiEditWish()">${fahuiOptions('')}</select></div>`;
+    h+=`<div class="field" data-k="份數"><label>份數<span class="req">*</span></label><input type="number" id="in_份數" value="1"></div>`;
+    h+=`<div class="field" data-k="祈願" id="fahuiWishField"><label>祈願／願望<span style="font-weight:400;color:var(--mut);font-size:.8em">（限50字）</span></label><input type="text" id="in_祈願" maxlength="80"><div id="editWishHelper" style="margin-top:6px"></div></div>`;
+  }else{ // 新增多項目
+    h+=`<div class="grouphd">項目（可加多個）</div><div class="itembox" id="fahuiItems"></div><button class="additem" onclick="addItemRow()">＋ 再加一個項目</button>`;
+  }
+  FAHUI_CUST.slice(1).forEach(f=>h+=fieldHTML(f));
+  wrap.innerHTML=h;
+  if(!EDIT.id){document.getElementById('fahuiItems').innerHTML='';addItemRow();}
+}
+/* ===== 法會祈願公版 ===== */
+const WISH_SIMPLE={
+ '補財':'修復天庫、地庫的破損，守住本命正財，事業順利，財源廣進。',
+ '補庫':'增財補庫，減少不必要的開支，事業順利，財源廣進。',
+ '補運(消災解厄)':'提升整體運勢，事事順心。',
+ '冤親(解冤釋結)':'迴向給自身討報之冤親債主，因果業力，化惡緣轉善緣',
+ '招貴人':'提升工作上的貴人運勢，工作有狀況時有貴人相助',
+ '化小人':'化解身邊所有的男女小人，轉為貴人相助，化惡緣轉善緣',
+ '貴人(木姻緣)':'廣結善緣，讓跟自己有善緣的人顯化出來，貴人相助。'
+};
+const WISH_WATER=[['求自我提升','提升個人魅力與自信'],['求對象','天賜良緣，感情上能遇到好的桃花，合適的對象']];
+function fireWishText(scen,name,bstr){ const b=name+(bstr?'（'+bstr+'）':'');
+ if(scen==='求在一起')return '化解和'+b+'之間的感情阻礙，有良好的互動及聯繫，感情越來越甜蜜，牽緣在一起';
+ if(scen==='求復合')return '化解和'+b+'之間的感情阻礙，有良好的互動及聯繫，重新牽緣在一起';
+ return '化解和'+b+'之間的感情阻礙，有良好的互動及溝通，感情越來越甜蜜熱絡'; }
+function wishMode(item){
+ if(item==='天赦金')return 'none';
+ if(/金姻緣/.test(item))return 'jin';
+ if(/[火土]姻緣/.test(item))return 'fire';
+ if(/水姻緣/.test(item))return 'water';
+ if(WISH_SIMPLE[item])return 'simple';
+ return 'free';
+}
+function partnerBlockHTML(){ return `<input class="fp-name" type="text" placeholder="對方姓名（XXX）" oninput="wishPartnerChg(this)">
+ <div class="fp-bd fp-bday">
+  <select class="fp-cal" onchange="wishPartnerChg(this)"><option value="國">國曆</option><option value="農">農曆</option></select>
+  <input class="fp-y" type="number" placeholder="年" oninput="wishPartnerChg(this)">
+  <input class="fp-m" type="number" placeholder="月" oninput="wishPartnerChg(this)">
+  <input class="fp-d" type="number" placeholder="日" oninput="wishPartnerChg(this)">
+ </div>`; }
+function pubBox(txt){ return `<div style="margin-top:5px;font-size:12px;color:#8a7a4a;line-height:1.6;background:rgba(156,126,58,.06);border-radius:7px;padding:7px 9px">公版參考：${txt}</div>`; }
+function scBtn(label,onclick){ return `<button type="button" onclick="${onclick}" style="padding:6px 11px;border:1px solid #9c7e3a;background:#fff;color:#9c7e3a;border-radius:15px;font-size:13px;cursor:pointer">${label}</button>`; }
+
+function itemRowHTML(item,qty,wish){
+ return `<div class="fitem">
+ <div class="fi-hd"><span class="fi-no"></span><button type="button" class="fi-del" onclick="fiRemove(this)" aria-label="移除這個項目">移除</button></div>
+ <select class="fi-item" onchange="fiItemChange(this)">${fahuiOptions(item)}</select>
+ <div class="fi-qrow"><span class="fi-qlabel">份數</span>
+  <button type="button" class="fi-step" onclick="fiBump(this,-1)">−</button>
+  <input class="fi-qty" type="number" min="1" inputmode="numeric" value="${qty||1}">
+  <button type="button" class="fi-step" onclick="fiBump(this,1)">＋</button></div>
+ <div class="fi-wisharea"></div></div>`;
+}
+function renderWishArea(card,item,initWish){
+ const box=card.querySelector('.fi-wisharea'); if(!box)return;
+ const mode=wishMode(item); card.dataset.scen='';
+ const wishInput=`<input class="fi-wish" type="text" maxlength="80" placeholder="此項目的祈願／願望（最好30字內）" value="${initWish||''}">`;
+ if(mode==='none'){ box.innerHTML=''; return; }
+ if(mode==='free'){ box.innerHTML=wishInput; return; }
+ if(mode==='simple'){ box.innerHTML=wishInput
+   +`<button type="button" onclick="fillPub(this,'${item}')" style="margin-top:6px;padding:6px 10px;border:1px solid #9c7e3a;background:#fff;color:#9c7e3a;border-radius:6px;font-size:13px;cursor:pointer">📋 複製公版到祈願欄</button>`
+   +pubBox(WISH_SIMPLE[item]); return; }
+ if(mode==='water'){ box.innerHTML=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">${scBtn('求自我提升',"waterScen(this,0)")}${scBtn('求對象',"waterScen(this,1)")}</div>`
+   +wishInput+pubBox('求自我提升 → '+WISH_WATER[0][1]+'<br>求對象 → '+WISH_WATER[1][1]); return; }
+ if(mode==='jin'){ box.innerHTML=`<div class="fi-partner" style="display:block">
+   <div class="fp-hd"><div class="fp-title">祈願</div><div class="fp-note">先填對方姓名＋生日，再點「複製公版」帶入祈願欄（可再自行修改）</div></div>
+   ${partnerBlockHTML()}
+   <div style="margin:8px 0">${scBtn('📋 複製公版到祈願欄',"jinFill(this)")}</div>
+   ${wishInput}
+   ${pubBox('祈求和○○○（農曆○年○月○日）之間的感情更好，有良好的互動及溝通，感情越來越甜蜜熱絡')}</div>`; return; }
+ if(mode==='fire'){ box.innerHTML=`<div class="fi-partner" style="display:block">
+   <div class="fp-hd"><div class="fp-title">祈願</div><div class="fp-note">先填對方姓名＋生日，再點下方情境帶入完整句（可再自行修改）</div></div>
+   ${partnerBlockHTML()}
+   <div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0">${scBtn('求在一起',"fireScen(this,'求在一起')")}${scBtn('求復合',"fireScen(this,'求復合')")}${scBtn('情侶求增溫',"fireScen(this,'情侶求增溫')")}</div>
+   ${wishInput}</div>`; return; }
+}
+function fiItemChange(sel){ const card=sel.closest('.fitem'); renderWishArea(card,sel.value,''); }
+function fillPub(btn,item){ const card=btn.closest('.fitem'); const w=card.querySelector('.fi-wish'); if(w&&WISH_SIMPLE[item]){w.value=WISH_SIMPLE[item];w.focus();} }
+function waterScen(btn,i){ const card=btn.closest('.fitem'); const w=card.querySelector('.fi-wish'); if(w){w.value=WISH_WATER[i][1];w.focus();} }
+function fireScen(btn,scen){ const card=btn.closest('.fitem'); card.dataset.scen=scen; const name=(card.querySelector('.fp-name').value||'').trim(); const w=card.querySelector('.fi-wish'); if(w){w.value=fireWishText(scen,name,fpBstr(card));w.focus();} }
+function jinFill(btn){ const card=btn.closest('.fitem'); card.dataset.scen='jin'; const name=(card.querySelector('.fp-name').value||'').trim(); const w=card.querySelector('.fi-wish'); if(w){w.value=partnerWish('金',name,fpBstr(card));w.focus();} }
+function wishPartnerChg(el){ const card=el.closest('.fitem'); const item=card.querySelector('.fi-item').value; const mode=wishMode(item);
+ const name=(card.querySelector('.fp-name').value||'').trim();
+ if(mode==='jin'){ if(card.dataset.scen==='jin'){ const w=card.querySelector('.fi-wish'); if(w)w.value=partnerWish('金',name,fpBstr(card)); } }
+ else if(mode==='fire'){ const scen=card.dataset.scen; if(scen){ const w=card.querySelector('.fi-wish'); if(w)w.value=fireWishText(scen,name,fpBstr(card)); } }
+}
+function partnerWish(item,name,bstr){ if(!name)return ''; return '祈求和'+name+(bstr?'（'+bstr+'）':'')+'感情更好，有良好的互動及溝通，感情越來越甜蜜熱絡'; }
+function fpBstr(card){ let y=card.querySelector('.fp-y').value,m=card.querySelector('.fp-m').value,d=card.querySelector('.fp-d').value; if(!(y&&m&&d))return ''; if(card.querySelector('.fp-cal').value==='國'){const cv=s2lMinguo(y,m,d);if(cv){y=cv.y;m=cv.m;d=cv.d;}} return '農曆'+y+'年'+m+'月'+d+'日'; }
+function fiBump(btn,d){const inp=btn.closest('.fitem').querySelector('.fi-qty');inp.value=Math.max(1,(parseInt(inp.value)||1)+d);}
+function shoudanPick(sel){
+  if(sel.value!=='__add__')return;
+  const nm=(prompt('新增收單人（業務／客服）姓名：')||'').trim();
+  sel.value='';
+  if(!nm)return;
+  TEACHER_SHOUDAN[TEACHER]=TEACHER_SHOUDAN[TEACHER]||[];
+  if(TEACHER_SHOUDAN[TEACHER].indexOf(nm)<0){
+    TEACHER_SHOUDAN[TEACHER].push(nm);
+    const opt=document.createElement('option');opt.value=nm;opt.textContent=nm;
+    sel.insertBefore(opt, sel.querySelector('option[value="__add__"]'));
+  }
+  sel.value=nm;
+  if(API_URL) fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addShoudan',teacher:TEACHER,name:nm})}).then(r=>r.json()).catch(()=>{});
+}
+function fahuiEditWish(){
+  const f=document.getElementById('fahuiWishField');if(!f)return;
+  const item=val('項目');
+  const help=document.getElementById('editWishHelper');
+  if(item==='天赦金'){f.style.display='none';const w=document.getElementById('in_祈願');if(w)w.value='';if(help)help.innerHTML='';return;}
+  f.style.display='';
+  if(!help)return;
+  const mode=wishMode(item); const bs='padding:6px 10px;border:1px solid #9c7e3a;background:#fff;color:#9c7e3a;border-radius:6px;font-size:13px;cursor:pointer';
+  let h='';
+  if(mode==='simple'){ h=`<button type="button" onclick="editFillWish(WISH_SIMPLE['${item}'])" style="${bs}">📋 複製公版到祈願欄</button>`+pubBox(WISH_SIMPLE[item]); }
+  else if(mode==='water'){ h=`<div style="display:flex;gap:6px;flex-wrap:wrap">${scBtn('求自我提升',"editFillWish(WISH_WATER[0][1])")}${scBtn('求對象',"editFillWish(WISH_WATER[1][1])")}</div>`+pubBox('求自我提升 → '+WISH_WATER[0][1]+'<br>求對象 → '+WISH_WATER[1][1]); }
+  else if(mode==='fire'){ h=`<div style="display:flex;gap:6px;flex-wrap:wrap">${scBtn('求在一起',"editFillWish(fireWishText('求在一起','○○○','農曆○年○月○日'))")}${scBtn('求復合',"editFillWish(fireWishText('求復合','○○○','農曆○年○月○日'))")}${scBtn('情侶求增溫',"editFillWish(fireWishText('情侶求增溫','○○○','農曆○年○月○日'))")}</div>`+pubBox('點情境帶入公版後，把 ○○○ 與生日改成對方的'); }
+  else if(mode==='jin'){ h=`<button type="button" onclick="editFillWish(partnerWish('金','○○○','農曆○年○月○日'))" style="${bs}">📋 複製公版到祈願欄</button>`+pubBox('帶入後把 ○○○ 與生日改成對方的：'+partnerWish('金','○○○','農曆○年○月○日')); }
+  else { h=''; }
+  help.innerHTML=h;
+}
+function editFillWish(t){ const w=document.getElementById('in_祈願'); if(w){ w.value=t; w.focus(); } }
+function addItemRow(){const box=document.getElementById('fahuiItems');box.insertAdjacentHTML('beforeend',itemRowHTML('',1,''));const row=box.lastElementChild;renderWishArea(row,row.querySelector('.fi-item').value,'');}
+function getItemRows(){return [...document.querySelectorAll('#fahuiItems .fitem')].map(r=>{
+  const item=r.querySelector('.fi-item').value;
+  const qty=parseInt(r.querySelector('.fi-qty').value)||0;
+  const mode=wishMode(item);
+  let wish='';
+  if(mode==='none'){ wish=''; }
+  else { const w=r.querySelector('.fi-wish'); wish=w?w.value.trim():''; }
+  return {項目:item,份數:qty,祈願:wish};
+});}
+
+/* 斗燈 */
+function renderDou(wrap){
+  let h=DOU_TOP.map(f=>fieldHTML(f)).join('');
+  h+=`<div class="grouphd">加購內容</div><div id="douDetail"></div>`;
+  wrap.innerHTML=h;renderDouDetail();
+}
+function renderDouDetail(){
+  const sel=document.getElementById('in_加購類型');const box=document.getElementById('douDetail');if(!box)return;
+  const cfg=DOUCONF[sel?sel.value:''];
+  if(!cfg){box.innerHTML='<p class="sub" style="margin:0">請先選加購類型。</p>';return;}
+  box.innerHTML=cfg.order.map(nm=>{const def=DOUDEF[nm];const req=def.k&&cfg.req.indexOf(def.k)>=0?1:0;return fieldHTML(def,req);}).join('');
+}
+/* 還陰債 */
+function renderYin(wrap){
+  let h=YIN_TOP.map(f=>fieldHTML(f)).join('');
+  h+=`<div class="grouphd">亡者明細（依牒文類別）</div><div id="yinDetail"></div>`;
+  wrap.innerHTML=h;renderYinDetail();
+}
+function renderYinDetail(){
+  const sel=document.getElementById('in_牒文類別');const box=document.getElementById('yinDetail');if(!box)return;
+  const cat=sel?sel.value:'';const cfg=YINCAT[cat];
+  if(!cfg){box.innerHTML='<p class="sub" style="margin:0">請先選牒文類別。</p>';return;}
+  box.innerHTML=cfg.order.map(nm=>{const def=YDEF[nm];const req=cfg.allReq?1:(def.k&&cfg.req&&cfg.req.indexOf(def.k)>=0?1:0);return fieldHTML(def,req);}).join('');
+  const ht=YINHINT_TXT[cat]||{};
+  const hn=document.getElementById('hint_神'),hz=document.getElementById('hint_祖');
+  if(hn)hn.textContent=ht.神?('神位地址：'+ht.神):'';
+  if(hz)hz.textContent=ht.祖?('先祖名：'+ht.祖):'';
+  yinAuto();
+}
+function yinAuto(){
+  const sel=document.getElementById('in_牒文類別');if(!sel)return;const cat=sel.value;
+  const zu=document.getElementById('in_先祖名');if(!zu)return;
+  if(cat==='地基主'){zu.value='地基主';zu.readOnly=true;zu.style.background='var(--bg2)';}
+  else if(cat==='冤親債主'){const n=val('陽世報恩人');zu.value=n?(n.charAt(0)+'氏前世今生之冤親債主'):'';zu.readOnly=true;zu.style.background='var(--bg2)';}
+  else if(cat==='個人正魂'){zu.value='';zu.readOnly=true;zu.placeholder='送出時自動帶入：姓＋公/姑娘/媽＋名';zu.style.background='var(--bg2)';}
+  else {zu.readOnly=false;zu.style.background='';}
+}
+
+function val(id){const e=document.getElementById('in_'+id);return e?(''+e.value).trim():'';}
+function clearMiss(){document.querySelectorAll('.field').forEach(el=>el.classList.remove('miss'));}
+function markMiss(k){const el=document.querySelector(`.field[data-k="${k}"]`);if(el)el.classList.add('miss');}
+
+/* 收集單筆（斗燈/祭改/普桌/還陰債/法會編輯）*/
+function collectSingle(){
+  const o={category:CURCAT,month:MONTH,teacher:TEACHER};
+  COLS[CURCAT].forEach(c=>o[c]=val(c));
+  if(CURCAT==='還陰債'){
+    const cat=o['牒文類別'];
+    // 只填姓氏、後面自動補：歷代祖先/嬰靈/辭祖
+    const SUF={'歷代祖先':'氏九玄七祖歷代祖先','嬰靈':'氏嬰靈','辭祖':'氏歷代祖先'};
+    if(SUF[cat]){ const s=(''+(o['先祖名']||'')).trim(); const tail=SUF[cat].slice(1);
+      if(s && s.indexOf(tail)<0) o['先祖名']=s+SUF[cat]; }
+    // 個人正魂：先祖名＝姓＋公/姑娘/媽＋名（自動組，不用重填）
+    if(cat==='個人正魂'){ o['先祖名']=(o['姓']||'')+(o['公姑娘媽']||'')+(o['名']||''); }
+    // 冤親債主：陽世報恩人姓氏 → ○氏前世今生之冤親債主
+    if(cat==='冤親債主'){ const n=(''+(o['陽世報恩人']||'')).trim(); if(n) o['先祖名']=n.charAt(0)+'氏前世今生之冤親債主'; }
+  }
+  applyLunar(CURCAT,o);
+  return o;
+}
+/* 驗證；回傳缺漏欄位陣列 */
+function validateSingle(o){
+  clearMiss();let miss=[];
+  const need=requiredOf(CURCAT,o);
+  need.forEach(k=>{if(!(''+(o[k]||'')).trim()){miss.push(k);markMiss(k);}});
+  return miss;
+}
+function requiredOf(cat,o){
+  if(cat==='還陰債'){const base=['牒文類別','份數','陽世報恩人','報恩人居住地址'];const cfg=YINCAT[o['牒文類別']];if(!cfg)return base;
+    if(cfg.allReq){let r=base.slice();cfg.order.forEach(nm=>{const def=YDEF[nm];if(def.k)r.push(def.k);if(def.type==='ymd')r.push(def.y,def.m,def.d);});return r;}
+    return base.concat(cfg.req||[]);}
+  if(cat==='斗燈'){let r=['加購類型','份數','姓名','居住地址'];const cf=DOUCONF[o['加購類型']];if(cf)r=r.concat(cf.req);return r;}
+  if(cat==='祭改')return ['份數','姓名','居住地址','性別'];
+  if(cat==='普桌')return ['份數','姓名','居住地址','捐掉或寄回'];
+  if(cat==='法會'){ // 編輯單筆
+    let r=['項目','份數','姓名','居住地址'];
+    if(FAHUI_NOBIRTH.indexOf(o['項目'])<0)r=r.concat(['生日年','生日月','生日日']);
+    return r;
+  }
+  return [];
+}
+
+function submitForm(){
+  if(!API_URL){toast('尚未設定 API_URL');return;}
+  if(CURCAT==='法會'&&!EDIT.id)return submitFahui();
+  const o=collectSingle();const miss=validateSingle(o);
+  if(miss.length){toast('必填：'+miss.join('、'));return;}
+  const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='送出中…';
+  const payload=Object.assign({action:EDIT.id?'update':'add'},o);
+  if(EDIT.id){payload['編號']=EDIT.id;payload.category=EDIT.cat;}
+  fetch(API_URL,{method:'POST',body:JSON.stringify(payload)}).then(r=>r.json()).then(d=>{
+    if(d.ok){DATA=d.data||DATA;TOTALS=d.totals||TOTALS;toast(EDIT.id?'已更新 ✓':'已加入 ✓');cancelEdit(true);clearForm();renderList();setStatus('已連線','ok');}
+    else toast('失敗：'+(d.error||'未知'));
+  }).catch(e=>toast('連線失敗')).finally(()=>{btn.disabled=false;btn.textContent=EDIT.id?'更新':'加入清單';});
+}
+/* 法會多項目送出 */
+function submitFahui(){
+  clearMiss();
+  const cust={};FAHUI_CUST.forEach(f=>{if(f.type==='ymd'){cust[f.y]=val(f.y);cust[f.m]=val(f.m);cust[f.d]=val(f.d);if(f.cal)cust[f.calk]=val(f.calk);}else cust[f.k]=val(f.k);});
+  let items=getItemRows().filter(it=>it.項目&&it.份數>0);
+  let miss=[];
+  if(!items.length){toast('請至少選一個項目（份數≥1）');return;}
+  if(!cust['姓名']){miss.push('姓名');markMiss('姓名');}
+  if(!cust['居住地址']){miss.push('居住地址');markMiss('居住地址');}
+  const needBirth=items.some(it=>FAHUI_NOBIRTH.indexOf(it.項目)<0);
+  if(needBirth&&!(val('生日年')&&val('生日月')&&val('生日日'))){miss.push('生日');markMiss('生日年');}
+  if(miss.length){toast('必填：'+miss.join('、'));return;}
+  applyLunar('法會',cust);
+  const rows=items.map(it=>Object.assign({},cust,{項目:it.項目,份數:it.份數,祈願:it.祈願||''}));
+  const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='送出中…';
+  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addBatch',category:'法會',month:MONTH,teacher:TEACHER,rows:rows})}).then(r=>r.json()).then(d=>{
+    if(d.ok){DATA=d.data||DATA;TOTALS=d.totals||TOTALS;toast('已加入 '+rows.length+' 筆 ✓');clearForm();renderList();setStatus('已連線','ok');}
+    else toast('失敗：'+(d.error||'未知'));
+  }).catch(e=>toast('連線失敗')).finally(()=>{btn.disabled=false;btn.textContent='加入清單';});
+}
+function clearForm(){renderForm();const fn=document.getElementById('in_姓名')||document.getElementById('in_陽世報恩人');if(fn)fn.focus();}
+
+function startEdit(cat,id){
+  const e=(DATA[cat]||[]).find(x=>String(x.編號)===String(id));if(!e)return;
+  selectCat(cat);EDIT={cat,id};renderForm();
+  COLS[cat].forEach(c=>setv(c,e[c]));
+  if(cat==='還陰債')renderYinDetail(),COLS[cat].forEach(c=>setv(c,e[c]));
+  if(cat==='斗燈')renderDouDetail(),COLS[cat].forEach(c=>setv(c,e[c]));
+  const cb=document.getElementById('in_生日別');if(cb)cb.value='農';
+  const lpwrap=document.getElementById('leapwrap_生日年');
+  if(lpwrap){ const lp=document.getElementById('leap_生日年'); const mv=''+(e['生日月']||'');
+    if(mv.indexOf('閏')===0){ if(lp)lp.checked=true; setv('生日月',mv.replace('閏','')); }
+    else if(lp){ lp.checked=false; }
+    lpwrap.style.display='flex';
+  }
+  const pv=document.getElementById('prev_生日年');if(pv)pv.textContent='';
+  if(cat==='法會')fahuiEditWish();
+  document.getElementById('formTitle').textContent='編輯：'+(e.姓名||e.陽世報恩人||'');
+  document.getElementById('submitBtn').textContent='更新';
+  document.getElementById('cancelBtn').style.display='';
+  focusForm();
+  renderList();
+}
+function setv(id,v){const e=document.getElementById('in_'+id);if(e)e.value=(v==null?'':v);}
+function cancelEdit(silent){EDIT={cat:null,id:null};document.getElementById('formTitle').textContent='新增明細';document.getElementById('submitBtn').textContent='加入清單';document.getElementById('cancelBtn').style.display='none';if(!silent){renderForm();renderList();}}
+
+function delEntry(cat,id,name){
+  if(!confirm('確定刪除「'+(name||'這一筆')+'」？無法復原。\n\n※ 若這筆行政已產生疏文，刪除後請主動通知行政（系統會自動記到「異動記錄」）。'))return;
+  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'delete',category:cat,'編號':id,month:MONTH,teacher:TEACHER})}).then(r=>r.json()).then(d=>{
+    if(d.ok){DATA=d.data||{};TOTALS=d.totals||{};if(EDIT.id===id)cancelEdit(true);renderList();toast('已刪除');}
+    else toast('刪除失敗：'+(d.error||''));
+  }).catch(e=>toast('連線失敗'));
+}
+
+function onMonth(){MONTH=document.getElementById('month').value.trim();cancelEdit(true);loadList();}
+function setStatus(t,c){const s=document.getElementById('status');s.textContent=t;s.className=c||'';}
+function loadList(){
+  if(!API_URL){renderList();return;}
+  setStatus('讀取中…','');
+  fetch(`${API_URL}?action=list&teacher=${encodeURIComponent(TEACHER)}&month=${encodeURIComponent(MONTH)}`).then(r=>r.json()).then(d=>{
+    if(d.ok){DATA=d.data||{};TOTALS=d.totals||{};renderList();const n=CATS_ORDER.reduce((s,c)=>s+((DATA[c]||[]).length),0);setStatus('已連線 · '+n+' 筆','ok');}
+    else setStatus('讀取失敗','err');
+  }).catch(e=>setStatus('連線失敗（檢查 API 網址/部署權限）','err'));
+}
+function esc(s){return (''+(s==null?'':s)).replace(/[\'"<>&`]/g,'');}
+function entryLabel(cat,e){
+  if(cat==='法會')return [e.姓名||'(未填)', `${e.項目||''} ×${e.份數||0}${e.祈願?' · 祈願:'+e.祈願:''}`];
+  if(cat==='斗燈')return [e.姓名||'(未填)', `${e.斗種||''}（${e.加購類型||''}）×${e.份數||0}`];
+  if(cat==='還陰債')return [e.陽世報恩人||'(未填)', `${e.牒文類別||''} ×${e.份數||0}`];
+  if(cat==='祭改')return [e.姓名||'(未填)', `祭改 ×${e.份數||0} ${e.性別||''}`];
+  if(cat==='普桌')return [e.姓名||'(未填)', `普桌 ×${e.份數||0} ${e.捐掉或寄回||''}`];
+  return [e.姓名||'',''];
+}
+function renderList(){
+  const area=document.getElementById('listArea');let h='';let total=0;
+  CATS_ORDER.forEach(cat=>{const rows=DATA[cat]||[];if(!rows.length)return;total+=rows.length;
+    const sum=rows.reduce((s,e)=>s+(parseFloat(e.份數)||0),0);
+    h+=`<div class="catgroup"><h3>${cat}<span class="c">${rows.length} 筆 · 共 ${sum} 份</span></h3>`;
+    rows.forEach(e=>{const lb=entryLabel(cat,e);const chg=(e.異動?' <span style="color:var(--red);font-size:.78em">●'+(String(e.異動).indexOf('(表)')>=0?(String(e.異動).indexOf('新增')===0?'行政在表上新增':'行政在表上改過'):'已改')+'</span>':'')+(e._beta?'<span class="betatag">內測</span>':'');
+      h+=`<div class="entry${EDIT.id===e.編號?' ed':''}"><div class="info">${hx(lb[0])}${chg}<small>${hx(lb[1])}</small></div>
+      <div><button class="rowbtn e" onclick="startEdit('${cat}','${esc(e.編號)}')">編輯</button><button class="rowbtn d" onclick="delEntry('${cat}','${esc(e.編號)}','${esc(lb[0])}')">刪除</button></div></div>`;});
+    h+=`</div>`;
+  });
+  const ln=document.getElementById('localNote'); if(ln) ln.innerHTML=localNoteHTML();
+  area.innerHTML= total?h:'<p class="empty">本月尚無資料，從上面選類別新增第一筆。</p>';
+  renderTotals();
+}
+function renderTotals(){
+  const t=TOTALS||{};const ta=document.getElementById('totArea');
+  renderHero();renderCR();
+  if(!Object.keys(t).length){ta.innerHTML='';return;}
+  const itline=ITEMS.map(i=>`${i.replace(/\(.*\)/,'')} ${t[i]||0}`).join('　');
+  ta.innerHTML=`<div class="totbar">本月彙總（寫進統計總表）<br>
+  萬寶小計 <b>${t['萬寶小計']||0}</b>　天赦 <b>${t['天赦金']||0}</b>　還陰債 <b>${t['還陰債']||0}</b>　年斗 <b>${t['年斗']||0}</b>　季斗 <b>${t['季斗']||0}</b>　令牌 <b>${t['令牌']||0}</b>　祭改 <b>${t['祭改']||0}</b>　普桌 <b>${t['普桌']||0}</b>
+  <div class="items">萬寶金11項：${itline}</div></div>`;
+}
+let tt;function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2300);}
+
+init();
+</script>
 <script>
 /* ===== 行政：項目開放設定面板 ===== */
 function openAdminPanel(){
