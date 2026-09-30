@@ -27,6 +27,31 @@ h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-
 .tab{flex:1;min-width:84px;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:10px 10px 0 0;padding:11px 6px;cursor:pointer;font-family:'Noto Serif TC',serif;font-weight:700;font-size:1em;text-align:center}
 .tab.active{background:var(--gold);color:#fff;border-color:var(--gold)}
 .card{background:var(--bg2);border:1px solid var(--line);border-radius:0 14px 14px 14px;margin:0 0 16px;padding:18px}
+@keyframes cardflash{0%{box-shadow:0 0 0 0 rgba(156,126,58,.75)}100%{box-shadow:0 0 0 14px rgba(156,126,58,0)}}
+.card.flash{animation:cardflash .85s ease-out 2}
+/* ===== 客人自動完成下拉 ===== */
+.acwrap{position:relative}
+.acbox{position:absolute;left:0;right:0;top:100%;z-index:60;background:var(--bg2);border:1px solid var(--line);border-top:none;border-radius:0 0 10px 10px;max-height:290px;overflow:auto;box-shadow:0 10px 26px rgba(0,0,0,.35)}
+.acbox .achd{padding:7px 11px;font-size:.76em;color:var(--mut);border-bottom:1px solid var(--line)}
+.acitem{display:flex;align-items:center;gap:8px;padding:9px 11px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.05)}
+.acitem:hover,.acitem.on{background:rgba(156,126,58,.22)}
+.acitem .nm{font-weight:700;min-width:64px}
+.acitem .mt{font-size:.78em;color:var(--mut);flex:1;line-height:1.35;word-break:break-all}
+.acitem .st{font-size:1.05em;background:none;border:none;cursor:pointer;padding:0 4px;color:#8a7a4a}
+.acitem .st.on{color:#e8b93b}
+/* ===== 彈出面板（帶入上月 / 常客名單） ===== */
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:18px}
+.panel{background:var(--bg2);border:1px solid var(--line);border-radius:14px;max-width:620px;width:100%;padding:20px;margin-top:24px}
+.panel h3{font-family:'Noto Serif TC';color:#c9a961;font-size:1.15em;margin:0 0 4px}
+.panel .ps{font-size:.84em;color:var(--mut);line-height:1.6;margin-bottom:12px}
+.plist{max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.prow{display:flex;align-items:center;gap:9px;padding:9px 11px;border-bottom:1px solid rgba(255,255,255,.05);font-size:.9em}
+.prow:last-child{border-bottom:none}
+.prow input[type=checkbox]{width:auto;margin:0}
+.prow .mt{font-size:.8em;color:var(--mut)}
+.prow .dup{font-size:.76em;color:#e07b39}
+.panel input[type=text],.panel select{width:100%;background:var(--panel);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:9px 11px;font-family:inherit;font-size:.98em}
+.panel select{width:auto;min-width:120px}
 .card h2{font-family:'Noto Serif TC',serif;font-size:1.05em;color:var(--cream);font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:3px}
 .card h2 .n{background:var(--gold);color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:.7em}
 .sub{color:var(--mut);font-size:.8em;margin:2px 0 14px;line-height:1.5}
@@ -119,7 +144,7 @@ h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-
   <span id="status">—</span>
 </div>
 <div class="tabs" id="tabs"></div>
-<div class="card">
+<div class="card" id="formCard">
   <h2><span class="n">＋</span><span id="formTitle">新增明細</span></h2>
   <p class="sub" id="formSub"></p>
   <div id="formFields"></div>
@@ -127,6 +152,8 @@ h1 small{display:block;font-size:.44em;color:var(--mut);letter-spacing:3px;font-
     <button class="btn" id="submitBtn" onclick="submitForm()">加入清單</button>
     <button class="btn ghost" onclick="clearForm()">清空</button>
     <button class="btn ghost" id="cancelBtn" style="display:none" onclick="cancelEdit()">取消編輯</button>
+    <button class="btn ghost" onclick="openCopyPanel()" title="把上個月同樣的客人整批帶進本月，只要改祈願就好">🔁 帶入上月</button>
+    <button class="btn ghost" onclick="openVipPanel()" title="常客名單：每月固定要報的客人">⭐ 常客名單</button>
   </div>
 </div>
 <div class="listcard">
@@ -150,8 +177,9 @@ let TEACHERS=[
  {name:'湯雯莉',no:5},{name:'沈佳琪',no:6},{name:'周冠榮',no:7},{name:'蕭鎧峻',no:8},
  {name:'賴素貞',no:9},{name:'張簡玉靖',no:10},{name:'梁凱妍',no:11},{name:'鄭聖勳',no:12},
  {name:'謝欣諭',no:13},{name:'王宥心',no:14},{name:'熊卿妃',no:15},{name:'鐘宥涵',no:16},
- {name:'謝承殷',no:17},{name:'陳昕昀',no:18},{name:'林雅涵',no:19},{name:'公司內部',no:20},
- {name:'靈應壇',no:21}
+ {name:'謝承殷',no:17},{name:'陳昕昀',no:18},{name:'林雅涵',no:19},
+ {name:'康瑋齊',no:20},{name:'陳博隆',no:21},{name:'黃宇廷',no:22},
+ {name:'公司內部',no:88},{name:'靈應壇',no:99}
 ];
 let TBYNAME={}; function rebuildT(){TBYNAME={};TEACHERS.forEach(t=>TBYNAME[t.name]=t);} rebuildT();
 function pwOf(no){return '123'+no;}
@@ -286,6 +314,16 @@ const DOUCONF={
 };
 
 let TEACHER=null,MONTH,CURCAT='法會',EDIT={cat:null,id:null},DATA={},TOTALS={};
+/* 後端為了加速，新增/修改/刪除後只回傳「當前分類」的資料(partial)，其他分類要保留原本的 */
+function mergeData(d){
+  if(!d) return;
+  if(d.partial && d.cat){ DATA[d.cat]=(d.data&&d.data[d.cat])||[]; }
+  else if(d.data){ DATA=d.data; }
+  if(d.totals){
+    if(d.partial){ Object.keys(d.totals).forEach(k=>{ if(d.totals[k]) TOTALS[k]=d.totals[k]; }); }
+    else TOTALS=d.totals;
+  }
+}
 
 function applyTheme(){document.documentElement.classList.remove('dark');document.body.classList.remove('dark');}
 function theme(m){applyTheme();}
@@ -401,6 +439,7 @@ function enterApp(name){
   document.getElementById('month').value=defMonth();MONTH=defMonth();
   const adm=document.getElementById('adminOpenBtn'); if(adm) adm.style.display=(ADMIN_NAMES.indexOf(name)>=0)?'':'none';
   loadOpenCfg(function(){ buildTabs();selectCat('法會');loadList(); });
+  if(typeof loadContacts==='function') loadContacts();
 }
 function logout(){try{localStorage.removeItem('xlUser')}catch(e){}location.reload();}
 
@@ -445,11 +484,13 @@ function fieldHTML(f,reqOverride){
 /* 渲染表單 */
 function renderForm(){
   const wrap=document.getElementById('formFields');
-  if(CURCAT==='法會'){renderFahui(wrap);return;}
-  if(CURCAT==='斗燈'){renderDou(wrap);return;}
-  if(CURCAT==='還陰債'){renderYin(wrap);return;}
+  if(CURCAT==='法會'){renderFahui(wrap);acAttach();return;}
+  if(CURCAT==='斗燈'){renderDou(wrap);acAttach();return;}
+  if(CURCAT==='還陰債'){renderYin(wrap);acAttach();return;}
   wrap.innerHTML=FIELDS[CURCAT].map(f=>fieldHTML(f)).join('');
+  acAttach();
 }
+function acAttach(){ if(typeof acAttachReal==='function')acAttachReal(); }
 /* 法會：多項目 + 客戶資料 */
 function renderFahui(wrap){
   let h='';
@@ -678,7 +719,7 @@ function submitForm(){
   const payload=Object.assign({action:EDIT.id?'update':'add'},o);
   if(EDIT.id){payload['編號']=EDIT.id;payload.category=EDIT.cat;}
   fetch(API_URL,{method:'POST',body:JSON.stringify(payload)}).then(r=>r.json()).then(d=>{
-    if(d.ok){DATA=d.data||DATA;TOTALS=d.totals||TOTALS;toast(EDIT.id?'已更新 ✓':'已加入 ✓');cancelEdit(true);clearForm();renderList();setStatus('已連線','ok');}
+    if(d.ok){mergeData(d);toast(EDIT.id?'已更新 ✓':'已加入 ✓');cancelEdit(true);clearForm();renderList();setStatus('已連線','ok');}
     else toast('失敗：'+(d.error||'未知'));
   }).catch(e=>toast('連線失敗')).finally(()=>{btn.disabled=false;btn.textContent=EDIT.id?'更新':'加入清單';});
 }
@@ -698,7 +739,7 @@ function submitFahui(){
   const rows=items.map(it=>Object.assign({},cust,{項目:it.項目,份數:it.份數,祈願:it.祈願||''}));
   const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='送出中…';
   fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addBatch',category:'法會',month:MONTH,teacher:TEACHER,rows:rows})}).then(r=>r.json()).then(d=>{
-    if(d.ok){DATA=d.data||DATA;TOTALS=d.totals||TOTALS;toast('已加入 '+rows.length+' 筆 ✓');clearForm();renderList();setStatus('已連線','ok');}
+    if(d.ok){mergeData(d);toast('已加入 '+rows.length+' 筆 ✓');clearForm();renderList();setStatus('已連線','ok');}
     else toast('失敗：'+(d.error||'未知'));
   }).catch(e=>toast('連線失敗')).finally(()=>{btn.disabled=false;btn.textContent='加入清單';});
 }
@@ -722,8 +763,18 @@ function startEdit(cat,id){
   document.getElementById('formTitle').textContent='編輯：'+(e.姓名||e.陽世報恩人||'');
   document.getElementById('submitBtn').textContent='更新';
   document.getElementById('cancelBtn').style.display='';
-  document.querySelector('.card').scrollIntoView({behavior:'smooth',block:'start'});
+  focusForm();
   renderList();
+}
+/* 按「編輯」後自動捲回最上面的填寫區，並閃一下讓人知道跳到哪 */
+function focusForm(){
+  const c=document.getElementById('formCard'); if(!c)return;
+  try{ c.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){ c.scrollIntoView(); }
+  c.classList.remove('flash'); void c.offsetWidth; c.classList.add('flash');
+  setTimeout(function(){
+    const fn=document.getElementById('in_姓名')||document.getElementById('in_陽世報恩人');
+    if(fn){ try{ fn.focus({preventScroll:true}); }catch(e){} }
+  },420);
 }
 function setv(id,v){const e=document.getElementById('in_'+id);if(e)e.value=(v==null?'':v);}
 function cancelEdit(silent){EDIT={cat:null,id:null};document.getElementById('formTitle').textContent='新增明細';document.getElementById('submitBtn').textContent='加入清單';document.getElementById('cancelBtn').style.display='none';if(!silent){renderForm();renderList();}}
@@ -731,7 +782,7 @@ function cancelEdit(silent){EDIT={cat:null,id:null};document.getElementById('for
 function delEntry(cat,id,name){
   if(!confirm('確定刪除「'+(name||'這一筆')+'」？無法復原。\n\n※ 若這筆行政已產生疏文，刪除後請主動通知行政（系統會自動記到「異動記錄」）。'))return;
   fetch(API_URL,{method:'POST',body:JSON.stringify({action:'delete',category:cat,'編號':id,month:MONTH,teacher:TEACHER})}).then(r=>r.json()).then(d=>{
-    if(d.ok){DATA=d.data||{};TOTALS=d.totals||{};if(EDIT.id===id)cancelEdit(true);renderList();toast('已刪除');}
+    if(d.ok){mergeData(d);if(EDIT.id===id)cancelEdit(true);renderList();toast('已刪除');}
     else toast('刪除失敗：'+(d.error||''));
   }).catch(e=>toast('連線失敗'));
 }
@@ -780,6 +831,261 @@ let tt;function toast(m){const e=document.getElementById('toast');e.textContent=
 
 init();
 </script>
+<script>
+/* ==========================================================================
+   【新增 A】客人通訊錄自動完成 — 打名字就跳出以前報過的客人，選了自動帶資料
+   【新增 B】⭐常客名單
+   【新增 C】🔁 帶入上月（VIP／每月固定要報的客人不用重打）
+   ========================================================================== */
+let CONTACTS=[], CONTACTS_READY=false, CONTACTS_BUSY=false;
+
+function loadContacts(cb){
+  if(!API_URL||!TEACHER){ if(cb)cb(); return; }
+  if(CONTACTS_BUSY){ if(cb)cb(); return; }
+  CONTACTS_BUSY=true;
+  fetch(API_URL+'?action=contacts&teacher='+encodeURIComponent(TEACHER))
+    .then(r=>r.json()).then(d=>{
+      CONTACTS_BUSY=false;
+      if(d&&d.ok){ CONTACTS=d.contacts||[]; CONTACTS_READY=true; }
+      if(cb)cb();
+    }).catch(()=>{ CONTACTS_BUSY=false; if(cb)cb(); });
+}
+
+/* ---------- 自動完成 ---------- */
+const AC_KEYS=['姓名','陽世報恩人'];
+let acEl=null, acIdx=-1, acList=[];
+
+function acAttachReal(){
+  AC_KEYS.forEach(function(k){
+    const el=document.getElementById('in_'+k);
+    if(!el||el.dataset.acBound)return;
+    el.dataset.acBound='1';
+    el.setAttribute('autocomplete','off');
+    const fld=el.parentNode; if(fld&&fld.classList)fld.classList.add('acwrap');
+    el.addEventListener('input',function(){acShow(el);});
+    el.addEventListener('focus',function(){acShow(el);});
+    el.addEventListener('keydown',acKey);
+    el.addEventListener('blur',function(){setTimeout(acHide,200);});
+  });
+}
+function acHide(){ const b=document.getElementById('acBox'); if(b)b.remove(); acEl=null; acIdx=-1; acList=[]; }
+function acMatch(q){
+  q=(q||'').trim();
+  if(!q) return [];
+  const hit=CONTACTS.filter(function(c){
+    const nm=''+(c['姓名']||'');
+    return nm.indexOf(q)>=0 || (''+(c['公司行號']||'')).indexOf(q)>=0;
+  });
+  hit.sort(function(a,b){
+    const va=a['常客']?1:0, vb=b['常客']?1:0;
+    if(va!==vb)return vb-va;
+    return (b['次數']||0)-(a['次數']||0);
+  });
+  return hit.slice(0,12);
+}
+function acShow(el){
+  acEl=el; acIdx=-1;
+  const old=document.getElementById('acBox'); if(old)old.remove();
+  if(!CONTACTS_READY){ loadContacts(function(){ if(document.activeElement===el)acShow(el); }); return; }
+  acList=acMatch(el.value);
+  if(!acList.length) return;
+  const wrap=el.parentNode; if(!wrap)return;
+  const box=document.createElement('div');
+  box.className='acbox'; box.id='acBox';
+  let h='<div class="achd">以前報過的客人（點一下自動帶入資料；★＝常客）</div>';
+  const here={}; (DATA[CURCAT]||[]).forEach(function(e){ here[(''+(e['姓名']||e['陽世報恩人']||'')).trim()]=true; });
+  acList.forEach(function(c,i){
+    const b=[c['生日年'],c['生日月'],c['生日日']].filter(Boolean).join('/');
+    const meta=[ here[(''+c['姓名']).trim()]?'⚠ 本月這一類已經填過':'',
+                 b?((c['生日別']||'農')+'曆 '+b+(c['時辰']?' '+c['時辰']+'時':'')):'',
+                 c['居住地址']||'', c['公司行號']||'',
+                 '報過'+(c['次數']||0)+'次'+(c['最近月份']?'·最近'+c['最近月份']:'') ].filter(Boolean).join('　|　');
+    h+='<div class="acitem" data-i="'+i+'" onmousedown="acPick(event,'+i+')">'
+      +'<span class="st'+(c['常客']?' on':'')+'" onmousedown="acStar(event,'+i+')" title="設為／取消常客">'+(c['常客']?'★':'☆')+'</span>'
+      +'<span class="nm">'+acEsc(c['姓名'])+'</span><span class="mt">'+acEsc(meta)+'</span></div>';
+  });
+  box.innerHTML=h;
+  wrap.appendChild(box);
+}
+function acEsc(s){ return (''+(s==null?'':s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function acKey(e){
+  const box=document.getElementById('acBox'); if(!box)return;
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();
+    acIdx += (e.key==='ArrowDown'?1:-1);
+    if(acIdx<0)acIdx=acList.length-1; if(acIdx>=acList.length)acIdx=0;
+    box.querySelectorAll('.acitem').forEach(function(n,i){ n.classList.toggle('on',i===acIdx); });
+    const on=box.querySelector('.acitem.on'); if(on)on.scrollIntoView({block:'nearest'});
+  }else if(e.key==='Enter'){
+    if(acIdx>=0){ e.preventDefault(); acFill(acList[acIdx]); acHide(); }
+  }else if(e.key==='Escape'){ acHide(); }
+}
+function acPick(e,i){ e.preventDefault(); acFill(acList[i]); acHide(); }
+function acStar(e,i){
+  e.preventDefault(); e.stopPropagation();
+  const c=acList[i]; if(!c)return;
+  const nv=!c['常客']; c['常客']=nv;
+  const el=e.target; el.textContent=nv?'★':'☆'; el.classList.toggle('on',nv);
+  vipSave(c['姓名'],c['生日年'],nv);
+}
+function vipSave(name,birthY,vip){
+  if(!API_URL)return;
+  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'contactVip',teacher:TEACHER,name:name,birthY:birthY,vip:vip})})
+    .then(r=>r.json()).then(d=>{ if(d&&d.ok&&d.contacts)CONTACTS=d.contacts; toast(vip?'已設為常客 ⭐':'已取消常客'); })
+    .catch(()=>toast('常客設定沒存到，請重試'));
+}
+/* 把通訊錄資料填進目前這張表單 */
+function acFill(c){
+  if(!c)return;
+  const put=function(id,v){ const e=document.getElementById('in_'+id); if(e&&v!=null&&v!=='')e.value=v; };
+  put('姓名',c['姓名']); put('陽世報恩人',c['姓名']);
+  put('居住地址',c['居住地址']); put('報恩人居住地址',c['居住地址']);
+  put('公司行號',c['公司行號']);
+  put('生日年',c['生日年']); put('生日月',c['生日月']); put('生日日',c['生日日']);
+  const cal=document.getElementById('in_生日別');
+  if(cal&&c['生日別']){ for(let i=0;i<cal.options.length;i++) if(cal.options[i].value===c['生日別'])cal.value=c['生日別']; }
+  const sc=document.getElementById('in_時辰');
+  if(sc&&c['時辰']){ for(let i=0;i<sc.options.length;i++) if(sc.options[i].value===c['時辰'])sc.value=c['時辰']; }
+  const sd=document.getElementById('in_收單人');
+  if(sd&&c['收單人']){ for(let i=0;i<sd.options.length;i++) if(sd.options[i].value===c['收單人'])sd.value=c['收單人']; }
+  try{ if(document.getElementById('in_生日年')) birthPrev('生日年','生日月','生日日','生日別'); }catch(e){}
+  try{ if(typeof yinAuto==='function'&&document.getElementById('in_陽世報恩人')) yinAuto(); }catch(e){}
+  toast('已帶入「'+c['姓名']+'」的資料，請確認後送出');
+}
+
+/* ---------- ⭐常客名單 ---------- */
+function openVipPanel(){
+  const draw=function(){
+    const m=document.createElement('div'); m.className='mask'; m.id='vipMask';
+    m.onclick=function(ev){ if(ev.target===m)closeVipPanel(); };
+    m.innerHTML='<div class="panel"><h3>⭐ 常客名單</h3>'
+      +'<div class="ps">被標成常客的人，每個月用「🔁 帶入上月」時可以一鍵只帶這些人。<br>'
+      +'點名字左邊的星星就能加入／移除。共 '+CONTACTS.length+' 位客人。</div>'
+      +'<input type="text" id="vipQ" placeholder="搜尋姓名…" oninput="vipRender()" style="margin-bottom:10px">'
+      +'<div class="plist" id="vipList"></div>'
+      +'<div class="actions" style="margin-top:14px">'
+      +'<button class="btn" onclick="closeVipPanel()">關閉</button>'
+      +'<button class="btn ghost" onclick="vipRebuild()">🔄 重新掃描歷史客人</button></div></div>';
+    document.body.appendChild(m); vipRender();
+  };
+  if(!CONTACTS_READY) loadContacts(draw); else draw();
+}
+function closeVipPanel(){ const m=document.getElementById('vipMask'); if(m)m.remove(); }
+function vipRender(){
+  const box=document.getElementById('vipList'); if(!box)return;
+  const q=(document.getElementById('vipQ')||{}).value||'';
+  let arr=CONTACTS.slice();
+  if(q.trim()) arr=arr.filter(c=>(''+c['姓名']).indexOf(q.trim())>=0);
+  arr.sort(function(a,b){ const va=a['常客']?1:0,vb=b['常客']?1:0; if(va!==vb)return vb-va; return (b['次數']||0)-(a['次數']||0); });
+  arr=arr.slice(0,300);
+  if(!arr.length){ box.innerHTML='<div class="prow"><span class="mt">沒有符合的客人。若是第一次用，先按下面「重新掃描歷史客人」。</span></div>'; return; }
+  box.innerHTML=arr.map(function(c){
+    const b=[c['生日年'],c['生日月'],c['生日日']].filter(Boolean).join('/');
+    return '<div class="prow"><span class="st'+(c['常客']?' on':'')+'" style="cursor:pointer;font-size:1.1em;color:'+(c['常客']?'#e8b93b':'#8a7a4a')+'" onclick="vipToggle(\''+encodeURIComponent(c['姓名'])+'\',\''+(c['生日年']||'')+'\')">'+(c['常客']?'★':'☆')+'</span>'
+      +'<b style="min-width:70px">'+acEsc(c['姓名'])+'</b>'
+      +'<span class="mt">'+acEsc([b,c['居住地址']].filter(Boolean).join('　|　'))+'　報過'+(c['次數']||0)+'次</span></div>';
+  }).join('');
+}
+function vipToggle(nameEnc,by){
+  const name=decodeURIComponent(nameEnc);
+  let nv=null;
+  CONTACTS.forEach(function(c){ if((''+c['姓名'])===name&&(!by||(''+c['生日年'])===by)){ if(nv===null)nv=!c['常客']; c['常客']=nv; } });
+  vipRender(); if(nv!==null) vipSave(name,by,nv);
+}
+function vipRebuild(){
+  if(!API_URL)return;
+  toast('掃描中，請稍候…');
+  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'contactRebuild',teacher:TEACHER})})
+    .then(r=>r.json()).then(d=>{ if(d&&d.ok){ CONTACTS=d.contacts||[]; CONTACTS_READY=true; vipRender(); toast('掃描完成，共 '+CONTACTS.length+' 位客人'); } else toast('掃描失敗'); })
+    .catch(()=>toast('連線失敗'));
+}
+
+/* ---------- 🔁 帶入上月 ---------- */
+let COPY={rows:[],month:'',cat:''};
+function prevMonthOf(m){
+  const p=(''+m).split('.'); let y=parseInt(p[0],10), mo=parseInt(p[1],10);
+  if(!y||!mo)return m; mo--; if(mo<1){mo=12;y--;}
+  return y+'.'+String(mo).padStart(2,'0');
+}
+function openCopyPanel(){
+  const src=prevMonthOf(MONTH);
+  COPY={rows:[],month:src,cat:CURCAT};
+  const m=document.createElement('div'); m.className='mask'; m.id='cpMask';
+  m.onclick=function(ev){ if(ev.target===m)closeCopyPanel(); };
+  m.innerHTML='<div class="panel"><h3>🔁 帶入上月的「'+CURCAT+'」</h3>'
+    +'<div class="ps">把上個月同一批客人整批複製到本月，帶進來之後要改祈願的再個別按「編輯」就好。<br>'
+    +'本月已經有同名資料的會標紅字、預設不勾，避免重複。</div>'
+    +'<div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">'
+    +'<label style="font-size:.85em;color:var(--mut)">來源月份</label>'
+    +'<select id="cpMonth" onchange="copyLoad()" style="flex:0 0 auto"></select>'
+    +'<button class="btn ghost" style="padding:6px 10px;font-size:.85em" onclick="copyCheck(1)">全選</button>'
+    +'<button class="btn ghost" style="padding:6px 10px;font-size:.85em" onclick="copyCheck(0)">全不選</button>'
+    +'<button class="btn ghost" style="padding:6px 10px;font-size:.85em" onclick="copyCheck(2)">只選⭐常客</button>'
+    +'</div>'
+    +'<div class="plist" id="cpList"><div class="prow"><span class="mt">讀取中…</span></div></div>'
+    +'<div class="actions" style="margin-top:14px">'
+    +'<button class="btn" id="cpGo" onclick="copyGo()">帶入本月</button>'
+    +'<button class="btn ghost" onclick="closeCopyPanel()">取消</button></div></div>';
+  document.body.appendChild(m);
+  const sel=document.getElementById('cpMonth');
+  const opts=[]; let mm=MONTH;
+  for(let i=0;i<12;i++){ mm=prevMonthOf(mm); opts.push(mm); }
+  sel.innerHTML=opts.map(o=>'<option value="'+o+'">'+o+'</option>').join('');
+  sel.value=src;
+  copyLoad();
+}
+function closeCopyPanel(){ const m=document.getElementById('cpMask'); if(m)m.remove(); }
+function copyLoad(){
+  const sel=document.getElementById('cpMonth'); const src=sel?sel.value:COPY.month;
+  COPY.month=src; COPY.rows=[];
+  const box=document.getElementById('cpList'); if(box)box.innerHTML='<div class="prow"><span class="mt">讀取中…</span></div>';
+  if(!API_URL){ if(box)box.innerHTML='<div class="prow"><span class="mt">未設定後端網址</span></div>'; return; }
+  fetch(API_URL+'?action=list&teacher='+encodeURIComponent(TEACHER)+'&month='+encodeURIComponent(src)+'&cat='+encodeURIComponent(COPY.cat))
+    .then(r=>r.json()).then(d=>{
+      COPY.rows=(d&&d.ok&&d.data&&d.data[COPY.cat])?d.data[COPY.cat]:[];
+      copyRender();
+    }).catch(()=>{ if(box)box.innerHTML='<div class="prow"><span class="mt">連線失敗</span></div>'; });
+}
+function copyNameOf(e){ return (''+(e['姓名']||e['陽世報恩人']||'')).trim(); }
+function copyIsVip(nm){ for(let i=0;i<CONTACTS.length;i++) if((''+CONTACTS[i]['姓名']).trim()===nm&&CONTACTS[i]['常客'])return true; return false; }
+function copyRender(){
+  const box=document.getElementById('cpList'); if(!box)return;
+  if(!COPY.rows.length){ box.innerHTML='<div class="prow"><span class="mt">'+COPY.month+' 的「'+COPY.cat+'」沒有資料。</span></div>'; return; }
+  const has={}; (DATA[COPY.cat]||[]).forEach(function(e){ has[copyNameOf(e)]=true; });
+  box.innerHTML=COPY.rows.map(function(e,i){
+    const nm=copyNameOf(e); const dup=!!has[nm];
+    const lb=entryLabel(COPY.cat,e);
+    return '<div class="prow"><input type="checkbox" id="cp_'+i+'" data-vip="'+(copyIsVip(nm)?1:0)+'"'+(dup?'':' checked')+'>'
+      +'<b style="min-width:70px">'+acEsc(nm||'(未填)')+(copyIsVip(nm)?' <span style="color:#e8b93b">★</span>':'')+'</b>'
+      +'<span class="mt" style="flex:1">'+acEsc(lb[1])+'</span>'
+      +(dup?'<span class="dup">本月已有</span>':'')+'</div>';
+  }).join('');
+}
+function copyCheck(mode){
+  COPY.rows.forEach(function(e,i){
+    const cb=document.getElementById('cp_'+i); if(!cb)return;
+    if(mode===2) cb.checked = cb.dataset.vip==='1';
+    else cb.checked = !!mode;
+  });
+}
+function copyGo(){
+  const rows=[];
+  COPY.rows.forEach(function(e,i){
+    const cb=document.getElementById('cp_'+i); if(!cb||!cb.checked)return;
+    const o={}; (COLS[COPY.cat]||[]).forEach(function(k){ if(e[k]!=null&&e[k]!=='')o[k]=e[k]; });
+    if(Object.keys(o).length)rows.push(o);
+  });
+  if(!rows.length){ toast('沒有勾選任何一筆'); return; }
+  if(!confirm('要把 '+rows.length+' 筆「'+COPY.cat+'」從 '+COPY.month+' 帶進 '+MONTH+' 嗎？\n帶進來之後可以個別按「編輯」改祈願。')) return;
+  const btn=document.getElementById('cpGo'); if(btn){btn.disabled=true;btn.textContent='寫入中…';}
+  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addBatch',category:COPY.cat,teacher:TEACHER,month:MONTH,rows:rows})})
+    .then(r=>r.json()).then(d=>{
+      if(d&&d.ok){ mergeData(d); renderList(); closeCopyPanel(); toast('已帶入 '+rows.length+' 筆 ✓ 記得檢查祈願'); }
+      else { toast('帶入失敗：'+((d&&d.error)||'')); if(btn){btn.disabled=false;btn.textContent='帶入本月';} }
+    }).catch(()=>{ toast('連線失敗'); if(btn){btn.disabled=false;btn.textContent='帶入本月';} });
+}
+</script>
+
 <script>
 /* ===== 行政：項目開放設定面板 ===== */
 function openAdminPanel(){
