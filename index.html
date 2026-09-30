@@ -436,6 +436,22 @@ header.top>div{flex-wrap:nowrap!important;gap:6px!important}
 .acs em{font-style:normal;background:#f0ece0;border-radius:6px;padding:0 5px;margin-right:4px;color:#6b5a3a}
 .acvip{font-size:.7em;color:#b8860b;margin-left:6px}
 /* ===== 客人自動完成／常客／帶入上月（正式版） ===== */
+
+/* 閏月勾選：固定一行 */
+.leaprow{display:flex;align-items:center;gap:6px;margin-top:6px;color:var(--mut);font-weight:400;font-size:.88em;white-space:nowrap}
+.leaprow input{width:auto!important;margin:0!important;flex:0 0 auto}
+/* 登入名牌：名字放大一點 */
+#loginTiles .lt .ltn{font-size:1.12em;font-weight:900;letter-spacing:1px;line-height:1.25}
+#loginTiles .lt .ltr{font-size:.78em}
+#loginTiles .lt{padding:11px 4px 9px}
+#loginTiles .lt svg{width:34px;height:34px}
+#loginTiles .lt .ltno{width:34px;height:34px;font-size:.9em}
+/* 本月已填清單：搜尋 */
+.lsearch{position:relative;margin:0 0 10px}
+.lsearch input{width:100%;background:#fff;border:1px solid var(--line);color:var(--txt);border-radius:11px;padding:10px 34px 10px 12px;font-family:inherit;font-size:.95em}
+.lsearch input:focus{outline:none;border-color:var(--gold)}
+.lsearch button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:transparent;color:var(--mut);font-size:1.1em;cursor:pointer;padding:4px 6px}
+.lsearch .n{font-size:.78em;color:var(--mut);margin-top:4px;display:block}
 @keyframes cardflash{0%{box-shadow:0 0 0 0 rgba(156,126,58,.75)}100%{box-shadow:0 0 0 14px rgba(156,126,58,0)}}
 .card.flash{animation:cardflash .85s ease-out 2}
 /* ===== 客人自動完成下拉 ===== */
@@ -528,7 +544,7 @@ header.top>div{flex-wrap:nowrap!important;gap:6px!important}
 <div class="listcard">
   <h2 style="font-family:'Noto Serif TC';color:var(--cream);font-size:1.05em;margin-bottom:4px">📋 本月已填清單</h2>
   <p class="sub">最底「總計」就是會寫進香量統計總表、被獎金系統抓走的數字，可直接核對。</p>
-  <div class="vipbar2"><button onclick="openCopyPanel()">🔁 帶入上月</button><button onclick="openVipPanel()">⭐ 常客名單</button></div><div id="localNote"></div><div id="listArea"><p class="empty">尚未載入。</p></div>
+  <div class="vipbar2"><button onclick="openCopyPanel()">🔁 帶入上月</button><button onclick="openVipPanel()">⭐ 常客名單</button></div><div class="lsearch"><input type="text" id="listQ" placeholder="搜尋本月清單裡的客人…" oninput="renderList()"><button onclick="document.getElementById('listQ').value='';renderList()" title="清除">✕</button><span class="n" id="listQn"></span></div><div id="localNote"></div><div id="listArea"><p class="empty">尚未載入。</p></div>
   <div id="totArea"></div>
 </div>
 </div>
@@ -1766,7 +1782,7 @@ function fieldHTML(f,reqOverride){
     seg+=`<span class="seg"><input type="number" id="in_${f.m}" placeholder="月"${oi}><span>月</span></span>`;
     seg+=`<span class="seg"><input type="number" id="in_${f.d}" placeholder="日"${oi}><span>日</span></span>`;
     let h=`<div class="field" data-k="${f.rk||f.y}"><label>${f.label}${req?'<span class="req">*</span>':''}${f.conv?'<span style="font-weight:400;color:var(--mut);font-size:.82em">　西元或民國皆可，不知農曆填國曆自動換算</span>':''}</label><div class="ymd">${seg}</div>`;
-    if(f.cal)h+=`<label id="leapwrap_${f.y}" style="display:flex;align-items:center;gap:5px;font-weight:400;font-size:.9em;margin-top:6px;color:var(--mut)"><input type="checkbox" id="leap_${f.y}" style="width:auto;margin:0 4px 0 0">此生日為農曆閏月（直接填農曆、且為閏月才勾）</label>`;
+    if(f.cal)h+=`<label id="leapwrap_${f.y}" class="leaprow"><input type="checkbox" id="leap_${f.y}"><span>農曆閏月才勾</span></label>`;
     if(f.conv)h+=`<div class="fhint" id="prev_${f.y}"></div>`;
     return h+egHTML+`</div>`;
   }
@@ -2101,9 +2117,16 @@ function entryLabel(cat,e){
   if(cat==='普桌')return [e.姓名||'(未填)', `普桌 ×${e.份數||0} ${e.捐掉或寄回||''}`];
   return [e.姓名||'',''];
 }
+function listQuery(){ const e=document.getElementById('listQ'); return e?(e.value||'').trim():''; }
+function rowMatches(cat,e,q){
+  if(!q) return true;
+  const lb=entryLabel(cat,e);
+  return (''+lb[0]+' '+lb[1]+' '+(e['公司行號']||'')+' '+(e['收單人']||'')+' '+(e['居住地址']||'')+' '+(e['報恩人居住地址']||'')).indexOf(q)>=0;
+}
 function renderList(){
   const area=document.getElementById('listArea');let h='';let total=0;
-  CATS_ORDER.forEach(cat=>{const rows=DATA[cat]||[];if(!rows.length)return;total+=rows.length;
+  const q=listQuery(); let all=0, shown=0;
+  CATS_ORDER.forEach(cat=>{const all0=DATA[cat]||[];all+=all0.length;const rows=all0.filter(e=>rowMatches(cat,e,q));if(!rows.length)return;total+=rows.length;shown+=rows.length;
     const sum=rows.reduce((s,e)=>s+(parseFloat(e.份數)||0),0);
     h+=`<div class="catgroup"><h3>${cat}<span class="c">${rows.length} 筆 · 共 ${sum} 份</span></h3>`;
     rows.forEach(e=>{const lb=entryLabel(cat,e);const chg=(e.異動?' <span style="color:var(--red);font-size:.78em">●'+(String(e.異動).indexOf('(表)')>=0?(String(e.異動).indexOf('新增')===0?'行政在表上新增':'行政在表上改過'):'已改')+'</span>':'')+(e._beta?'<span class="betatag">內測</span>':'');
@@ -2112,7 +2135,8 @@ function renderList(){
     h+=`</div>`;
   });
   const ln=document.getElementById('localNote'); if(ln) ln.innerHTML=localNoteHTML();
-  area.innerHTML= total?h:'<p class="empty">本月尚無資料，從上面選類別新增第一筆。</p>';
+  area.innerHTML= total?h:(q?'<p class="empty">找不到「'+hx(q)+'」，本月清單裡沒有這個人。</p>':'<p class="empty">本月尚無資料，從上面選類別新增第一筆。</p>');
+  const qn=document.getElementById('listQn'); if(qn) qn.textContent=q?('符合 '+shown+' 筆／本月共 '+all+' 筆'):'';
   renderTotals();
 }
 function renderTotals(){
