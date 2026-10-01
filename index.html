@@ -490,14 +490,46 @@ header.top>div{flex-wrap:nowrap!important;gap:6px!important}
 .viprow input{width:20px;height:20px;margin-top:2px}
 .viprow small{display:block;color:#8a7a5a;font-size:12px;margin-top:2px}
 .viprow.done{opacity:.6}
+header.top button,header.top .portalbtn{white-space:nowrap}
+@media(max-width:560px){header.top{flex-wrap:wrap}}
+#mypw{position:fixed;inset:0;z-index:9999;background:rgba(40,30,15,.38);display:none;align-items:center;justify-content:center;padding:18px}
+#mypw.show{display:flex}
+#mypw .mpbox{background:#fff;border-radius:20px;width:100%;max-width:360px;padding:26px 22px 20px;box-shadow:0 24px 60px rgba(60,45,20,.25);text-align:center;color:var(--txt)}
+#mypw .mplock{width:54px;height:54px;margin:0 auto 10px;border-radius:50%;background:#f6f0e2;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:24px}
+#mypw h3{margin:0;font-size:1.1em;color:var(--gold2);letter-spacing:.06em}
+#mypw .mpsub{font-size:.8em;color:var(--mut);margin-top:4px}
+#mypw label{display:block;text-align:left;font-size:.8em;color:var(--mut);margin-top:14px;letter-spacing:.06em}
+#mypw input{display:block;width:100%;box-sizing:border-box;margin-top:6px;height:50px;border-radius:14px;border:1.5px solid var(--line);background:var(--bg2);font-family:inherit;font-size:20px;letter-spacing:.3em;text-align:center;color:var(--txt);-webkit-appearance:none;appearance:none}
+#mypw input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 4px rgba(156,126,58,.14)}
+#mypw .mperr{display:none;margin-top:12px;font-size:.85em;color:var(--red)}
+#mypw .mpok{display:none;margin-top:12px;font-size:.85em;color:var(--green)}
+#mypw .mprow{display:flex;gap:10px;margin-top:18px}
+#mypw .mprow button{flex:1;height:46px;border-radius:14px;border:1px solid var(--line);background:#fff;color:var(--txt);font-family:inherit;font-size:15px;cursor:pointer;letter-spacing:.08em}
+#mypw .mprow .go{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:700}
+#mypw .mprow .go:disabled{opacity:.6}
+#mypw .mpnote{margin-top:12px;font-size:.75em;color:var(--mut);line-height:1.6}
 </style></head>
 <body>
+
+<div id="mypw" role="dialog" aria-modal="true"><div class="mpbox">
+  <div class="mplock">🔑</div>
+  <h3>修改我的密碼</h3>
+  <div class="mpsub" id="mpWho"></div>
+  <label>目前的密碼<input type="password" id="mpOld" inputmode="numeric" autocomplete="current-password"></label>
+  <label>新密碼（至少 4 碼）<input type="password" id="mpNew" inputmode="numeric" autocomplete="new-password"></label>
+  <label>新密碼再輸入一次<input type="password" id="mpNew2" inputmode="numeric" autocomplete="new-password"></label>
+  <div class="mperr" id="mpErr"></div>
+  <div class="mpok" id="mpOk"></div>
+  <div class="mprow"><button onclick="closeMyPw()">取消</button><button class="go" id="mpGo" onclick="saveMyPw()">確定修改</button></div>
+  <div class="mpnote">忘記密碼請找行政幫你清除，<br>清除後會回到原本的「123＋編號」。</div>
+</div></div>
 
 <div class="wrap">
 <header class="top">
   <h1>香量線上填單<small>MIIRAGIC · 香量回報</small></h1>
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
     <span class="who" id="whoBadge" style="display:none"></span>
+    <button id="myPwBtn" onclick="openMyPw()" style="display:none;background:#fff;border:1px solid var(--line);color:var(--gold2);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:inherit;font-size:.72em">🔑 改密碼</button>
     <button id="logoutBtn" onclick="logout()" style="display:none;background:transparent;border:1px solid var(--line);color:var(--mut);border-radius:7px;padding:6px 10px;cursor:pointer;font-family:inherit;font-size:.8em">登出</button>
     <button id="adminOpenBtn" onclick="openAdminPanel()" style="display:none;background:#9c7e3a;border:none;color:#fff;border-radius:7px;padding:6px 12px;cursor:pointer;font-family:inherit;font-size:.8em;margin-left:6px">⚙ 開放設定</button>
     <a class="portalbtn" href="https://kevin87265-pixel.github.io/portal/" target="_blank" rel="noopener">🏠 入口網站</a>
@@ -1757,11 +1789,54 @@ function enterApp(name){
   document.getElementById('whoBadge').textContent='👤 '+(t?t.no+'　':'')+name;
   rankEnter(name);
   document.getElementById('logoutBtn').style.display='';
+  document.getElementById('myPwBtn').style.display='';
   document.getElementById('month').value=defMonth();MONTH=defMonth();
   const adm=document.getElementById('adminOpenBtn'); if(adm) adm.style.display=(ADMIN_NAMES.indexOf(name)>=0)?'':'none';
   loadOpenCfg(function(){ buildTabs();selectCat('法會');loadList(); });
   if(typeof loadContacts==='function') setTimeout(function(){loadContacts();},600);
 }
+/* 老師自己改密碼（2026-10-01） */
+function openMyPw(){
+  if(!TEACHER) return;
+  const t=TBYNAME[TEACHER];
+  document.getElementById('mpWho').textContent=(t?t.no+'　':'')+TEACHER;
+  ['mpOld','mpNew','mpNew2'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mpErr').style.display='none'; document.getElementById('mpOk').style.display='none';
+  document.getElementById('mpGo').disabled=false; document.getElementById('mpGo').textContent='確定修改';
+  document.getElementById('mypw').classList.add('show');
+  setTimeout(()=>document.getElementById('mpOld').focus(),60);
+}
+function closeMyPw(){document.getElementById('mypw').classList.remove('show');}
+function saveMyPw(){
+  const name=TEACHER, t=TBYNAME[name]; if(!t) return;
+  const oldp=document.getElementById('mpOld').value.trim(), n1=document.getElementById('mpNew').value.trim(), n2=document.getElementById('mpNew2').value.trim();
+  const err=m=>{const e=document.getElementById('mpErr');e.textContent=m;e.style.display='block';const b=document.getElementById('mpGo');b.disabled=false;b.textContent='確定修改';};
+  document.getElementById('mpErr').style.display='none';
+  if(!oldp) return err('請輸入目前的密碼');
+  if(n1.length<4) return err('新密碼至少要 4 碼');
+  if(/[\s]/.test(n1)) return err('新密碼不能有空白');
+  if(n1!==n2) return err('兩次輸入的新密碼不一樣');
+  if(n1===oldp) return err('新密碼跟目前的一樣');
+  if(n1==='123123') return err('這組不能用，請換一組');
+  if(!API_URL) return err('現在連不到系統，請稍後再試');
+  const b=document.getElementById('mpGo'); b.disabled=true; b.textContent='處理中…';
+  const doSet=function(){
+    apiPost('teacherSetPw',{name:name,pw:n1},function(d){
+      if(d&&d.ok){
+        t.hasPw=true; secLogin(name,n1);
+        const ok=document.getElementById('mpOk'); ok.textContent='改好了！下次登入請用新密碼。'; ok.style.display='block';
+        b.textContent='完成'; toast('密碼已更新');
+        setTimeout(closeMyPw,1600);
+      } else err('修改失敗，請稍後再試');
+    });
+  };
+  if(!t.hasPw){ if(oldp===pwOf(t.no)) doSet(); else err('目前的密碼不對'); return; }
+  fetch(API_URL+'?action=checkPw&name='+encodeURIComponent(name)+'&pw='+encodeURIComponent(oldp))
+    .then(r=>r.json()).then(d=>{ if(d&&d.ok&&d.pass) doSet(); else err('目前的密碼不對'); })
+    .catch(()=>err('現在連不到系統，請稍後再試'));
+}
+document.addEventListener('keydown',e=>{ const m=document.getElementById('mypw'); if(!m||!m.classList.contains('show')) return; if(e.key==='Escape') closeMyPw(); if(e.key==='Enter') saveMyPw(); });
+
 function logout(){secSet('sec_tok','');try{localStorage.removeItem('xlUser')}catch(e){}location.reload();}
 
 function buildTabs(){document.getElementById('tabs').innerHTML=CATS_ORDER.filter(c=>catOpen(c)).map(c=>`<button class="tab" data-c="${c}" onclick="selectCat('${c}')">${c}</button>`).join('');}
