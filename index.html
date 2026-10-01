@@ -997,8 +997,9 @@ function bonusLineHTML(name,est){
 
 /* =====================================================================
    客戶提醒：從老師自己過去 12 個月填過的單整理出
-   🎂 本月生日（依農曆生日換算成這個月的日期）　🔁 上個月做過、這個月還沒續　💤 半年以上沒回來
+   🎂 本月生日（依農曆生日換算成這個月的日期）　🔁 上個月做過、這個月還沒續　💤 3 個月以上沒回來
    ===================================================================== */
+const IDLE_MONTHS=3;      // 幾個月沒報名就算「很久沒來」
 const HIST={};            // HIST[teacher] = {months:{'2026.08':DATA,...}, demo:bool, loading:bool}
 let CR_TAB='bday', CR_OPEN=false, CR_MORE=false;
 function monthsBack(n){const d=new Date();const out=[];for(let i=0;i<n;i++){const dt=new Date(d.getFullYear(),d.getMonth()-i,1);out.push(dt.getFullYear()+'.'+String(dt.getMonth()+1).padStart(2,'0'));}return out;}
@@ -1060,15 +1061,30 @@ function crLists(name){
   const t0=new Date(today.getFullYear(),today.getMonth(),today.getDate());
   const dim=new Date(today.getFullYear(),today.getMonth()+1,0).getDate();
   for(let dd=1;dd<=dim;dd++){const d=new Date(today.getFullYear(),today.getMonth(),dd);const l=solar2lunar(d.getFullYear(),d.getMonth()+1,dd);days.push({d,l,i:Math.round((d-t0)/86400000)});}
-  const bday=[];
-  cs.forEach(c=>{if(!c.bm||!c.bd)return;const hit=days.find(x=>x.l.lMonth===c.bm&&x.l.lDay===c.bd);if(hit){const last=c.visits.slice().sort((a,b)=>mDiff(b.m,a.m))[0];bday.push({c,hit,last});}});
+  const bday=[]; const seenB={};
+  cs.forEach(c=>{if(!c.bm||!c.bd)return;const hit=days.find(x=>x.l.lMonth===c.bm&&x.l.lDay===c.bd);if(hit){const last=c.visits.slice().sort((a,b)=>mDiff(b.m,a.m))[0];seenB[c.name]=1;bday.push({c,hit,last});}});
+  // 再把通訊錄裡（更早以前報過）的客人也補進來
+  (CONTACTS||[]).forEach(c=>{
+    const nm=(''+c['姓名']).trim(); if(!nm||seenB[nm])return;
+    const bm=+(''+(c['生日月']||'')).replace('閏','')||0, bd=+c['生日日']||0; if(!bm||!bd)return;
+    const hit=days.find(x=>x.l.lMonth===bm&&x.l.lDay===bd); if(!hit)return;
+    seenB[nm]=1;
+    bday.push({c:{name:nm,bm:bm,bd:bd},hit:hit,last:c['最近月份']?{m:''+c['最近月份'],item:'報過 '+(c['次數']||0)+' 個月'}:null});
+  });
   bday.sort((a,b)=>{const pa=a.hit.i<0,pb=b.hit.i<0; if(pa!==pb) return pa?1:-1; return pa? b.hit.i-a.hit.i : a.hit.i-b.hit.i;});   // 還沒到的排前面，已過的放後面
-  // 該續做：上個月有法會，這個月還沒有
+  // 該續做：上個月做過（法會／斗燈／還陰債／祭改都算），這個月還沒有
   const renew=[];
-  cs.forEach(c=>{const pv=c.visits.filter(v=>v.m===prev&&v.cat==='法會');const cv=c.visits.filter(v=>v.m===cur);if(pv.length&&!cv.length)renew.push({c,items:[...new Set(pv.map(v=>v.item))]});});
-  // 很久沒來：最後一次在 6 個月以前
-  const idle=[];
-  cs.forEach(c=>{const last=c.visits.slice().sort((a,b)=>mDiff(b.m,a.m))[0];if(!last)return;const gap=mDiff(cur,last.m);if(gap>=6)idle.push({c,last,gap});});
+  cs.forEach(c=>{const pv=c.visits.filter(v=>v.m===prev);const cv=c.visits.filter(v=>v.m===cur);
+    if(pv.length&&!cv.length)renew.push({c,items:[...new Set(pv.map(v=>(v.cat==='法會'?'':v.cat+'·')+(v.item||v.cat)))]});});
+  // 很久沒來：最後一次在 IDLE_MONTHS 個月以前（用通訊錄的全部歷史，不只最近 6 個月）
+  const idle=[]; const seenIdle={};
+  (CONTACTS||[]).forEach(c=>{
+    const lm=(''+(c['最近月份']||'')).trim(); if(!/^\d{4}\.\d{1,2}$/.test(lm))return;
+    const gap=mDiff(cur,lm.length===6?lm.replace('.','.0'):lm);
+    if(gap<IDLE_MONTHS)return;
+    const key=(''+c['姓名']).trim(); if(!key||seenIdle[key])return; seenIdle[key]=1;
+    idle.push({c:{name:c['姓名'],bm:+(''+(c['生日月']||'')).replace('閏','')||0,bd:+c['生日日']||0},last:{m:lm,item:'報過 '+(c['次數']||0)+' 個月'},gap});
+  });
   idle.sort((a,b)=>a.gap-b.gap);
   return {bday,renew,idle};
 }
@@ -1092,16 +1108,16 @@ function renderCR(){
     const list=L[CR_TAB]||[]; const show=CR_MORE?list:list.slice(0,8);
     h+=`<div class="crpanel">${H.demo?'<div class="crdemo">連不到後台，下面是<b>示範資料</b>（正式使用時會是老師自己的客戶）</div>':''}
       <div class="crtabs">${tabs.map(t=>`<button class="${CR_TAB===t[0]?'on':''}" onclick="CR_TAB='${t[0]}';CR_MORE=false;renderCR()">${t[1]} <b>${t[2]}</b></button>`).join('')}</div>`;
-    if(!list.length) h+=`<p class="empty" style="padding:12px">${CR_TAB==='bday'?'這個月沒有客戶生日':CR_TAB==='renew'?'上個月的客戶這個月都續了 👍':'沒有很久沒來的客戶'}</p>`;
+    if(!list.length) h+=`<p class="empty" style="padding:12px">${CR_TAB==='bday'?'這個月沒有客戶生日':CR_TAB==='renew'?'上個月的客戶這個月都續了 👍':'沒有 '+IDLE_MONTHS+' 個月以上沒回來的客戶'}</p>`;
     show.forEach((o,i)=>{
       let sub='';
       if(CR_TAB==='bday'){const d=o.hit.d;sub=`${o.hit.i===0?'<b>今天</b>':o.hit.i===1?'<b>明天</b>':(d.getMonth()+1)+'/'+d.getDate()+'（週'+WK[d.getDay()]+'）'+(o.hit.i<0?'・已過':'')}・農曆${o.c.bm}/${o.c.bd}${o.last?'・上次 '+o.last.item:''}`;}
       if(CR_TAB==='renew') sub='上個月做：'+o.items.join('、');
-      if(CR_TAB==='idle') sub=`上次 ${o.last.m}・${o.last.item}（${o.gap} 個月前）`;
+      if(CR_TAB==='idle') sub=`上次 ${o.last.m}（${o.gap} 個月前）・${o.last.item}`;
       h+=`<div class="crrow"><div class="info">${escH(o.c.name)}<small>${sub}</small></div><button onclick="crCopy('${CR_TAB}',${list.indexOf(o)})">複製問候</button></div>`;
     });
     if(list.length>8&&!CR_MORE) h+=`<button class="crmore" onclick="CR_MORE=true;renderCR()">顯示全部 ${list.length} 位</button>`;
-    h+=`<div class="crfoot">整理自你過去 6 個月填過的單・<a href="javascript:void(0)" onclick="histLoad(TEACHER,true)">重新整理</a></div></div>`;
+    h+=`<div class="crfoot">生日與「很久沒來」看全部歷史客人，「該續做」看最近 6 個月・<a href="javascript:void(0)" onclick="histLoad(TEACHER,true)">重新整理</a></div></div>`;
   }
   box.innerHTML=h;
 }
@@ -1339,9 +1355,9 @@ function acShow(el){
   acList.forEach(function(c,i){
     const b=[c['生日年'],c['生日月'],c['生日日']].filter(Boolean).join('/');
     const meta=[ here[(''+c['姓名']).trim()]?'⚠ 本月這一類已經填過':'',
-                 b?((c['生日別']||'農')+'曆 '+b+(c['時辰']?' '+c['時辰']+'時':'')):'',
+                 b?(calLabel(c['生日別'])+' '+b+(c['時辰']?' '+c['時辰']+'時':'')):'',
                  c['居住地址']||'', c['公司行號']||'',
-                 '報過'+(c['次數']||0)+'次'+(c['最近月份']?'·最近'+c['最近月份']:'') ].filter(Boolean).join('　|　');
+                 '報過'+(c['次數']||0)+'個月'+(c['最近月份']?'·最近'+c['最近月份']:'') ].filter(Boolean).join('　|　');
     h+='<div class="acitem" data-i="'+i+'" onmousedown="acPick(event,'+i+')">'
       +'<span class="st'+(c['常客']?' on':'')+'" onmousedown="acStar(event,'+i+')" title="設為／取消常客">'+(c['常客']?'★':'☆')+'</span>'
       +'<span class="nm">'+acEsc(c['姓名'])+'</span><span class="mt">'+acEsc(meta)+'</span></div>';
@@ -1350,6 +1366,8 @@ function acShow(el){
   wrap.appendChild(box);
 }
 function acEsc(s){ return (''+(s==null?'':s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+/* 生日別顯示：舊資料有人寫「農」有人寫「農曆」，統一印成「農曆／國曆」 */
+function calLabel(v){ v=(''+(v==null?'':v)).trim(); if(v.indexOf('國')>=0) return '國曆'; return '農曆'; }
 function acKey(e){
   const box=document.getElementById('acBox'); if(!box)return;
   if(e.key==='ArrowDown'||e.key==='ArrowUp'){
@@ -1383,16 +1401,24 @@ function acFill(c){
   put('姓名',c['姓名']); put('陽世報恩人',c['姓名']);
   put('居住地址',c['居住地址']); put('報恩人居住地址',c['居住地址']);
   put('公司行號',c['公司行號']);
-  put('生日年',c['生日年']); put('生日月',c['生日月']); put('生日日',c['生日日']);
+  /* 通訊錄裡存的生日一律是「農曆」（填單時若選國曆，送出前已經換算過一次）
+     所以帶入時固定切成農曆，否則送出時會被再換算一次，生日就錯了 */
   const cal=document.getElementById('in_生日別');
-  if(cal&&c['生日別']){ for(let i=0;i<cal.options.length;i++) if(cal.options[i].value===c['生日別'])cal.value=c['生日別']; }
+  if(cal){ for(let i=0;i<cal.options.length;i++) if(cal.options[i].value==='農') cal.value='農'; }
+  put('生日年',c['生日年']);
+  const _bm=''+(c['生日月']==null?'':c['生日月']);
+  const _lp=document.getElementById('leap_生日年'), _lw=document.getElementById('leapwrap_生日年');
+  if(_bm.indexOf('閏')>=0){ put('生日月',_bm.replace('閏','')); if(_lp)_lp.checked=true; }
+  else { put('生日月',_bm); if(_lp)_lp.checked=false; }
+  if(_lw) _lw.style.display='flex';
+  put('生日日',c['生日日']);
   const sc=document.getElementById('in_時辰');
   if(sc&&c['時辰']){ for(let i=0;i<sc.options.length;i++) if(sc.options[i].value===c['時辰'])sc.value=c['時辰']; }
   const sd=document.getElementById('in_收單人');
   if(sd&&c['收單人']){ for(let i=0;i<sd.options.length;i++) if(sd.options[i].value===c['收單人'])sd.value=c['收單人']; }
-  try{ if(document.getElementById('in_生日年')) birthPrev('生日年','生日月','生日日','生日別'); }catch(e){}
+  try{ const _pv=document.getElementById('prev_生日年'); if(_pv)_pv.textContent=''; }catch(e){}
   try{ if(typeof yinAuto==='function'&&document.getElementById('in_陽世報恩人')) yinAuto(); }catch(e){}
-  toast('已帶入「'+c['姓名']+'」的資料，請確認後送出');
+  toast('已帶入「'+c['姓名']+'」的資料（生日為農曆），請確認後送出');
 }
 
 /* ---------- ⭐常客名單 ---------- */
@@ -1425,7 +1451,7 @@ function vipRender(){
     const b=[c['生日年'],c['生日月'],c['生日日']].filter(Boolean).join('/');
     return '<div class="prow"><span class="st'+(c['常客']?' on':'')+'" style="cursor:pointer;font-size:1.1em;color:'+(c['常客']?'#e8b93b':'#8a7a4a')+'" onclick="vipToggle(\''+encodeURIComponent(c['姓名'])+'\',\''+(c['生日年']||'')+'\')">'+(c['常客']?'★':'☆')+'</span>'
       +'<b style="min-width:70px">'+acEsc(c['姓名'])+'</b>'
-      +'<span class="mt">'+acEsc([b,c['居住地址']].filter(Boolean).join('　|　'))+'　報過'+(c['次數']||0)+'次</span></div>';
+      +'<span class="mt">'+acEsc([b?(calLabel(c['生日別'])+' '+b):'',c['居住地址']].filter(Boolean).join('　|　'))+'　報過'+(c['次數']||0)+'個月</span></div>';
   }).join('');
 }
 function vipToggle(nameEnc,by){
@@ -2007,12 +2033,56 @@ function fahuiEditWish(){
   let h='';
   if(mode==='simple'){ h=`<button type="button" onclick="editFillWish(WISH_SIMPLE['${item}'])" style="${bs}">📋 複製公版到祈願欄</button>`+pubBox(WISH_SIMPLE[item]); }
   else if(mode==='water'){ h=`<div style="display:flex;gap:6px;flex-wrap:wrap">${scBtn('求自我提升',"editFillWish(WISH_WATER[0][1])")}${scBtn('求對象',"editFillWish(WISH_WATER[1][1])")}</div>`+pubBox('求自我提升 → '+WISH_WATER[0][1]+'<br>求對象 → '+WISH_WATER[1][1]); }
-  else if(mode==='fire'){ h=`<div style="display:flex;gap:6px;flex-wrap:wrap">${scBtn('求在一起',"editFillWish(fireWishText('求在一起','○○○','農曆○年○月○日'))")}${scBtn('求復合',"editFillWish(fireWishText('求復合','○○○','農曆○年○月○日'))")}${scBtn('情侶求增溫',"editFillWish(fireWishText('情侶求增溫','○○○','農曆○年○月○日'))")}</div>`+pubBox('點情境帶入公版後，把 ○○○ 與生日改成對方的'); }
-  else if(mode==='jin'){ h=`<button type="button" onclick="editFillWish(partnerWish('金','○○○','農曆○年○月○日'))" style="${bs}">📋 複製公版到祈願欄</button>`+pubBox('帶入後把 ○○○ 與生日改成對方的：'+partnerWish('金','○○○','農曆○年○月○日')); }
+  else if(mode==='fire'){ h=edPartnerHTML()
+      +`<div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0">${scBtn('求在一起',"edScen('fire','求在一起')")}${scBtn('求復合',"edScen('fire','求復合')")}${scBtn('情侶求增溫',"edScen('fire','情侶求增溫')")}</div>`
+      +pubBox('填好對方姓名＋生日，再點情境帶入整句（國曆會自動換算成農曆）'); }
+  else if(mode==='jin'){ h=edPartnerHTML()
+      +`<div style="margin:8px 0"><button type="button" onclick="edScen('jin','')" style="${bs}">📋 複製公版到祈願欄</button></div>`
+      +pubBox('填好對方姓名＋生日，再按複製（國曆會自動換算成農曆）：'+partnerWish('金','○○○','農曆○年○月○日')); }
   else { h=''; }
   help.innerHTML=h;
+  if(mode==='fire'||mode==='jin') edPartnerFromWish();
 }
 function editFillWish(t){ const w=document.getElementById('in_祈願'); if(w){ w.value=t; w.focus(); } }
+/* ===== 編輯模式：姻緣類的「對方姓名＋生日」欄（跟新增模式一樣，國曆會自動換算成農曆） ===== */
+let ED_SCEN='';
+function edPartnerHTML(){ return `<div class="fi-partner" id="edPartner" style="display:block">
+ <div class="fp-hd"><div class="fp-title">對方資料</div><div class="fp-note">填好之後按下面的按鈕，祈願欄就會自動帶入</div></div>
+ <input class="fp-name" type="text" id="edpName" placeholder="對方姓名（XXX）" oninput="edPartnerChg()">
+ <div class="fp-bd fp-bday">
+  <select class="fp-cal" id="edpCal" onchange="edPartnerChg()"><option value="國">國曆</option><option value="農">農曆</option></select>
+  <input class="fp-y" id="edpY" type="number" placeholder="年" oninput="edPartnerChg()">
+  <input class="fp-m" id="edpM" type="number" placeholder="月" oninput="edPartnerChg()">
+  <input class="fp-d" id="edpD" type="number" placeholder="日" oninput="edPartnerChg()">
+ </div></div>`; }
+function edpV(id){ const e=document.getElementById(id); return e?(''+e.value).trim():''; }
+function edpBstr(){ let y=edpV('edpY'),m=edpV('edpM'),d=edpV('edpD'); if(!(y&&m&&d))return '';
+ if(edpV('edpCal')==='國'){ const cv=s2lMinguo(y,m,d); if(cv){y=cv.y;m=cv.m;d=cv.d;} }
+ return '農曆'+y+'年'+m+'月'+d+'日'; }
+function edScen(mode,scen){
+ ED_SCEN=(mode==='jin')?'jin':scen;
+ const nm=edpV('edpName')||'○○○'; const bs=edpBstr()||'農曆○年○月○日';
+ editFillWish(mode==='jin'?partnerWish('金',nm,bs):fireWishText(scen,nm,bs));
+}
+function edPartnerChg(){
+ if(!ED_SCEN) return;
+ const nm=edpV('edpName')||'○○○'; const bs=edpBstr()||'農曆○年○月○日';
+ const w=document.getElementById('in_祈願'); if(!w)return;
+ w.value=(ED_SCEN==='jin')?partnerWish('金',nm,bs):fireWishText(ED_SCEN,nm,bs);
+}
+/* 從既有祈願文字把對方姓名＋農曆生日拆回欄位，老師不用重打 */
+function edPartnerFromWish(){
+ ED_SCEN='';
+ const w=document.getElementById('in_祈願'); if(!w)return;
+ const t=''+w.value;
+ const m=t.match(/和([^（(]{1,12})[（(]農曆\s*([0-9]{1,4})\s*年\s*(閏?[0-9]{1,2})\s*月\s*([0-9]{1,2})\s*日/);
+ if(!m) return;
+ const set=function(id,v){ const e=document.getElementById(id); if(e)e.value=v; };
+ set('edpName',m[1].trim()); set('edpCal','農'); set('edpY',m[2]); set('edpM',(''+m[3]).replace('閏','')); set('edpD',m[4]);
+ if(/重新牽緣在一起/.test(t)) ED_SCEN='求復合';
+ else if(/牽緣在一起/.test(t)) ED_SCEN='求在一起';
+ else if(/感情越來越甜蜜熱絡/.test(t)) ED_SCEN=/祈求和/.test(t)?'jin':'情侶求增溫';
+}
 function addItemRow(){const box=document.getElementById('fahuiItems');box.insertAdjacentHTML('beforeend',itemRowHTML('',1,''));const row=box.lastElementChild;renderWishArea(row,row.querySelector('.fi-item').value,'');}
 function getItemRows(){return [...document.querySelectorAll('#fahuiItems .fitem')].map(r=>{
   const item=r.querySelector('.fi-item').value;
@@ -2155,7 +2225,7 @@ function startEdit(cat,id){
     lpwrap.style.display='flex';
   }
   const pv=document.getElementById('prev_生日年');if(pv)pv.textContent='';
-  if(cat==='法會')fahuiEditWish();
+  if(cat==='法會'){ ED_SCEN=''; fahuiEditWish(); }
   document.getElementById('formTitle').textContent='編輯：'+(e.姓名||e.陽世報恩人||'');
   document.getElementById('submitBtn').textContent='更新';
   document.getElementById('cancelBtn').style.display='';
