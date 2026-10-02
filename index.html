@@ -1388,6 +1388,14 @@ function acShow(el){
   wrap.appendChild(box);
 }
 function acEsc(s){ return (''+(s==null?'':s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+/* 常客名單用的短版生日：有出生年就印國曆，沒有就印農曆 */
+function birthShort(by,bm,bd){
+  const sol=birthSolarStr(by,bm,bd); if(sol) return sol;
+  const lun=[by,bm,bd].filter(function(x){return x!==''&&x!=null;}).join('/');
+  return lun? ('農'+lun) : '';
+}
+/* 地址太長會把常客名單撐成好幾行，只留前面看得出是誰的部分 */
+function addrShort(a){ a=(''+(a==null?'':a)).replace(/\s+/g,''); return a.length>15? a.slice(0,15)+'…' : a; }
 /* 生日別顯示：舊資料有人寫「農」有人寫「農曆」，統一印成「農曆／國曆」 */
 function calLabel(v){ v=(''+(v==null?'':v)).trim(); if(v.indexOf('國')>=0) return '國曆'; return '農曆'; }
 function acKey(e){
@@ -1470,10 +1478,11 @@ function vipRender(){
   arr=arr.slice(0,300);
   if(!arr.length){ box.innerHTML='<div class="prow"><span class="mt">沒有符合的客人。若是第一次用，先按下面「重新掃描歷史客人」。</span></div>'; return; }
   box.innerHTML=arr.map(function(c){
-    const b=birthLine(c['生日年'],c['生日月'],c['生日日']);
+    const b=birthShort(c['生日年'],c['生日月'],c['生日日']);
     return '<div class="prow"><span class="st'+(c['常客']?' on':'')+'" style="cursor:pointer;font-size:1.1em;color:'+(c['常客']?'#e8b93b':'#8a7a4a')+'" onclick="vipToggle(\''+encodeURIComponent(c['姓名'])+'\',\''+(c['生日年']||'')+'\')">'+(c['常客']?'★':'☆')+'</span>'
       +'<b style="min-width:70px">'+acEsc(c['姓名'])+'</b>'
-      +'<span class="mt">'+acEsc([b,c['居住地址']].filter(Boolean).join('　|　'))+'　報過'+(c['次數']||0)+'個月</span></div>';
+      +'<span class="mt">'+acEsc(b)+'　報過'+(c['次數']||0)+'個月'
+        +(c['居住地址']?('<br>'+acEsc(addrShort(c['居住地址']))):'')+'</span></div>';
   }).join('');
 }
 function vipToggle(nameEnc,by){
