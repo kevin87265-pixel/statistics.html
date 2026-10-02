@@ -1132,7 +1132,7 @@ function renderCR(){
       let sub='';
       if(CR_TAB==='bday'){const d=o.hit.d;
         const day=o.hit.i===0?'<b>今天</b>':o.hit.i===1?'<b>明天</b>':(d.getMonth()+1)+'/'+d.getDate()+'（週'+WK[d.getDay()]+'）'+(o.hit.i<0?'・已過':'');
-        const bl=o.hit.sol?('・'+o.hit.sol.y+'/'+o.hit.sol.m+'/'+o.hit.sol.d+' 出生'):('・農曆'+(o.hit.lun||'')+'（沒填出生年）');
+        const bl=o.hit.sol?('・'+o.hit.sol.y+' 年生'):('・農曆'+(o.hit.lun||'')+'（沒填出生年，用農曆推算）');
         sub=day+bl+(o.last?'・上次 '+o.last.item:'');}
       if(CR_TAB==='renew') sub='上個月做：'+o.items.join('、');
       if(CR_TAB==='idle') sub=`上次 ${o.last.m}（${o.gap} 個月前）・${o.last.item}`;
