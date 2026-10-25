@@ -11,7 +11,7 @@
 .big{--fs:19px}
 *{box-sizing:border-box;margin:0;padding:0}
 html{background:var(--bg)}
-body{background:var(--bg);color:var(--txt);font-family:'Noto Sans TC',sans-serif;font-size:var(--fs);line-height:1.55;min-height:100vh}
+body{background:var(--bg);color:var(--txt);font-family:'Noto Sans TC',sans-serif;font-size:var(--fs);line-height:1.55;min-height:100vh;text-wrap:pretty}
 .wrap{max-width:780px;margin:0 auto;padding:16px 14px 100px}
 header.top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--gold);padding-bottom:12px;flex-wrap:wrap;gap:8px}
 h1{font-family:'Noto Serif TC',serif;font-weight:900;color:var(--gold2);font-size:1.4em;letter-spacing:1px}
@@ -2467,5 +2467,212 @@ function admSaveLabels(){ const map={}; document.querySelectorAll('.adm-lbl').fo
 
 function admAdminAdd(){ const n=(document.getElementById('admAdminName').value||'').trim(); if(!n)return; apiPost('adminAdd',{name:n},function(d){ if(d&&d.ok){ ADMINS=d.admins||[]; document.getElementById('admAdminBox').innerHTML=admAdminChips(); document.getElementById('admAdminName').value=''; } else alert('失敗'); }); }
 function admAdminDel(n){ apiPost('adminDelete',{name:n},function(d){ if(d&&d.ok){ ADMINS=d.admins||[]; document.getElementById('admAdminBox').innerHTML=admAdminChips(); } else alert('失敗'); }); }
+</script>
+<script>
+/* ==========================================================================
+   手機鍵盤遮擋修正
+   點到任何輸入欄位（input / select / textarea）時，把「欄位標題＋輸入格」
+   一起捲到鍵盤上方真正看得到的範圍中央，使用者就不會不知道自己在打哪一格。
+   以 window.visualViewport 取得鍵盤跳出後的實際可見高度，iPhone / Android 皆適用。
+   ========================================================================== */
+(function(){
+  if(window.__kbCenterOn) return; window.__kbCenterOn=1;
+
+  var vv = window.visualViewport || null;
+  var isTouch = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+  var SKIP = {hidden:1,checkbox:1,radio:1,button:1,submit:1,reset:1,image:1,range:1,color:1};
+  var UNIT = '.field, .fi-qrow, .ymd, .bar';
+  var PAD  = 10;
+  var cur=null, downTarget=null, downAt=0, keyNavAt=0, timers=[], shifted=null;
+
+  function eligible(el){
+    if(!el || !el.tagName) return false;
+    var tag = el.tagName.toLowerCase();
+    if(tag!=='input' && tag!=='select' && tag!=='textarea') return false;
+    if(tag==='input' && SKIP[(el.type||'text').toLowerCase()]) return false;
+    if(el.disabled || el.readOnly) return false;
+    return true;
+  }
+
+  /* 鍵盤跳出後畫面上真正看得到的範圍（client 座標） */
+  function vis(){
+    if(vv && vv.height) return {top: vv.offsetTop||0, height: vv.height};
+    return {top:0, height: window.innerHeight || document.documentElement.clientHeight || 0};
+  }
+  /* 被鍵盤吃掉的高度（Android 若整個版面縮小則為 0，但 vis() 仍然正確） */
+  function kbH(){
+    if(!vv || !vv.height) return 0;
+    return Math.max(0, (window.innerHeight||0) - (vv.height + (vv.offsetTop||0)));
+  }
+
+  function labelOf(el){
+    try{ if(el.labels && el.labels.length) return el.labels[0]; }catch(e){}
+    var f = el.closest ? el.closest('.field') : null;
+    if(f){ var lb=f.querySelector('label'); if(lb) return lb; }
+    var row = el.closest ? el.closest('.fi-qrow') : null;
+    if(row){ var q=row.querySelector('.fi-qlabel'); if(q) return q; }
+    var p = el.previousElementSibling;
+    while(p){
+      var t=(p.tagName||'').toLowerCase();
+      var c=(typeof p.className==='string'?p.className:'');
+      if(t==='label' || /fi-qlabel|grouphd|fp-title/.test(c)) return p;
+      p = p.previousElementSibling;
+    }
+    return null;
+  }
+
+  /* 要被捲進可見範圍的目標：優先整個欄位區塊（標題＋輸入格＋提示） */
+  function rectOf(el, avail, topAlign){
+    var r = el.getBoundingClientRect();
+    if(!topAlign){
+      var u = el.closest ? el.closest(UNIT) : null;
+      if(u){
+        var ur = u.getBoundingClientRect();
+        if(ur.height>0 && ur.height <= avail - PAD*2) return {top:ur.top, bottom:ur.bottom};
+      }
+    }
+    var top=r.top, bottom=r.bottom;
+    var lb = labelOf(el);
+    if(lb){
+      var lr = lb.getBoundingClientRect();
+      if(lr.height>0 && lr.top <= r.top+1 && (r.top-lr.top) < 200) top = Math.min(top, lr.top);
+    }
+    return {top:top, bottom:bottom};
+  }
+
+  function scrollerOf(el){
+    var n = el.parentElement;
+    while(n && n!==document.body && n!==document.documentElement){
+      var cs=null; try{ cs=getComputedStyle(n); }catch(e){}
+      if(cs && /(auto|scroll|overlay)/.test(cs.overflowY) && n.scrollHeight > n.clientHeight+2) return n;
+      n = n.parentElement;
+    }
+    return null;
+  }
+  function fixedOf(el){
+    var n = el.parentElement;
+    while(n && n!==document.body && n!==document.documentElement){
+      var cs=null; try{ cs=getComputedStyle(n); }catch(e){}
+      if(cs && cs.position==='fixed') return n;
+      n = n.parentElement;
+    }
+    return null;
+  }
+  function unshift(){
+    if(shifted){ try{ shifted.el.style.transform = shifted.old; }catch(e){} shifted=null; }
+  }
+  /* 最底下那幾格原本捲不到中央（頁面已經到底），鍵盤開著時先墊高一點 */
+  function spacer(){ return document.getElementById('__kbSpacer'); }
+  function setSpacer(h){
+    var s=spacer();
+    if(!(h>0)){ if(s&&s.parentNode) s.parentNode.removeChild(s); return; }
+    if(!s){ s=document.createElement('div'); s.id='__kbSpacer'; s.setAttribute('aria-hidden','true');
+            s.style.cssText='width:1px;height:0;pointer-events:none;visibility:hidden'; document.body.appendChild(s); }
+    s.style.height = Math.min(2000, Math.round(h)) + 'px';
+  }
+  function cleanup(){ unshift(); setSpacer(0); }
+
+  function center(el){
+    if(!el || !document.contains(el)) return;
+    var v = vis(), avail = v.height;
+    if(!avail) return;
+
+    /* 常客自動完成的清單是長在欄位下面的，這時候把標題貼上緣，清單才看得到 */
+    var topAlign = false;
+    try{
+      var pn = el.parentNode;
+      topAlign = !!(pn && pn.querySelector && pn.querySelector('#acBox'));
+    }catch(e){}
+
+    var t = rectOf(el, avail, topAlign);
+    var h = t.bottom - t.top;
+    var delta;
+    if(topAlign || h >= avail - PAD*2) delta = t.top - (v.top + PAD);
+    else delta = (t.top + h/2) - (v.top + avail/2);
+    if(Math.abs(delta) < 4) return;
+
+    var sc = scrollerOf(el);
+    if(sc){
+      var b = sc.scrollTop;
+      sc.scrollTop = b + delta;
+      delta = delta - (sc.scrollTop - b);
+      if(Math.abs(delta) < 4) return;
+    }
+    var fx = fixedOf(el);
+    if(fx){
+      /* 位置固定的彈窗，捲視窗沒有用，直接把彈窗往上挪 */
+      if(!shifted || shifted.el!==fx){ unshift(); shifted={el:fx, old:fx.style.transform||'', y:0}; }
+      shifted.y = Math.min(0, shifted.y - delta);
+      fx.style.transform = (shifted.old ? shifted.old+' ' : '') + 'translateY('+shifted.y+'px)';
+      return;
+    }
+    var y0 = window.pageYOffset || document.documentElement.scrollTop || 0;
+    var want = y0 + delta;
+    var max = Math.max(0, (document.documentElement.scrollHeight||0) - (window.innerHeight||0));
+    if(want > max){
+      var now = spacer() ? (parseFloat(spacer().style.height)||0) : 0;
+      setSpacer(now + (want-max) + 8);
+    }
+    window.scrollTo(0, want);
+  }
+
+  function clearTimers(){ while(timers.length) clearTimeout(timers.pop()); }
+  function run(el, delays){
+    clearTimers();
+    delays.forEach(function(d){
+      timers.push(setTimeout(function(){ if(cur===el) center(el); }, d));
+    });
+  }
+
+  /* 只處理「使用者自己點到／用 Tab 跳到」的欄位，程式自己 focus 的不要亂捲 */
+  function byUser(el){
+    var now=Date.now();
+    if(now-keyNavAt < 1200) return true;
+    if(downTarget && now-downAt < 1500){
+      if(downTarget===el) return true;
+      if(el.contains && el.contains(downTarget)) return true;
+      var u = el.closest ? el.closest(UNIT) : null;
+      if(u && u.contains(downTarget)) return true;
+    }
+    return false;
+  }
+
+  function mark(e){ downTarget=e.target; downAt=Date.now(); }
+  document.addEventListener('pointerdown', mark, true);
+  document.addEventListener('mousedown',  mark, true);
+  document.addEventListener('touchstart', mark, {capture:true, passive:true});
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Tab' || e.key==='Enter') keyNavAt=Date.now();
+  }, true);
+
+  document.addEventListener('focusin', function(e){
+    var el=e.target;
+    if(!eligible(el)) return;
+    cur=el;
+    if(!isTouch && kbH()<=120) return;   /* 電腦版不要動畫面 */
+    if(!byUser(el)) return;
+    run(el, [0,160,380,650,900]);        /* 鍵盤跳出有動畫，多補幾次 */
+  }, true);
+
+  document.addEventListener('focusout', function(e){
+    if(cur===e.target){
+      cur=null; clearTimers();
+      setTimeout(function(){ if(!cur) cleanup(); }, 80);
+    }
+  }, true);
+
+  /* 鍵盤跳出／收起、轉向時，若目前欄位被蓋住就補捲一次 */
+  function onVp(){
+    if(!cur || !document.contains(cur) || document.activeElement!==cur){
+      if(kbH()<=120) cleanup();
+      return;
+    }
+    var v=vis(), r=cur.getBoundingClientRect();
+    if(r.bottom > v.top+v.height-6 || r.top < v.top+6) run(cur,[0,140,340]);
+  }
+  if(vv) vv.addEventListener('resize', onVp);
+  window.addEventListener('resize', onVp);
+  window.addEventListener('orientationchange', function(){ setTimeout(onVp,350); });
+})();
 </script>
 </body></html>
