@@ -584,34 +584,6 @@ header.top button,header.top .portalbtn{white-space:nowrap}
 <div class="toast" id="toast"></div>
 
 <script>
-/* =====================================================================
-   登入憑證（2026-10-30）：登入後後台會發一張「通行證」，之後每次讀寫都自動帶上。
-   沒有或過期，後台就不給資料，畫面會請你重新登入。
-   ===================================================================== */
-(function(){
-  var TK='xl_tok';
-  window.xlTok=function(v){ try{ if(v===undefined) return localStorage.getItem(TK)||''; if(v) localStorage.setItem(TK,v); else localStorage.removeItem(TK); }catch(e){} return ''; };
-  var raw=window.fetch.bind(window), asked=false;
-  window.fetch=function(url,opt){
-    var api=(typeof API_URL!=='undefined'&&API_URL)?API_URL:'';
-    if(!api||typeof url!=='string'||url.indexOf(api)!==0) return raw(url,opt);
-    var tok=xlTok();
-    if(tok){
-      var isPost=!!(opt&&String(opt.method||'').toUpperCase()==='POST');
-      if(!isPost){ if(!/[?&]token=/.test(url)) url+=(url.indexOf('?')>=0?'&':'?')+'token='+encodeURIComponent(tok); }
-      else if(typeof opt.body==='string'){ try{ var b=JSON.parse(opt.body); if(b&&typeof b==='object'&&!b.token){ b.token=tok; opt=Object.assign({},opt,{body:JSON.stringify(b)}); } }catch(e){} }
-    }
-    return raw(url,opt).then(function(res){
-      if(tok){ try{ res.clone().json().then(function(d){
-        if(d&&d.needLogin&&!asked){ asked=true; xlTok(''); try{localStorage.removeItem('xlUser')}catch(e){}
-          alert('登入已過期，請重新登入'); location.reload(); }
-      }).catch(function(){}); }catch(e){} }
-      return res;
-    });
-  };
-})();
-</script>
-<script>
 
 /* =====================================================================
    品階內測版（2026-09-25）
@@ -691,28 +663,18 @@ const INTERNAL_ACCTS = ['公司內部','靈應壇'];
 const CORE4 = ['陳捷容','羅文勳','蕭竣方','陳彩綺'];
 
 /* ---------- 預設老師資料（品階取自獎金計算系統；累積業績先用 2026 年 1-8 月加總示範；目標＝1-8月平均×1.1） ---------- */
-/* 累積業績、推薦關係、本月目標：2026-10-30 起放在主控試算表「累積業績」分頁，
-   登入後才向後台拿（老師只拿到自己和下線）。每月月結改那張表即可，不用再改這個網頁。 */
-let CUM_ASOF='';
-const CUM={};
+/* 累積業績＝行政 2026.10.02 提供的「總累積業績」（2025 前累積＋2026 累積）。
+   每月月結後更新 CUM_ASOF 與數字即可，品階會自動重算。 */
+const CUM_ASOF='2026.09';
+const CUM={'陳捷容':9478120,'陳彩綺':7606362,'沈佳琪':6273811,'羅文勳':6052513,'湯雯莉':4349523,'周冠榮':3188116,'蕭鎧峻':1648578,'謝承殷':1550480,'賴素貞':1489080,'蕭竣方':1478817,'熊卿妃':1103850,'鄭聖勳':632273,'鐘宥涵':632120,'陳昕昀':611140,'梁凱妍':602660,'張簡玉靖':316480,'林雅涵':252160,'謝欣諭':171823,'王宥心':108460};
 /* 推薦關係（取自獎金計算系統）：誰的上線是誰 */
-const SPONSOR={};
+const SPONSOR={'陳彩綺':'陳捷容','湯雯莉':'陳捷容','熊卿妃':'陳捷容','鐘宥涵':'陳捷容','沈佳琪':'羅文勳','周冠榮':'羅文勳','鄭聖勳':'羅文勳','王宥心':'羅文勳','謝欣諭':'湯雯莉','賴素貞':'湯雯莉','張簡玉靖':'賴素貞','梁凱妍':'陳彩綺','謝承殷':'蕭鎧峻','陳昕昀':'蕭鎧峻','林雅涵':'蕭鎧峻'};
 /* 正式老師＋行政正式認定的品階（只升不降的底線）；2026.10.02 依行政聘階表更新
    ※ 陳捷容、羅文勳業績＋團隊總裁數已達環球總裁，系統會自動往上算，這裡只放行政認定的底線 */
 const OFFICIAL={'陳捷容':'總裁','羅文勳':'總裁','陳彩綺':'總裁','沈佳琪':'總裁','湯雯莉':'總裁','周冠榮':'總裁','謝承殷':'鑽石','蕭鎧峻':'鑽石','蕭竣方':'鑽石','賴素貞':'鑽石','熊卿妃':'黃金','鐘宥涵':'黃金','鄭聖勳':'黃金','陳昕昀':'銀階','梁凱妍':'銀階','張簡玉靖':'銀階','林雅涵':'銀階','謝欣諭':'銀階','王宥心':'銀階'};
-const GOAL_DEFAULT={};
+const GOAL_DEFAULT={'陳捷容':450000,'羅文勳':300000,'陳彩綺':360000,'沈佳琪':180000,'湯雯莉':290000,'周冠榮':80000,'蕭竣方':30000,'蕭鎧峻':60000,'熊卿妃':50000,'張簡玉靖':50000,'鐘宥涵':30000,'謝欣諭':40000,'賴素貞':160000,'鄭聖勳':70000,'梁凱妍':70000,'王宥心':30000,'謝承殷':30000,'陳昕昀':30000,'林雅涵':30000};
 const PROFILE_DEFAULT={};
-let RANK_READY=false;
-function rebuildProfileDefault(){ Object.keys(Object.assign({},OFFICIAL,CUM,GOAL_DEFAULT)).forEach(n=>{ PROFILE_DEFAULT[n]={formal:!!OFFICIAL[n], cum:CUM[n]||0, goal:GOAL_DEFAULT[n]||30000}; }); }
-rebuildProfileDefault();
-/* 登入後載入累積業績（拿到之後才算品階、才跳升階恭喜） */
-function loadRankData(cb){
-  if(typeof API_URL==='undefined'||!API_URL||!xlTok()){ cb&&cb(); return; }
-  fetch(API_URL+'?action=rankData').then(r=>r.json()).then(d=>{
-    if(d&&d.ok&&d.cum){ Object.assign(CUM,d.cum); Object.assign(SPONSOR,d.sponsor||{}); Object.assign(GOAL_DEFAULT,d.goal||{}); CUM_ASOF=d.asof||''; rebuildProfileDefault(); RANK_READY=true; }
-    cb&&cb();
-  }).catch(()=>{ cb&&cb(); });
-}
+Object.keys(GOAL_DEFAULT).forEach(n=>{ PROFILE_DEFAULT[n]={formal:!!OFFICIAL[n], cum:CUM[n]||0, goal:GOAL_DEFAULT[n]}; });
 const PROFILE_KEY='rankBeta_profiles_v2';
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
@@ -872,7 +834,7 @@ function rankEnter(name){
   const bs=document.getElementById('betaWho'); if(bs) bs.value=name;
   renderHero();
   CR_OPEN=false;CR_MORE=false;CR_TAB='bday';renderCR();setTimeout(function(){histLoad(name);},1200);
-  const r2=rankOfName(name); if(r2&&RANK_READY){ const k='lastRank_'+name; let prev=''; try{prev=localStorage.getItem(k)||''}catch(e){}
+  const r2=rankOfName(name); if(r2){ const k='lastRank_'+name; let prev=''; try{prev=localStorage.getItem(k)||''}catch(e){}
     if(prev&&RBY[prev]&&RBY[prev].i<r2.i) setTimeout(()=>celebrate(r2),600);
     try{localStorage.setItem(k,r2.k)}catch(e){} }
   landingScroll(name);
@@ -1892,7 +1854,7 @@ function init(){
     fixTeachers();renderLoginTiles();renderRankRules();
     document.getElementById('loginTeacher').innerHTML=TEACHERS.map(t=>`<option value="${t.name}">${t.no}　${t.name}</option>`).join('');
     let saved=null;try{saved=localStorage.xlUser}catch(e){}
-    if(saved&&TBYNAME[saved]&&xlTok())loadRankData(function(){enterApp(saved);});
+    if(saved&&TBYNAME[saved])enterApp(saved);
     else document.getElementById('login').style.display='';
   });
 }
@@ -1900,24 +1862,17 @@ function doLogin(){
   const name=document.getElementById('loginTeacher').value;
   const pw=document.getElementById('loginPw').value.trim();
   const err=document.getElementById('loginErr');
-  const bad=function(msg){err.style.cssText='display:block;background:rgba(192,57,43,.12);border-left:3px solid var(--red);color:var(--red);border-radius:9px;padding:11px 14px;margin-top:10px;font-size:.88em';err.textContent=msg||'密碼不正確，請重新輸入。';};
-  if(!pw) return bad('請輸入密碼。');
-  if(!API_URL) return bad('現在連不到系統，請稍後再試。');
+  const bad=function(){err.style.cssText='display:block;background:rgba(192,57,43,.12);border-left:3px solid var(--red);color:var(--red);border-radius:9px;padding:11px 14px;margin-top:10px;font-size:.88em';err.textContent='密碼不正確，請重新輸入。';};
+  const good=function(){secLogin(name,pw);err.style.display='none';try{localStorage.xlUser=name}catch(e){}document.getElementById('login').style.display='none';enterApp(name);};
+  if(pw==='123123'){ err.style.display='none'; try{localStorage.removeItem('xlUser')}catch(e){} document.getElementById('login').style.display='none'; enterAdmin(); return; }
+  const t=TBYNAME[name];
+  if(!t)return;
+  if(!t.hasPw){ if(pw===pwOf(t.no))good(); else bad(); return; }   // 沒設自訂密碼：用預設 123+編號
+  if(!API_URL){ bad(); return; }
   err.style.display='none'; err.textContent='';
-  fetch(API_URL+'?action=login&name='+encodeURIComponent(name)+'&pw='+encodeURIComponent(pw))
-    .then(r=>r.json()).then(d=>{
-      if(d&&d.token){
-        xlTok(d.token);
-        document.getElementById('login').style.display='none';
-        if(d.adminPw){ try{localStorage.removeItem('xlUser')}catch(e){} enterAdmin(); return; }
-        try{localStorage.xlUser=name}catch(e){}
-        loadRankData(function(){ enterApp(name); });
-        return;
-      }
-      if(d&&d.error) return bad(d.error);
-      bad();
-    })
-    .catch(()=>bad('現在連不到系統，請稍後再試。'));
+  fetch(API_URL+'?action=checkPw&name='+encodeURIComponent(name)+'&pw='+encodeURIComponent(pw))
+    .then(r=>r.json()).then(d=>{ if(d&&d.ok&&d.pass)good(); else bad(); })
+    .catch(()=>{ if(pw===pwOf(t.no))good(); else bad(); });        // 連線失敗：退回預設密碼判斷
 }
 function enterApp(name){
   TEACHER=name;const t=TBYNAME[name];
@@ -1954,6 +1909,7 @@ function saveMyPw(){
   if(/[\s]/.test(n1)) return err('新密碼不能有空白');
   if(n1!==n2) return err('兩次輸入的新密碼不一樣');
   if(n1===oldp) return err('新密碼跟目前的一樣');
+  if(n1==='123123') return err('這組不能用，請換一組');
   if(!API_URL) return err('現在連不到系統，請稍後再試');
   const b=document.getElementById('mpGo'); b.disabled=true; b.textContent='處理中…';
   const doSet=function(){
@@ -1963,7 +1919,7 @@ function saveMyPw(){
         const ok=document.getElementById('mpOk'); ok.textContent='改好了！下次登入請用新密碼。'; ok.style.display='block';
         b.textContent='完成'; toast('密碼已更新');
         setTimeout(closeMyPw,1600);
-      } else err((d&&d.error)||'修改失敗，請稍後再試');
+      } else err('修改失敗，請稍後再試');
     });
   };
   if(!t.hasPw){ if(oldp===pwOf(t.no)) doSet(); else err('目前的密碼不對'); return; }
@@ -1973,7 +1929,7 @@ function saveMyPw(){
 }
 document.addEventListener('keydown',e=>{ const m=document.getElementById('mypw'); if(!m||!m.classList.contains('show')) return; if(e.key==='Escape') closeMyPw(); if(e.key==='Enter') saveMyPw(); });
 
-function logout(){secSet('sec_tok','');xlTok('');try{localStorage.removeItem('xlUser')}catch(e){}location.reload();}
+function logout(){secSet('sec_tok','');try{localStorage.removeItem('xlUser')}catch(e){}location.reload();}
 
 function buildTabs(){document.getElementById('tabs').innerHTML=CATS_ORDER.filter(c=>catOpen(c)).map(c=>`<button class="tab" data-c="${c}" onclick="selectCat('${c}')">${c}</button>`).join('');}
 function selectCat(c){if(EDIT.id&&EDIT.cat!==c)cancelEdit(true);CURCAT=c;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.c===c));document.getElementById('formSub').textContent=CATDESC[c]||'';renderForm();}
@@ -2439,7 +2395,7 @@ function saveAdminPanel(){
 }
 </script>
 <script>
-/* ===== 行政管理介面（用行政密碼登入，後台檢查） ===== */
+/* ===== 行政管理介面（密碼123123進入） ===== */
 function apiPost(action,payload,cb){ if(!API_URL){cb&&cb({ok:false});return;} fetch(API_URL,{method:'POST',body:JSON.stringify(Object.assign({action:action},payload||{}))}).then(r=>r.json()).then(d=>cb&&cb(d)).catch(()=>cb&&cb({ok:false})); }
 
 function enterAdmin(){
@@ -2474,7 +2430,7 @@ function renderAdmin(){
   h+=' <button onclick="openAdminPanel()" style="margin-top:8px;background:#5a4a2a;color:#fff;border:none;border-radius:7px;padding:9px 16px;cursor:pointer">⚙ 開放設定</button></div>';
 
   h+=`<div style="${card}"><div style="font-weight:800;font-size:16px;color:#5a4a2a;margin-bottom:10px">🛡 行政人員</div>`;
-  h+='<div style="font-size:12px;color:#8a7a4a;margin-bottom:10px">行政人員名單（記錄用）。所有行政共用同一組行政密碼進入本介面。</div>';
+  h+='<div style="font-size:12px;color:#8a7a4a;margin-bottom:10px">行政人員名單（記錄用）。所有行政共用密碼 123123 進入本介面。</div>';
   h+='<div id="admAdminBox" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">'+admAdminChips()+'</div>';
   h+='<div style="display:flex;gap:8px"><input id="admAdminName" placeholder="新增行政人員姓名" style="flex:1;padding:9px;border:1px solid #d8cca8;border-radius:7px"><button onclick="admAdminAdd()" style="background:#9c7e3a;color:#fff;border:none;border-radius:7px;padding:9px 16px;cursor:pointer;font-weight:700">＋新增</button></div></div>';
 
