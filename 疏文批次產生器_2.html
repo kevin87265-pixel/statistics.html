@@ -5,6 +5,57 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>疏文批次產生器 v5・神奇身心靈學苑</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script>
+/* =====================================================================
+   行政登入（2026-10-30）：這是行政工具，要先輸入行政密碼，後台確認後才給資料。
+   通行證存在這台裝置，30 天內不用再輸入。
+   ===================================================================== */
+(function(){
+  var API='https://script.google.com/macros/s/AKfycbwSM81dVKy_ZkFdQneulQKv7m13rfYe8xonhBFPI6T1sASw3A2Q3rBNjJ1oY3MsOPIYZw/exec', TK='xl_admin_tok', raw=window.fetch.bind(window), waiting=[];
+  function tok(v){ try{ if(v===undefined) return localStorage.getItem(TK)||''; if(v) localStorage.setItem(TK,v); else localStorage.removeItem(TK); }catch(e){} return ''; }
+  window.fetch=function(url,opt){
+    if(typeof url!=='string'||url.indexOf(API)!==0) return raw(url,opt);
+    var t=tok();
+    if(t){
+      var isPost=!!(opt&&String(opt.method||'').toUpperCase()==='POST');
+      if(!isPost){ if(!/[?&]token=/.test(url)) url+=(url.indexOf('?')>=0?'&':'?')+'token='+encodeURIComponent(t); }
+      else if(typeof opt.body==='string'){ try{ var b=JSON.parse(opt.body); if(b&&typeof b==='object'&&!b.token){ b.token=t; opt=Object.assign({},opt,{body:JSON.stringify(b)}); } }catch(e){} }
+    }
+    return raw(url,opt).then(function(res){
+      try{ res.clone().json().then(function(d){ if(d&&d.needLogin){ tok(''); show(); } }).catch(function(){}); }catch(e){}
+      return res;
+    });
+  };
+  function el(tag,css,txt){ var e=document.createElement(tag); if(css) e.style.cssText=css; if(txt) e.textContent=txt; return e; }
+  function show(){
+    if(document.getElementById('xlGate')) return;
+    var mask=el('div','position:fixed;inset:0;z-index:2147483000;background:#ffffff;display:flex;align-items:center;justify-content:center;padding:20px;color-scheme:light');
+    mask.id='xlGate';
+    var box=el('div','background:#fff;border:1px solid #e3e6ea;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.12);padding:26px 22px;width:100%;max-width:360px;font-family:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;color:#1f2328;text-wrap:pretty');
+    box.appendChild(el('div','font-size:20px;font-weight:700;margin-bottom:6px','請輸入行政密碼'));
+    box.appendChild(el('div','font-size:16px;color:#5b6370;margin-bottom:14px;line-height:1.6','這是行政工具，確認身分後才會載入資料。'));
+    var inp=el('input','width:100%;box-sizing:border-box;font-size:17px;padding:12px 14px;border:1px solid #c9ced6;border-radius:10px;background:#fff;color:#1f2328');
+    inp.type='password'; inp.autocomplete='current-password'; box.appendChild(inp);
+    var err=el('div','display:none;color:#b42318;font-size:16px;margin-top:10px'); box.appendChild(err);
+    var btn=el('button','margin-top:14px;width:100%;font-size:17px;font-weight:700;padding:12px;border:0;border-radius:10px;background:#0f766e;color:#fff;cursor:pointer','進入'); box.appendChild(btn);
+    function go(){
+      var pw=inp.value.trim(); if(!pw){ err.textContent='請輸入密碼。'; err.style.display='block'; return; }
+      btn.disabled=true; btn.textContent='確認中…'; err.style.display='none';
+      raw(API+'?action=login&name='+encodeURIComponent('行政')+'&pw='+encodeURIComponent(pw)).then(function(r){return r.json();}).then(function(d){
+        btn.disabled=false; btn.textContent='進入';
+        if(d&&d.token&&d.admin){ tok(d.token); mask.remove(); var w=waiting; waiting=[]; w.forEach(function(f){ try{f();}catch(e){} }); return; }
+        err.textContent=(d&&d.error)||'密碼不正確，請重新輸入。'; err.style.display='block';
+      }).catch(function(){ btn.disabled=false; btn.textContent='進入'; err.textContent='現在連不到系統，請稍後再試。'; err.style.display='block'; });
+    }
+    btn.onclick=go; inp.onkeydown=function(e){ if(e.key==='Enter') go(); };
+    mask.appendChild(box); (document.body||document.documentElement).appendChild(mask);
+    setTimeout(function(){ try{inp.focus();}catch(e){} },50);
+  }
+  /* 要有通行證才執行 cb；沒有就先跳登入框 */
+  window.adminGate=function(cb){ if(tok()){ cb&&cb(); return; } if(cb) waiting.push(cb); if(document.body) show(); else document.addEventListener('DOMContentLoaded',show); };
+  window.adminGateReset=function(){ tok(''); };
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -3174,5 +3225,6 @@ window.addEventListener('load', async () => {
 });
 </script>
 
+<script>adminGate();</script>
 </body>
 </html>
