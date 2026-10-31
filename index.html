@@ -1593,12 +1593,14 @@ function copyGo(){
   });
   if(!rows.length){ toast('沒有勾選任何一筆'); return; }
   if(!confirm('要把 '+rows.length+' 筆「'+COPY.cat+'」從 '+COPY.month+' 帶進 '+MONTH+' 嗎？\n帶進來之後可以個別按「編輯」改祈願。')) return;
+  if(!dupCheck(COPY.cat,rows))return;
   const btn=document.getElementById('cpGo'); if(btn){btn.disabled=true;btn.textContent='寫入中…';}
+  const _before=(DATA[COPY.cat]||[]).length, _n=rows.length, _cat=COPY.cat;
   fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addBatch',category:COPY.cat,teacher:TEACHER,month:MONTH,rows:rows})})
     .then(r=>r.json()).then(d=>{
       if(d&&d.ok){ mergeData(d); renderList(); closeCopyPanel(); toast('已帶入 '+rows.length+' 筆 ✓ 記得檢查祈願'); }
       else { toast('帶入失敗：'+((d&&d.error)||'')); if(btn){btn.disabled=false;btn.textContent='帶入本月';} }
-    }).catch(()=>{ toast('連線失敗'); if(btn){btn.disabled=false;btn.textContent='帶入本月';} });
+    }).catch(function(){ closeCopyPanel(); verifyAfterFail(_cat,_n,_before,null,''); });
 }
 
 </script>
@@ -2259,18 +2261,90 @@ function requiredOf(cat,o){
   return [];
 }
 
+/* ===== 防重複填單（2026-10-31） =====
+   問題：送出時若連線不穩顯示「連線失敗」，但後台其實已經寫進去，
+         老師以為沒填到就再填一次，變成重複單。
+   做法：1) 送出前先比對清單裡有沒有一模一樣的，有就先問
+         2) 送出失敗時不讓他直接重填，改成自動重讀清單確認到底進去了沒 */
+function dupKeyOf(cat,o){
+  const nm=(''+(o['姓名']||o['陽世報恩人']||'')).trim();
+  const fs=(''+(o['份數']||'')).trim();
+  if(cat==='法會')   return nm+'|'+(o['項目']||'')+'|'+fs;
+  if(cat==='斗燈')   return nm+'|'+(o['加購類型']||'')+'|'+(o['斗種']||'')+'|'+fs;
+  if(cat==='還陰債') return nm+'|'+(o['牒文類別']||'')+'|'+fs;
+  return nm+'|'+fs;
+}
+function dupLabelOf(cat,o){
+  const nm=(''+(o['姓名']||o['陽世報恩人']||'')).trim();
+  if(cat==='法會')   return nm+'（'+(o['項目']||'')+' ×'+(o['份數']||'')+'）';
+  if(cat==='斗燈')   return nm+'（'+(o['斗種']||'')+' ×'+(o['份數']||'')+'）';
+  if(cat==='還陰債') return nm+'（'+(o['牒文類別']||'')+' ×'+(o['份數']||'')+'）';
+  return nm+'（×'+(o['份數']||'')+'）';
+}
+function dupCheck(cat,rows){
+  const have={}; (DATA[cat]||[]).forEach(function(e){ have[dupKeyOf(cat,e)]=true; });
+  const hit=rows.filter(function(r){ return have[dupKeyOf(cat,r)]; });
+  if(!hit.length) return true;
+  return confirm('這個月的「'+cat+'」清單裡，已經有一模一樣的資料：\n\n'
+    + hit.map(function(r){return '　· '+dupLabelOf(cat,r);}).join('\n')
+    + '\n\n如果你是因為剛才顯示「連線失敗」才重填，請先按「取消」，'
+    + '捲到下面的清單確認有沒有那一筆。\n\n確定還是要再加一筆嗎？');
+}
+/* 送出失敗後，自動重讀清單確認到底寫進去了沒 */
+function verifyAfterFail(cat,addCount,beforeCount,btn,btnLabel){
+  setStatus('連線不穩，正在確認剛才那筆有沒有送出…','');
+  if(btn){btn.disabled=true;btn.textContent='確認中…';}
+  const restore=function(){ if(btn){btn.disabled=false;btn.textContent=btnLabel;} };
+  setTimeout(function(){
+    fetch(API_URL+'?action=list&teacher='+encodeURIComponent(TEACHER)+'&month='+encodeURIComponent(MONTH))
+    .then(function(r){return r.json();}).then(function(d){
+      if(!d||!d.ok){
+        restore();
+        setStatus('連線失敗（無法確認）','err');
+        alert('連線不穩，沒辦法自動幫你確認。\n\n請先按一下上面的月份重新讀取，看清單裡有沒有剛才那一筆，'
+            + '再決定要不要重填。\n不要直接重填，會變成兩筆。');
+        return;
+      }
+      DATA=d.data||{}; TOTALS=d.totals||{}; renderList();
+      const now=(DATA[cat]||[]).length;
+      const total=CATS_ORDER.reduce(function(a,c){return a+((DATA[c]||[]).length);},0);
+      setStatus('已連線 · '+total+' 筆','ok');
+      restore();
+      if(now>=beforeCount+addCount){
+        clearForm();
+        alert('剛才雖然顯示連線失敗，但資料其實已經成功送出了（'+addCount+' 筆）。\n\n'
+            + '已經幫你確認過，清單裡有了。\n請不要再填一次，不然會變成兩筆。');
+      }else{
+        alert('確認過了，剛才那筆沒有送出成功，清單裡沒有。\n\n資料還留在上面，請再按一次送出。');
+      }
+    }).catch(function(){
+      restore();
+      setStatus('連線失敗（無法確認）','err');
+      alert('連線不穩，沒辦法自動幫你確認。\n\n請先按一下上面的月份重新讀取，看清單裡有沒有剛才那一筆，'
+          + '再決定要不要重填。\n不要直接重填，會變成兩筆。');
+    });
+  },2500);
+}
+
 function submitForm(){
   if(!API_URL){toast('尚未設定 API_URL');return;}
   if(CURCAT==='法會'&&!EDIT.id)return submitFahui();
   const o=collectSingle();const miss=validateSingle(o);
   if(miss.length){toast('必填：'+miss.join('、'));return;}
+  if(!EDIT.id&&!dupCheck(CURCAT,[o]))return;
   const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='送出中…';
+  const _lb=EDIT.id?'更新':'加入清單';
+  const _before=(DATA[CURCAT]||[]).length, _isAdd=!EDIT.id, _cat=CURCAT;
   const payload=Object.assign({action:EDIT.id?'update':'add'},o);
   if(EDIT.id){payload['編號']=EDIT.id;payload.category=EDIT.cat;}
   fetch(API_URL,{method:'POST',body:JSON.stringify(payload)}).then(r=>r.json()).then(d=>{
     if(d.ok){DATA=d.data||DATA;TOTALS=d.totals||TOTALS;toast(EDIT.id?'已更新 ✓':'已加入 ✓');cancelEdit(true);clearForm();renderList();setStatus('已連線','ok');}
     else toast('失敗：'+(d.error||'未知'));
-  }).catch(e=>toast('連線失敗')).finally(()=>{btn.disabled=false;btn.textContent=EDIT.id?'更新':'加入清單';});
+    btn.disabled=false;btn.textContent=_lb;
+  }).catch(function(){
+    if(_isAdd) verifyAfterFail(_cat,1,_before,btn,_lb);
+    else { toast('連線失敗'); btn.disabled=false; btn.textContent=_lb; }
+  });
 }
 /* 法會多項目送出 */
 function submitFahui(){
@@ -2286,11 +2360,14 @@ function submitFahui(){
   if(miss.length){toast('必填：'+miss.join('、'));return;}
   applyLunar('法會',cust);
   const rows=items.map(it=>Object.assign({},cust,{項目:it.項目,份數:it.份數,祈願:it.祈願||''}));
+  if(!dupCheck('法會',rows))return;
   const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='送出中…';
+  const _before=(DATA['法會']||[]).length, _n=rows.length;
   fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addBatch',category:'法會',month:MONTH,teacher:TEACHER,rows:rows})}).then(r=>r.json()).then(d=>{
     if(d.ok){DATA=d.data||DATA;TOTALS=d.totals||TOTALS;toast('已加入 '+rows.length+' 筆 ✓');clearForm();renderList();setStatus('已連線','ok');}
     else toast('失敗：'+(d.error||'未知'));
-  }).catch(e=>toast('連線失敗')).finally(()=>{btn.disabled=false;btn.textContent='加入清單';});
+    btn.disabled=false;btn.textContent='加入清單';
+  }).catch(function(){ verifyAfterFail('法會',_n,_before,btn,'加入清單'); });
 }
 function clearForm(){renderForm();const fn=document.getElementById('in_姓名')||document.getElementById('in_陽世報恩人');if(fn)fn.focus();}
 
