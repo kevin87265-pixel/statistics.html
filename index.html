@@ -878,9 +878,22 @@ function sbxHandle(b){
 }
 const _realFetch=window.fetch.bind(window);
 const fakeRes=o=>Promise.resolve({json:()=>Promise.resolve(o)});
+function secHandle(d){
+  if(d&&d.needLogin){ secSet('sec_tok',''); try{localStorage.removeItem('xlUser')}catch(e){}
+    if(!window.__secAlerted){ window.__secAlerted=1; alert('登入已過期，請重新登入'); setTimeout(function(){location.reload()},200); } }
+  return d;
+}
 window.fetch=function(url,opt){
-  const isApi=BETA&&typeof url==='string'&&typeof API_URL!=='undefined'&&API_URL&&url.indexOf(API_URL)===0;
-  if(isApi&&!(opt&&String(opt.method||'').toUpperCase()==='POST')&&url.indexOf('?')>0) url=secAttachUrl(url);
+  const isApiUrl=typeof url==='string'&&typeof API_URL!=='undefined'&&API_URL&&url.indexOf(API_URL)===0;
+  const isPost=!!(opt&&String(opt.method||'').toUpperCase()==='POST');
+  /* 令牌一律附上（不分正式／內測），否則後台強制模式會回「登入已過期」 */
+  if(isApiUrl&&!isPost&&url.indexOf('?')>0) url=secAttachUrl(url);
+  if(isApiUrl&&isPost&&opt&&typeof opt.body==='string'){
+    try{ const _b=JSON.parse(opt.body); const _tk=secGet('sec_tok'), _kk=secGet('sec_key');
+         if(_tk&&!_b.token)_b.token=_tk; if(_kk&&!_b.key)_b.key=_kk;
+         opt=Object.assign({},opt,{body:JSON.stringify(_b)}); }catch(e){}
+  }
+  const isApi=BETA&&isApiUrl;
   if(isApi&&/action=(teachers|sysConfig)(&|$)/.test(url)){
     return _realFetch(url,opt).then(r=>r.json()).then(d=>{ d=cleanDeep(d);
       if(d&&Array.isArray(d.teachers)){ SERVER_NAMES=d.teachers.map(t=>t.name); d.teachers=fixTeacherList(d.teachers); }
@@ -905,6 +918,9 @@ window.fetch=function(url,opt){
       return {json:()=>Promise.resolve(d)};
     }).catch(err=>{ if(loc){SBX_LOCAL=true;return {json:()=>Promise.resolve({ok:true,data:loc,totals:sbxAgg(loc)})};} throw err; });
   }
+  if(isApiUrl) return _realFetch(url,opt).then(function(r){
+    return r.json().then(function(d){ return {json:function(){return Promise.resolve(secHandle(d));}}; },function(){ return r; });
+  });
   return _realFetch(url,opt);
 };
 function sbxReset(){ if(!confirm('把這位老師這個月的內測資料清掉，回到正式資料？'))return; lsDel(sbxKey(TEACHER,MONTH)); SBX_LOCAL=false; loadList(); toast('已回到正式資料'); }
@@ -1854,8 +1870,9 @@ function init(){
     fixTeachers();renderLoginTiles();renderRankRules();
     document.getElementById('loginTeacher').innerHTML=TEACHERS.map(t=>`<option value="${t.name}">${t.no}　${t.name}</option>`).join('');
     let saved=null;try{saved=localStorage.xlUser}catch(e){}
-    if(saved&&TBYNAME[saved])enterApp(saved);
-    else document.getElementById('login').style.display='';
+    if(saved&&TBYNAME[saved]&&secGet('sec_tok'))enterApp(saved);
+    else{ const _sel=document.getElementById('loginTeacher'); if(saved&&TBYNAME[saved]&&_sel)_sel.value=saved;
+          document.getElementById('login').style.display=''; }
   });
 }
 function doLogin(){
@@ -1863,7 +1880,7 @@ function doLogin(){
   const pw=document.getElementById('loginPw').value.trim();
   const err=document.getElementById('loginErr');
   const bad=function(){err.style.cssText='display:block;background:rgba(192,57,43,.12);border-left:3px solid var(--red);color:var(--red);border-radius:9px;padding:11px 14px;margin-top:10px;font-size:.88em';err.textContent='密碼不正確，請重新輸入。';};
-  const good=function(){secLogin(name,pw);err.style.display='none';try{localStorage.xlUser=name}catch(e){}document.getElementById('login').style.display='none';enterApp(name);};
+  const good=function(){err.style.display='none';try{localStorage.xlUser=name}catch(e){}document.getElementById('login').style.display='none';Promise.resolve(secLogin(name,pw)).then(function(){enterApp(name);});};
   if(pw==='123123'){ err.style.display='none'; try{localStorage.removeItem('xlUser')}catch(e){} document.getElementById('login').style.display='none'; enterAdmin(); return; }
   const t=TBYNAME[name];
   if(!t)return;
@@ -2316,7 +2333,7 @@ function loadList(){
   setStatus('讀取中…','');
   fetch(`${API_URL}?action=list&teacher=${encodeURIComponent(TEACHER)}&month=${encodeURIComponent(MONTH)}`).then(r=>r.json()).then(d=>{
     if(d.ok){DATA=d.data||{};TOTALS=d.totals||{};renderList();const n=CATS_ORDER.reduce((s,c)=>s+((DATA[c]||[]).length),0);setStatus('已連線 · '+n+' 筆','ok');}
-    else setStatus('讀取失敗','err');
+    else setStatus(d&&d.needLogin?'登入已過期，請重新登入':('讀取失敗'+(d&&d.error?'：'+d.error:'')),'err');
   }).catch(e=>setStatus('連線失敗（檢查 API 網址/部署權限）','err'));
 }
 function esc(s){return (''+(s==null?'':s)).replace(/[\'"<>&`]/g,'');}
@@ -2387,11 +2404,20 @@ function saveAdminPanel(){
   const cfg={fahui:{}};
   document.querySelectorAll('.adm-fh').forEach(c=>{ cfg.fahui[c.dataset.it]=c.checked; });
   document.querySelectorAll('.adm-cat').forEach(c=>{ cfg[c.dataset.c]=c.checked; });
-  OPENCFG=cfg;
-  if(API_URL){ fetch(API_URL,{method:'POST',body:JSON.stringify({action:'setOpenItems',config:cfg})}).then(r=>r.json()).catch(()=>{}); }
-  closeAdminPanel();
-  buildTabs(); if(CATS_ORDER.filter(catOpen).indexOf(CURCAT)<0)selectCat('法會'); else renderForm();
-  alert('已儲存！老師重新整理填單頁後即可看到最新開放項目。');
+  const _done=function(){ OPENCFG=cfg; closeAdminPanel();
+    buildTabs(); if(CATS_ORDER.filter(catOpen).indexOf(CURCAT)<0)selectCat('法會'); else renderForm();
+    alert('已儲存！老師重新整理填單頁後即可看到最新開放項目。'); };
+  if(!API_URL){ _done(); return; }
+  const _btn=document.querySelector('#admPanelWrap button'); if(_btn){_btn.disabled=true;_btn.textContent='儲存中…';}
+  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'setOpenItems',config:cfg})}).then(r=>r.json()).then(function(d){
+    if(d&&d.ok){ _done(); return; }
+    if(_btn){_btn.disabled=false;_btn.textContent='儲存並套用';}
+    const m=(d&&d.needLogin)?'登入已過期，請重新登入後再改。':((d&&d.error)||'請稍後再試。');
+    alert('沒有存成功：'+m+'\n設定維持原狀，沒有被改動。');
+  }).catch(function(){
+    if(_btn){_btn.disabled=false;_btn.textContent='儲存並套用';}
+    alert('沒有存成功：連不到系統。\n設定維持原狀，沒有被改動。');
+  });
 }
 </script>
 <script>
