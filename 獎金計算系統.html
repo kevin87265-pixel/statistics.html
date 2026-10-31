@@ -140,7 +140,7 @@ ul.orgtree>li::before,ul.orgtree>li::after{border:none}
 
   /* ---------- 登入小視窗（同時只會有一個） ---------- */
   var pending=null;
-  function askLogin(){
+  function askLogin(msg){
     if(pending) return pending;
     pending = new Promise(function(resolve){
       var wrap=document.createElement('div');
@@ -149,7 +149,8 @@ ul.orgtree>li::before,ul.orgtree>li::after{border:none}
       wrap.innerHTML =
         '<div style="background:#fff;color:#3a3226;border-radius:14px;max-width:360px;width:100%;padding:22px;box-shadow:0 12px 44px rgba(0,0,0,.3);font-family:system-ui,-apple-system,\'Noto Sans TC\',sans-serif">'
         + '<div style="font-size:19px;font-weight:800;color:#9c7e3a;margin-bottom:6px">請先登入後台</div>'
-        + '<div style="font-size:13px;color:#8a7a4a;line-height:1.65;margin-bottom:16px">後台已加上登入檢查，要先登入才能抓線上資料。<br>帳號密碼跟填單系統同一組。</div>'
+        + (msg?'<div style="background:#fdecea;color:#a3271b;border-radius:9px;padding:10px 12px;font-size:13px;line-height:1.6;margin-bottom:12px">'+msg+'</div>':'')
+        + '<div style="font-size:13px;color:#8a7a4a;line-height:1.65;margin-bottom:16px">要讀全部老師的資料，請用<b>「公司內部」</b>或<b>「蕭竣方」</b>登入（其他帳號沒有權限）。<br>密碼跟填單系統同一組。</div>'
         + '<label style="display:block;font-size:13px;font-weight:700;margin-bottom:5px">老師</label>'
         + '<select id="__authWho" style="width:100%;padding:10px;border:1px solid #ddd3bb;border-radius:9px;font-size:15px;margin-bottom:12px;background:#fff;color:#3a3226"><option>讀取中…</option></select>'
         + '<label style="display:block;font-size:13px;font-weight:700;margin-bottom:5px">密碼</label>'
@@ -168,7 +169,8 @@ ul.orgtree>li::before,ul.orgtree>li::after{border:none}
         if(!ts.length){ sel.innerHTML='<option value="">（讀不到名單，請手動輸入）</option>'; return; }
         sel.innerHTML = ts.map(function(t){ return '<option value="'+t.name+'">'+(t.no!=null?t.no+'　':'')+t.name+'</option>'; }).join('');
         var last=''; try{ last=localStorage.getItem('__authLastWho')||'' }catch(e){}
-        if(last) sel.value=last;
+        if(msg || !last) last='公司內部';
+        sel.value=last; if(sel.value!==last && sel.options.length) sel.selectedIndex=0;
         pw.focus();
       }).catch(function(){ sel.innerHTML='<option value="">（讀不到名單）</option>'; });
 
@@ -199,11 +201,12 @@ ul.orgtree>li::before,ul.orgtree>li::after{border:none}
     var a=attach(url,opt);
     return RF(a.url,a.opt).then(function(r){
       return r.json().then(function(d){
-        if(d && d.needLogin && !retried){
+        var noPerm = d && d.ok===false && /沒有權限/.test(d.error||'');
+        if(d && (d.needLogin||noPerm) && (retried||0)<3){
           setTok('');
-          return askLogin().then(function(ok){
+          return askLogin(noPerm?'剛才登入的帳號沒有權限讀這些資料，請改用「公司內部」或「蕭竣方」登入。':'').then(function(ok){
             if(!ok) return wrapRes(d);
-            return doFetch(url,opt,true);
+            return doFetch(url,opt,(retried||0)+1);
           });
         }
         return wrapRes(d);
@@ -213,7 +216,7 @@ ul.orgtree>li::before,ul.orgtree>li::after{border:none}
 
   window.fetch=function(url,opt){
     if(!isApi(url)) return RF(url,opt);
-    return doFetch(url,opt,false);
+    return doFetch(url,opt,0);
   };
   /* 讓使用者可以自己先登入／換人 */
   window.__authLogin=function(){ setTok(''); return askLogin(); };
@@ -418,7 +421,7 @@ function fetchOnline(){
   const st=document.getElementById('onlineStatus');
   if(st){st.style.color='var(--mut)';st.textContent='讀取中…（跨各老師試算表彙整，約需數十秒，請稍候）';}
   fetch(`${API_URL}?action=summary&month=${encodeURIComponent(m)}`).then(r=>r.json()).then(d=>{
-    if(!d.ok||!d.summary){if(st){st.style.color='var(--red)';st.textContent='讀取失敗，請確認月份與後端部署。';}return;}
+    if(!d.ok||!d.summary){if(st){st.style.color='var(--red)';st.textContent='讀取失敗：'+(d.error||'請確認月份與後端部署')+'。';}return;}
     let cnt=0;
     Object.keys(d.summary).forEach(name=>{
       if(!PARTS[name])return; const s=d.summary[name];
