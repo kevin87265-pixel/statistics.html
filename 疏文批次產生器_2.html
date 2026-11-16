@@ -2381,7 +2381,7 @@ function parseSheet(sheetName, aoa) {
       sysId: idxSysId >= 0 ? (cols[idxSysId] || '') : '',
       rowIndex: i,
       sheetName: sheetName,
-      buyType: /^斗燈/.test(sheetName) ? ((cols.find(c => /^(單筆加購|季斗加購|令牌加購|五行年斗|五行季斗)$/.test(c))) || '') : '',
+      buyType: /^斗燈/.test(sheetName) ? ((cols.find(c => /^(單筆加購|季斗加購|令牌加購|五行年斗|五行季斗|VIP贈送年斗)$/.test(c))) || '') : '',
       deathType: idxDeath >= 0 ? (cols[idxDeath] || '') : '',  // 牒文類別(冤親債主拔薦牒文/歷代祖先拔薦牒文...)
       errors: [],
       template: null,

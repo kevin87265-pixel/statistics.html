@@ -853,8 +853,8 @@ function sbxSave(t,m,d){lsSet(sbxKey(t,m),JSON.stringify(d));}
 let SBX_LOCAL=false;
 function nnum(v){const n=parseFloat((''+(v==null?'':v)).replace(/[,\s]/g,''));return isNaN(n)?0:n;}
 function sbxAgg(data){
-  const a={}; ITEMS.forEach(i=>a[i]=0); ['天赦金','還陰債','年斗','季斗','五行年斗','五行季斗','令牌','祭改','普桌','化煞水'].forEach(k=>a[k]=0);
-  const dt=t=>{t=(''+t).trim();if(t==='令牌加購')return'令牌';if(t==='五行年斗')return'五行年斗';if(t==='五行季斗')return'五行季斗';if(t==='季斗加購')return'季斗';return'年斗';};
+  const a={}; ITEMS.forEach(i=>a[i]=0); ['天赦金','還陰債','年斗','季斗','五行年斗','五行季斗','令牌','祭改','普桌','化煞水','贈送年斗'].forEach(k=>a[k]=0);
+  const dt=t=>{t=(''+t).trim();if(t==='VIP贈送年斗')return'贈送年斗';if(t==='令牌加購')return'令牌';if(t==='五行年斗')return'五行年斗';if(t==='五行季斗')return'五行季斗';if(t==='季斗加購')return'季斗';return'年斗';};
   (data['法會']||[]).forEach(r=>{const it=(''+r['項目']).trim(),q=nnum(r['份數']);if(it==='天赦金')a['天赦金']+=q;else if(ITEMS.indexOf(it)>=0)a[it]+=q;});
   (data['斗燈']||[]).forEach(r=>{a[dt(r['加購類型'])]+=nnum(r['份數']);});
   ['還陰債','祭改','普桌'].forEach(c=>(data[c]||[]).forEach(r=>{a[c]+=nnum(r['份數']);}));
@@ -1634,8 +1634,39 @@ let OPENCFG=null;                                /* null＝全開；{fahui:{項�
 let ITEMLABELS={};                               /* 項目顯示名稱對應 {原始名:顯示名}，計價仍用原始名 */
 let ADMINS=[];                                   /* 後端設定的行政人員名單 */
 function labelOf(it){ return ITEMLABELS[it]||it; }
-function itemOpen(it){ return !(OPENCFG&&OPENCFG.fahui&&OPENCFG.fahui[it]===false); }
-function catOpen(c){ if(TOGGLE_CATS.indexOf(c)<0) return true; return !(OPENCFG&&OPENCFG[c]===false); }
+/* ===== 2026-11-16：行政可調整老師所有選項（全部老師共用＋個別老師另外設定） =====
+   OPENCFG = { fahui:{項目:bool}, 斗燈:bool, 還陰債:bool, 祭改:bool, 普桌:bool,
+               opts:{ 欄位:{選項:bool} },
+               per:{ 老師:{ fahui:{}, cats:{}, opts:{} } } }   ← per 只存跟全部老師不同的地方 */
+const OPT_FIELDS=[
+ {k:'加購類型',cat:'斗燈',label:'斗燈｜加購類型'},
+ {k:'斗種',cat:'斗燈',label:'斗燈｜斗種'},
+ {k:'牒文類別',cat:'還陰債',label:'還陰債｜牒文類別'},
+ {k:'捐掉或寄回',cat:'普桌',label:'普桌｜捐掉或寄回'}
+];
+function optListOf(k){
+  let o=[];
+  if(k==='加購類型') o=(DOU_TOP.find(f=>f.k===k)||{}).opts||[];
+  else if(k==='斗種') o=(DOUDEF['斗種']||{}).opts||[];
+  else if(k==='牒文類別') o=(YIN_TOP.find(f=>f.k===k)||{}).opts||[];
+  else if(k==='捐掉或寄回') o=((FIELDS['普桌']||[]).find(f=>f.k===k)||{}).opts||[];
+  return o.filter(v=>v!=='');
+}
+function cfgFor(name){
+  const g=OPENCFG||{}; const p=(g.per&&name&&g.per[name])||null;
+  const e={fahui:Object.assign({},g.fahui||{}),opts:{}};
+  TOGGLE_CATS.forEach(c=>{ if(c in g) e[c]=g[c]; });
+  Object.keys(g.opts||{}).forEach(k=>{ e.opts[k]=Object.assign({},g.opts[k]); });
+  if(p){
+    Object.assign(e.fahui,p.fahui||{});
+    Object.keys(p.cats||{}).forEach(c=>{ e[c]=p.cats[c]; });
+    Object.keys(p.opts||{}).forEach(k=>{ e.opts[k]=Object.assign(e.opts[k]||{},p.opts[k]); });
+  }
+  return e;
+}
+function itemOpen(it){ const e=cfgFor(TEACHER); return !(e.fahui&&e.fahui[it]===false); }
+function catOpen(c){ if(TOGGLE_CATS.indexOf(c)<0) return true; const e=cfgFor(TEACHER); return !(e[c]===false); }
+function optOpen(k,v){ const e=cfgFor(TEACHER); return !(e.opts&&e.opts[k]&&e.opts[k][v]===false); }
 function loadOpenCfg(cb){ if(!API_URL){cb&&cb();return;} fetch(API_URL+'?action=openItems').then(r=>r.json()).then(d=>{ OPENCFG=(d&&d.config)||null; cb&&cb(); }).catch(()=>{cb&&cb();}); }
 function loadSysCfg(cb){ if(!API_URL){cb&&cb();return;} fetch(API_URL+'?action=sysConfig').then(r=>r.json()).then(d=>{ if(d&&d.ok){ ITEMLABELS=d.itemLabels||{}; ADMINS=d.admins||[]; } cb&&cb(); }).catch(()=>{cb&&cb();}); }
 function fahuiOptions(selected){ return FAHUI_ITEMS.filter(o=>itemOpen(o)||o===selected).map(o=>`<option value="${o}"${o===selected?' selected':''}>${labelOf(o)}</option>`).join(''); }
@@ -1730,7 +1761,7 @@ const CATDESC={'法會':'先勾選項目與份數（可多個），再填一次�
 const GANZHI=['','甲','乙','丙','丁','戊','己','庚','辛','壬','癸','子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
 const DOU_TOP=[
  {sh:1,k:'收單人',type:'select',from:'shoudan'},
- {k:'加購類型',type:'select',opts:['','單筆加購','季斗加購','令牌加購','五行年斗','五行季斗'],req:1,onchg:'renderDouDetail'},
+ {k:'加購類型',type:'select',opts:['','單筆加購','季斗加購','令牌加購','五行年斗','五行季斗','VIP贈送年斗'],req:1,onchg:'renderDouDetail'},
  {k:'份數',type:'num',req:1,def:1},
  {k:'姓名',type:'text',req:1},
  {type:'ymd',cal:1,conv:1,calk:'生日別',y:'生日年',m:'生日月',d:'生日日',label:'生日'},
@@ -1745,6 +1776,7 @@ const DOUDEF={
 const DOUCONF={
  '單筆加購':{order:['斗種'],req:['斗種']},
  '季斗加購':{order:['斗種'],req:['斗種']},
+ 'VIP贈送年斗':{order:['斗種'],req:['斗種']},
  '五行年斗':{order:['斗種','令牌'],req:['斗種','令牌字或祈願']},
  '五行季斗':{order:['斗種','令牌'],req:['斗種','令牌字或祈願']},
  '令牌加購':{order:['斗種','令牌'],req:['斗種','令牌字或祈願']}
@@ -1975,7 +2007,7 @@ function fieldHTML(f,reqOverride){
   if(f.type==='select'){
     const opts=(f.from==='shoudan'
         ? [{v:'',t:'— 未指定'},{v:TEACHER,t:TEACHER+'（本人）'}].concat((TEACHER_SHOUDAN[TEACHER]||[]).map(x=>({v:x,t:x}))).concat([{v:'__add__',t:'＋ 新增收單人…'}])
-        : f.opts)||[];
+        : (f.opts&&OPT_FIELDS.some(x=>x.k===f.k)? f.opts.filter(o=>{const v=(o&&typeof o==='object')?o.v:o; return v===''||optOpen(f.k,v);}) : f.opts))||[];
     const optHTML=opts.map(o=>{const v=(o&&typeof o==='object')?o.v:o;const t=(o&&typeof o==='object')?o.t:(o||'—');return `<option value="${hx(v)}">${hx(t)}</option>`;}).join('');
     const onchg=f.onchg?` onchange="${f.onchg}()"`:(f.from==='shoudan'?` onchange="shoudanPick(this)"`:'');
     let h=`<div class="field" data-k="${f.k}"><label>${lab}</label><select id="in_${f.k}"${onchg}>${optHTML}</select>`;
@@ -2392,7 +2424,9 @@ function startEdit(cat,id){
   focusForm();
   renderList();
 }
-function setv(id,v){const e=document.getElementById('in_'+id);if(e)e.value=(v==null?'':v);}
+function setv(id,v){const e=document.getElementById('in_'+id);if(!e)return;const val=(v==null?'':''+v);
+  if(e.tagName==='SELECT'&&val&&![...e.options].some(o=>o.value===val)){const o=document.createElement('option');o.value=val;o.textContent=val;e.appendChild(o);}
+  e.value=val;}
 function cancelEdit(silent){EDIT={cat:null,id:null};document.getElementById('formTitle').textContent='新增明細';document.getElementById('submitBtn').textContent='加入清單';document.getElementById('cancelBtn').style.display='none';if(!silent){renderForm();renderList();}}
 
 function delEntry(cat,id,name){
@@ -2459,33 +2493,102 @@ init();
 </script>
 <script>
 /* ===== 行政：項目開放設定面板 ===== */
+/* ===== 開放設定面板（2026-11-16 改版）：全部老師共用＋個別老師另外設定；老師看得到的選項行政都能開關 ===== */
+let ADM_WHO='';      /* ''＝全部老師；否則＝某位老師 */
+function admBaseCfg(){ const g=OPENCFG||{}; const e={fahui:Object.assign({},g.fahui||{}),opts:{}}; TOGGLE_CATS.forEach(c=>{ if(c in g) e[c]=g[c]; }); Object.keys(g.opts||{}).forEach(k=>{ e.opts[k]=Object.assign({},g.opts[k]); }); return e; }
+function admPer(name){ const g=OPENCFG||{}; return (g.per&&g.per[name])||null; }
+function admBox(cls,attrs,label,on,tag){
+  return `<label class="adm-box"><input type="checkbox" class="${cls}" ${attrs} ${on?'checked':''}><span>${label}${tag?'<em class="adm-tag">個別</em>':''}</span></label>`;
+}
 function openAdminPanel(){
   loadOpenCfg(function(){
-    let h='<div style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:20px" id="admMask" onclick="if(event.target===this)closeAdminPanel()">';
-    h+='<div style="background:#fff;border-radius:14px;max-width:520px;width:100%;padding:22px;margin-top:30px;box-shadow:0 10px 40px rgba(0,0,0,.3)">';
-    h+='<div style="font-size:20px;font-weight:800;color:#9c7e3a;margin-bottom:4px">⚙ 這場開放項目設定</div>';
-    h+='<div style="font-size:13px;color:#8a7a4a;margin-bottom:16px;line-height:1.6">勾選＝開放老師填單；取消＝關閉（老師看不到、選不到，避免誤選）。全院共用，存檔後所有老師立即生效。</div>';
-    h+='<div style="font-weight:700;margin:10px 0 6px;color:#5a4a2a">法會項目</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
-    FAHUI_ITEMS.forEach(function(it){ const on=itemOpen(it); h+=`<label style="display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid #e0d6bf;border-radius:8px;font-size:14px;cursor:pointer"><input type="checkbox" class="adm-fh" data-it="${it}" ${on?'checked':''} style="width:18px;height:18px">${it}</label>`; });
-    h+='</div>';
-    h+='<div style="font-weight:700;margin:16px 0 6px;color:#5a4a2a">分類（整類開關）</div><div style="display:flex;gap:10px">';
-    TOGGLE_CATS.forEach(function(c){ const on=catOpen(c); h+=`<label style="display:flex;align-items:center;gap:7px;padding:8px 14px;border:1px solid #e0d6bf;border-radius:8px;font-size:14px;cursor:pointer"><input type="checkbox" class="adm-cat" data-c="${c}" ${on?'checked':''} style="width:18px;height:18px">${c}</label>`; });
-    h+='</div>';
-    h+='<div style="display:flex;gap:10px;margin-top:20px"><button onclick="saveAdminPanel()" style="flex:1;background:#9c7e3a;color:#fff;border:none;border-radius:9px;padding:12px;font-size:15px;font-weight:700;cursor:pointer">儲存並套用</button><button onclick="closeAdminPanel()" style="background:#f0ece0;color:#5a4a2a;border:none;border-radius:9px;padding:12px 18px;font-size:15px;cursor:pointer">取消</button></div>';
+    const w=document.getElementById('admPanelWrap'); if(w) w.remove();
+    let h='<style>'
+      +'#admMask{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:16px;color-scheme:light}'
+      +'#admCard{background:#fff;color:#3a3226;border-radius:14px;max-width:560px;width:100%;padding:20px;margin:20px 0 40px;box-shadow:0 10px 40px rgba(0,0,0,.3)}'
+      +'.adm-h{font-weight:700;margin:16px 0 6px;color:#5a4a2a;font-size:15px}'
+      +'.adm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}'
+      +'.adm-box{display:flex;align-items:center;gap:7px;padding:8px 10px;border:1px solid #e0d6bf;border-radius:8px;font-size:14px;cursor:pointer;background:#fff;min-width:0}'
+      +'.adm-box input{width:18px;height:18px;flex:none;margin:0}'
+      +'.adm-box span{min-width:0;word-break:keep-all;overflow-wrap:anywhere}'
+      +'.adm-tag{font-style:normal;font-size:11px;background:#fbe9d0;color:#9c5a12;border-radius:5px;padding:1px 5px;margin-left:5px;white-space:nowrap}'
+      +'.adm-note{font-size:13px;color:#8a7a4a;line-height:1.65;text-wrap:pretty}'
+      +'#admWho{width:100%;padding:10px;border:1px solid #d9cba8;border-radius:9px;font-size:15px;background:#fffdf6;color:#3a3226}'
+      +'</style>';
+    h+='<div id="admMask" onclick="if(event.target===this)closeAdminPanel()"><div id="admCard">';
+    h+='<div style="font-size:20px;font-weight:800;color:#9c7e3a;margin-bottom:4px">⚙ 老師填單選項設定</div>';
+    h+='<div class="adm-note" style="margin-bottom:12px">勾選＝老師看得到；取消＝隱藏。<br>已經填過的單不受影響。</div>';
+    h+='<div class="adm-h" style="margin-top:4px">設定對象</div><select id="admWho" onchange="ADM_WHO=this.value;admRenderBody()"><option value="">全部老師（共用）</option>';
+    TEACHERS.forEach(t=>{ const has=!!admPer(t.name); h+=`<option value="${hx(t.name)}"${ADM_WHO===t.name?' selected':''}>${hx(t.name)}${has?'　★已有個別設定':''}</option>`; });
+    h+='</select><div id="admBody"></div>';
+    h+='<div style="display:flex;gap:10px;margin-top:20px"><button id="admSave" onclick="saveAdminPanel()" style="flex:1;background:#9c7e3a;color:#fff;border:none;border-radius:9px;padding:12px;font-size:15px;font-weight:700;cursor:pointer">儲存並套用</button><button onclick="closeAdminPanel()" style="background:#f0ece0;color:#5a4a2a;border:none;border-radius:9px;padding:12px 18px;font-size:15px;cursor:pointer">取消</button></div>';
     h+='</div></div>';
     const d=document.createElement('div');d.id='admPanelWrap';d.innerHTML=h;document.body.appendChild(d);
+    const sel=document.getElementById('admWho'); if(sel) sel.value=ADM_WHO;
+    admRenderBody();
   });
 }
+function admRenderBody(){
+  const box=document.getElementById('admBody'); if(!box) return;
+  const who=ADM_WHO, e=who?cfgFor(who):admBaseCfg(), per=who?(admPer(who)||{}):{};
+  const pf=per.fahui||{}, pc=per.cats||{}, po=per.opts||{};
+  let h='';
+  if(who){
+    h+=`<div class="adm-note" style="background:#fff8e8;border:1px solid #f0dfb8;border-radius:9px;padding:9px 11px;margin-top:10px">只改「${hx(who)}」看到的選項，其他老師不受影響。標「個別」的是跟全部老師不一樣的地方。`;
+    if(admPer(who)) h+=`<div style="margin-top:8px"><button onclick="admResetWho()" style="background:#fff;border:1px solid #d9cba8;color:#7a5a2a;border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer">恢復跟全部老師一樣</button></div>`;
+    h+='</div>';
+  }else{
+    const ps=Object.keys((OPENCFG&&OPENCFG.per)||{});
+    h+=`<div class="adm-note" style="margin-top:8px">改這裡＝全部老師一起套用。${ps.length?'已有個別設定的老師：'+ps.map(hx).join('、')+'（他們個別調過的地方不會被這裡蓋掉）':''}</div>`;
+  }
+  h+='<div class="adm-h">法會項目</div><div class="adm-grid">';
+  FAHUI_ITEMS.forEach(it=>{ h+=admBox('adm-fh',`data-it="${hx(it)}"`,hx(it),!(e.fahui&&e.fahui[it]===false),who&&(it in pf)); });
+  h+='</div><div class="adm-h">分類（整類開關）</div><div class="adm-grid">';
+  TOGGLE_CATS.forEach(c=>{ h+=admBox('adm-cat',`data-c="${hx(c)}"`,hx(c),!(e[c]===false),who&&(c in pc)); });
+  h+='</div>';
+  OPT_FIELDS.forEach(f=>{
+    h+=`<div class="adm-h">${hx(f.label)}</div><div class="adm-grid">`;
+    optListOf(f.k).forEach(v=>{ const on=!(e.opts&&e.opts[f.k]&&e.opts[f.k][v]===false); const tag=who&&po[f.k]&&(v in po[f.k]); h+=admBox('adm-opt',`data-k="${hx(f.k)}" data-v="${hx(v)}"`,hx(v),on,tag); });
+    h+='</div>';
+  });
+  box.innerHTML=h;
+}
+function admResetWho(){
+  if(!ADM_WHO) return;
+  if(!confirm('把「'+ADM_WHO+'」的個別設定清掉，恢復跟全部老師一樣？')) return;
+  const cfg=JSON.parse(JSON.stringify(OPENCFG||{})); if(cfg.per){ delete cfg.per[ADM_WHO]; }
+  admPostCfg(cfg,'已恢復！「'+ADM_WHO+'」重新整理後就跟全部老師一樣。');
+}
 function closeAdminPanel(){ const w=document.getElementById('admPanelWrap'); if(w)w.remove(); }
+function admReadPanel(){
+  const r={fahui:{},cats:{},opts:{}};
+  document.querySelectorAll('.adm-fh').forEach(c=>{ r.fahui[c.dataset.it]=c.checked; });
+  document.querySelectorAll('.adm-cat').forEach(c=>{ r.cats[c.dataset.c]=c.checked; });
+  document.querySelectorAll('.adm-opt').forEach(c=>{ (r.opts[c.dataset.k]=r.opts[c.dataset.k]||{})[c.dataset.v]=c.checked; });
+  return r;
+}
 function saveAdminPanel(){
-  const cfg={fahui:{}};
-  document.querySelectorAll('.adm-fh').forEach(c=>{ cfg.fahui[c.dataset.it]=c.checked; });
-  document.querySelectorAll('.adm-cat').forEach(c=>{ cfg[c.dataset.c]=c.checked; });
+  const r=admReadPanel(), old=OPENCFG||{};
+  const cfg=JSON.parse(JSON.stringify(old)); cfg.per=cfg.per||{};
+  if(!ADM_WHO){
+    cfg.fahui=r.fahui; TOGGLE_CATS.forEach(c=>{ cfg[c]=r.cats[c]; }); cfg.opts=r.opts;
+  }else{
+    const base=admBaseCfg(), p={};
+    const isOn=(v)=>v!==false;
+    Object.keys(r.fahui).forEach(it=>{ if(isOn(base.fahui[it])!==r.fahui[it]) (p.fahui=p.fahui||{})[it]=r.fahui[it]; });
+    Object.keys(r.cats).forEach(c=>{ if(isOn(base[c])!==r.cats[c]) (p.cats=p.cats||{})[c]=r.cats[c]; });
+    Object.keys(r.opts).forEach(k=>Object.keys(r.opts[k]).forEach(v=>{ const b=base.opts[k]&&base.opts[k][v]; if(isOn(b)!==r.opts[k][v]) ((p.opts=p.opts||{})[k]=p.opts[k]||{})[v]=r.opts[k][v]; }));
+    if(Object.keys(p).length) cfg.per[ADM_WHO]=p; else delete cfg.per[ADM_WHO];
+  }
+  if(!Object.keys(cfg.per).length) delete cfg.per;
+  admPostCfg(cfg,ADM_WHO?'已儲存！「'+ADM_WHO+'」重新整理填單頁後就會看到。':'已儲存！老師重新整理填單頁後即可看到最新開放項目。');
+}
+function admPostCfg(cfg,okMsg){
   const _done=function(){ OPENCFG=cfg; closeAdminPanel();
     buildTabs(); if(CATS_ORDER.filter(catOpen).indexOf(CURCAT)<0)selectCat('法會'); else renderForm();
-    alert('已儲存！老師重新整理填單頁後即可看到最新開放項目。'); };
+    alert(okMsg); };
   if(!API_URL){ _done(); return; }
-  const _btn=document.querySelector('#admPanelWrap button'); if(_btn){_btn.disabled=true;_btn.textContent='儲存中…';}
+  const _btn=document.getElementById('admSave'); if(_btn){_btn.disabled=true;_btn.textContent='儲存中…';}
   fetch(API_URL,{method:'POST',body:JSON.stringify({action:'setOpenItems',config:cfg})}).then(r=>r.json()).then(function(d){
     if(d&&d.ok){ _done(); return; }
     if(_btn){_btn.disabled=false;_btn.textContent='儲存並套用';}
@@ -2496,6 +2599,7 @@ function saveAdminPanel(){
     alert('沒有存成功：連不到系統。\n設定維持原狀，沒有被改動。');
   });
 }
+
 </script>
 <script>
 /* ===== 行政管理介面（密碼123123進入） ===== */
