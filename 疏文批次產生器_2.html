@@ -1585,7 +1585,8 @@ const COVER_TITLE_MAP = {
   '招貴人': '親貴人人名清冊',
   '化小人': '遠小人人名清冊',
   '祭改': '祭改人名清冊',
-  '拔薦牒文': '拔薦諜文人名清冊',
+  '拔薦牒文': '拔薦牒文人名清冊',
+  '普桌': '普桌人名清冊',
 };
 
 // 份數欄「金名稱」對照 — 例如補財項目顯示「萬寶金X份 / 補財金X份」
@@ -1790,7 +1791,7 @@ function makeCell(text, width = 720, bold = true, fontSize = 32) {
 // pageRows: 該頁實際資料 (最多 25 筆)
 // goldName: 「萬寶金/X金」中的 X (如「補財金」)
 // skipWanbao: 若為 true,份數欄不顯示「萬寶金X份」,只顯示「X金X份」(天赦日專用)
-function makeSummaryTable(pageRows, goldName, skipWanbao = false) {
+function makeSummaryTable(pageRows, goldName, skipWanbao = false, plainParts = false) {
   // 每欄寬度都是 850 dxa(跟範本一致), 26 欄合計 22100 dxa
   const cellWidth = 850;
   
@@ -1821,7 +1822,9 @@ function makeSummaryTable(pageRows, goldName, skipWanbao = false) {
     let partsText = '';
     if (r && r.parts) {
       const p = String(r.parts).replace(/\.0$/, '');
-      if (skipWanbao) {
+      if (plainParts) {
+        partsText = `${p}份`;   // 還陰債、普桌：只寫「X份」（2026-11-16 K 定）
+      } else if (skipWanbao) {
         partsText = `${goldName}${p}份`;
       } else {
         partsText = `萬寶金${p}份\n${goldName}${p}份`;
@@ -1873,6 +1876,7 @@ async function buildSummaryDocx(itemName, rows) {
   
   // 天赦日特殊處理: 跟疏文一致,份數欄不顯示「萬寶金X份」,只顯示「天赦金X份」
   const skipWanbao = (itemName === '天赦金');
+  const plainParts = (itemName === '拔薦牒文' || itemName === '普桌');
   
   // 切頁: 每頁 25 筆
   const pages = [];
@@ -1890,7 +1894,7 @@ async function buildSummaryDocx(itemName, rows) {
   
   // 每頁一個表格,中間用分頁
   for (let i = 0; i < pages.length; i++) {
-    bodyContent += makeSummaryTable(pages[i], goldName, skipWanbao);
+    bodyContent += makeSummaryTable(pages[i], goldName, skipWanbao, plainParts);
     if (i < pages.length - 1) {
       bodyContent += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
     } else {
