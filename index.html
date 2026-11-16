@@ -1465,7 +1465,30 @@ function acFill(c){
   if(sd&&c['收單人']){ for(let i=0;i<sd.options.length;i++) if(sd.options[i].value===c['收單人'])sd.value=c['收單人']; }
   try{ const _pv=document.getElementById('prev_生日年'); if(_pv)_pv.textContent=''; }catch(e){}
   try{ if(typeof yinAuto==='function'&&document.getElementById('in_陽世報恩人')) yinAuto(); }catch(e){}
+  try{ ['居住地址','報恩人居住地址'].forEach(function(k){ if(c['居住地址']) addrHint(k); }); }catch(e){}
   toast('已帶入「'+c['姓名']+'」的資料（生日為農曆），請確認後送出');
+}
+/* 2026-11-16：自動帶出的地址是「上次填的」，可能當時就打錯，提醒老師跟客人確認 */
+function addrHint(k){
+  const inp=document.getElementById('in_'+k); if(!inp) return;
+  const fld=inp.closest('.field')||inp.parentNode; if(!fld) return;
+  let h=fld.querySelector('.addrHint');
+  if(!h){ h=document.createElement('div'); h.className='addrHint';
+    h.style.cssText='font-size:13px;color:#a2680f;background:#fff6e2;border:1px solid #f1d9a6;border-radius:7px;padding:5px 9px;margin-top:6px;line-height:1.5';
+    fld.appendChild(h); }
+  h.textContent='↑ 這是上次填的地址，請跟客人再確認一次';
+  inp.addEventListener('input',function(){ const x=fld.querySelector('.addrHint'); if(x) x.remove(); },{once:true});
+}
+/* 2026-11-16：送出前檢查地址常見錯字（例：4侯之5 → 4樓之5） */
+function addrTypoOK(rows){
+  const KS=['居住地址','報恩人居住地址','神位地址'], hits=[];
+  (rows||[]).forEach(function(o){ KS.forEach(function(k){
+    const a=''+(o&&o[k]||''); const m=a.match(/(\d)\s*([侯摟婁簍候楼])/);
+    if(m){ const t=m[1]+m[2]+'　→　'+m[1]+'樓'; if(hits.indexOf(t)<0) hits.push(t); }
+  }); });
+  if(!hits.length) return true;
+  return confirm('地址裡好像有錯字：\n\n'+hits.map(function(x){return '　'+x;}).join('\n')
+    +'\n\n是不是要打「樓」？\n\n按「取消」回去修改；確定沒打錯才按「確定」送出。');
 }
 
 /* ---------- ⭐常客名單 ---------- */
@@ -1593,10 +1616,11 @@ function copyGo(){
   });
   if(!rows.length){ toast('沒有勾選任何一筆'); return; }
   if(!confirm('要把 '+rows.length+' 筆「'+COPY.cat+'」從 '+COPY.month+' 帶進 '+MONTH+' 嗎？\n帶進來之後可以個別按「編輯」改祈願。')) return;
+  if(!addrTypoOK(rows))return;
   if(!dupCheck(COPY.cat,rows))return;
   const btn=document.getElementById('cpGo'); if(btn){btn.disabled=true;btn.textContent='寫入中…';}
   const _before=(DATA[COPY.cat]||[]).length, _n=rows.length, _cat=COPY.cat;
-  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addBatch',category:COPY.cat,teacher:TEACHER,month:MONTH,rows:rows})})
+  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addBatch',category:COPY.cat,teacher:TEACHER,month:MONTH,rows:rows,_cid:cidOf(COPY.cat,rows)})})
     .then(r=>r.json()).then(d=>{
       if(d&&d.ok){ mergeData(d); renderList(); closeCopyPanel(); toast('已帶入 '+rows.length+' 筆 ✓ 記得檢查祈願'); }
       else { toast('帶入失敗：'+((d&&d.error)||'')); if(btn){btn.disabled=false;btn.textContent='帶入本月';} }
@@ -2313,14 +2337,21 @@ function dupLabelOf(cat,o){
   if(cat==='還陰債') return nm+'（'+(o['牒文類別']||'')+' ×'+(o['份數']||'')+'）';
   return nm+'（×'+(o['份數']||'')+'）';
 }
+let DUP_FORCED=false;   /* 老師在重複提醒按了「確定要再加」→ 這次送出不要被當成重複擋掉 */
+function cidOf(cat,rows){
+  const str=[TEACHER,MONTH,cat,JSON.stringify(rows)].join('|'); let h=5381;
+  for(let i=0;i<str.length;i++){ h=((h<<5)+h+str.charCodeAt(i))|0; }
+  return 'C'+(h>>>0).toString(36)+'_'+str.length+(DUP_FORCED?'_'+Date.now().toString(36):'');
+}
 function dupCheck(cat,rows){
+  DUP_FORCED=false;
   const have={}; (DATA[cat]||[]).forEach(function(e){ have[dupKeyOf(cat,e)]=true; });
   const hit=rows.filter(function(r){ return have[dupKeyOf(cat,r)]; });
   if(!hit.length) return true;
   return confirm('這個月的「'+cat+'」清單裡，已經有一模一樣的資料：\n\n'
     + hit.map(function(r){return '　· '+dupLabelOf(cat,r);}).join('\n')
     + '\n\n如果你是因為剛才顯示「連線失敗」才重填，請先按「取消」，'
-    + '捲到下面的清單確認有沒有那一筆。\n\n確定還是要再加一筆嗎？');
+    + '捲到下面的清單確認有沒有那一筆。\n\n確定還是要再加一筆嗎？') && (DUP_FORCED=true);
 }
 /* 送出失敗後，自動重讀清單確認到底寫進去了沒 */
 function verifyAfterFail(cat,addCount,beforeCount,btn,btnLabel){
@@ -2363,14 +2394,15 @@ function submitForm(){
   if(CURCAT==='法會'&&!EDIT.id)return submitFahui();
   const o=collectSingle();const miss=validateSingle(o);
   if(miss.length){toast('必填：'+miss.join('、'));return;}
+  if(!addrTypoOK([o]))return;
   if(!EDIT.id&&!dupCheck(CURCAT,[o]))return;
   const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='送出中…';
   const _lb=EDIT.id?'更新':'加入清單';
   const _before=(DATA[CURCAT]||[]).length, _isAdd=!EDIT.id, _cat=CURCAT;
   const payload=Object.assign({action:EDIT.id?'update':'add'},o);
-  if(EDIT.id){payload['編號']=EDIT.id;payload.category=EDIT.cat;}
+  if(EDIT.id){payload['編號']=EDIT.id;payload.category=EDIT.cat;} else payload._cid=cidOf(CURCAT,[o]);
   fetch(API_URL,{method:'POST',body:JSON.stringify(payload)}).then(r=>r.json()).then(d=>{
-    if(d.ok){DATA=d.data||DATA;TOTALS=d.totals||TOTALS;toast(EDIT.id?'已更新 ✓':'已加入 ✓');cancelEdit(true);clearForm();renderList();setStatus('已連線','ok');}
+    if(d.ok){DATA=d.data||DATA;TOTALS=d.totals||TOTALS;toast(d.dedup?'這筆剛才已經送出過了，沒有重複加入 ✓':(EDIT.id?'已更新 ✓':'已加入 ✓'));cancelEdit(true);clearForm();renderList();setStatus('已連線','ok');}
     else toast('失敗：'+(d.error||'未知'));
     btn.disabled=false;btn.textContent=_lb;
   }).catch(function(){
@@ -2392,11 +2424,12 @@ function submitFahui(){
   if(miss.length){toast('必填：'+miss.join('、'));return;}
   applyLunar('法會',cust);
   const rows=items.map(it=>Object.assign({},cust,{項目:it.項目,份數:it.份數,祈願:it.祈願||''}));
+  if(!addrTypoOK(rows))return;
   if(!dupCheck('法會',rows))return;
   const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='送出中…';
   const _before=(DATA['法會']||[]).length, _n=rows.length;
-  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addBatch',category:'法會',month:MONTH,teacher:TEACHER,rows:rows})}).then(r=>r.json()).then(d=>{
-    if(d.ok){DATA=d.data||DATA;TOTALS=d.totals||TOTALS;toast('已加入 '+rows.length+' 筆 ✓');clearForm();renderList();setStatus('已連線','ok');}
+  fetch(API_URL,{method:'POST',body:JSON.stringify({action:'addBatch',category:'法會',month:MONTH,teacher:TEACHER,rows:rows,_cid:cidOf('法會',rows)})}).then(r=>r.json()).then(d=>{
+    if(d.ok){DATA=d.data||DATA;TOTALS=d.totals||TOTALS;toast(d.dedup?'這張單剛才已經送出過了，沒有重複加入 ✓':'已加入 '+rows.length+' 筆 ✓');clearForm();renderList();setStatus('已連線','ok');}
     else toast('失敗：'+(d.error||'未知'));
     btn.disabled=false;btn.textContent='加入清單';
   }).catch(function(){ verifyAfterFail('法會',_n,_before,btn,'加入清單'); });
