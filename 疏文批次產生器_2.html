@@ -1791,7 +1791,7 @@ function makeCell(text, width = 720, bold = true, fontSize = 32) {
 // pageRows: 該頁實際資料 (最多 25 筆)
 // goldName: 「萬寶金/X金」中的 X (如「補財金」)
 // skipWanbao: 若為 true,份數欄不顯示「萬寶金X份」,只顯示「X金X份」(天赦日專用)
-function makeSummaryTable(pageRows, goldName, skipWanbao = false, plainParts = false) {
+function makeSummaryTable(pageRows, goldName, skipWanbao = false, plainParts = false, partsLines = null) {
   // 每欄寬度都是 850 dxa(跟範本一致), 26 欄合計 22100 dxa
   const cellWidth = 850;
   
@@ -1822,7 +1822,9 @@ function makeSummaryTable(pageRows, goldName, skipWanbao = false, plainParts = f
     let partsText = '';
     if (r && r.parts) {
       const p = String(r.parts).replace(/\.0$/, '');
-      if (plainParts) {
+      if (partsLines) {
+        partsText = partsLines.map(n => `${n}${p}份`).join('\n');   // 還陰債：百寶箱／庫錢／拔薦牒文金（沒有萬寶金）
+      } else if (plainParts) {
         partsText = `${p}份`;   // 普桌：只寫「X份」（2026-11-16 K 定）
       } else if (skipWanbao) {
         partsText = `${goldName}${p}份`;
@@ -1876,7 +1878,8 @@ async function buildSummaryDocx(itemName, rows) {
   
   // 天赦日特殊處理: 跟疏文一致,份數欄不顯示「萬寶金X份」,只顯示「天赦金X份」
   const skipWanbao = (itemName === '天赦金');
-  const plainParts = (itemName === '普桌');   // 普桌只寫「X份」；還陰債照範本「萬寶金X份／拔薦牒文金X份」
+  const plainParts = (itemName === '普桌');   // 普桌只寫「X份」
+  const partsLines = (itemName === '拔薦牒文') ? ['百寶箱','庫錢','拔薦牒文金'] : null;   // 還陰債沒有萬寶金（2026-11-16 K 定）
   
   // 切頁: 每頁 25 筆
   const pages = [];
@@ -1894,7 +1897,7 @@ async function buildSummaryDocx(itemName, rows) {
   
   // 每頁一個表格,中間用分頁
   for (let i = 0; i < pages.length; i++) {
-    bodyContent += makeSummaryTable(pages[i], goldName, skipWanbao, plainParts);
+    bodyContent += makeSummaryTable(pages[i], goldName, skipWanbao, plainParts, partsLines);
     if (i < pages.length - 1) {
       bodyContent += '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
     } else {
