@@ -1823,7 +1823,7 @@ function makeSummaryTable(pageRows, goldName, skipWanbao = false, plainParts = f
     if (r && r.parts) {
       const p = String(r.parts).replace(/\.0$/, '');
       if (plainParts) {
-        partsText = `${p}份`;   // 還陰債、普桌：只寫「X份」（2026-11-16 K 定）
+        partsText = `${p}份`;   // 普桌：只寫「X份」（2026-11-16 K 定）
       } else if (skipWanbao) {
         partsText = `${goldName}${p}份`;
       } else {
@@ -1876,7 +1876,7 @@ async function buildSummaryDocx(itemName, rows) {
   
   // 天赦日特殊處理: 跟疏文一致,份數欄不顯示「萬寶金X份」,只顯示「天赦金X份」
   const skipWanbao = (itemName === '天赦金');
-  const plainParts = (itemName === '拔薦牒文' || itemName === '普桌');
+  const plainParts = (itemName === '普桌');   // 普桌只寫「X份」；還陰債照範本「萬寶金X份／拔薦牒文金X份」
   
   // 切頁: 每頁 25 筆
   const pages = [];
