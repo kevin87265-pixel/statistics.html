@@ -1235,10 +1235,22 @@ function cleanDeep(o){ if(typeof o==='string') return cleanName(o); if(Array.isA
 /* 2) 登入憑證：後台升級成「強制模式」後，每次讀寫都要帶憑證；舊後台會忽略，不影響現在使用 */
 function secGet(k){try{return sessionStorage.getItem(k)||''}catch(e){return ''}}
 function secSet(k,v){try{v?sessionStorage.setItem(k,v):sessionStorage.removeItem(k)}catch(e){}}
+/* 有時間上限的讀取：超過 ms 毫秒就放棄，自動再試 tries 次 */
+function fetchJsonT(url,ms,tries){
+  tries=tries||1;
+  const once=function(){
+    if(typeof AbortController==='undefined') return _realFetch(url).then(r=>r.json());
+    const ac=new AbortController(); const tm=setTimeout(function(){try{ac.abort();}catch(e){}},ms);
+    return _realFetch(url,{signal:ac.signal}).then(r=>r.json()).then(function(d){clearTimeout(tm);return d;},function(e){clearTimeout(tm);throw e;});
+  };
+  const go=function(n){ return once().catch(function(e){ if(n>1) return go(n-1); throw e; }); };
+  return go(tries);
+}
 function secLogin(name,pw){
   if(!API_URL) return Promise.resolve();
-  return _realFetch(API_URL+'?action=login&name='+encodeURIComponent(name)+'&pw='+encodeURIComponent(pw))
-    .then(r=>r.json()).then(d=>{ if(d&&d.ok&&d.token) secSet('sec_tok',d.token); }).catch(()=>{});
+  if(secGet('sec_tok')&&secGet('sec_who')===name) return Promise.resolve();
+  return fetchJsonT(API_URL+'?action=login&name='+encodeURIComponent(name)+'&pw='+encodeURIComponent(pw),12000,2)
+    .then(d=>{ if(d&&d.ok&&d.token){ secSet('sec_tok',d.token); secSet('sec_who',name); } }).catch(()=>{});
 }
 function secAttachUrl(url){
   const tok=secGet('sec_tok'), key=secGet('sec_key');
@@ -1971,10 +1983,21 @@ function doLogin(){
   if(!t)return;
   if(!t.hasPw){ if(pw===pwOf(t.no))good(); else bad(); return; }   // 沒設自訂密碼：用預設 123+編號
   if(!API_URL){ bad(); return; }
-  err.style.display='none'; err.textContent='';
-  fetch(API_URL+'?action=checkPw&name='+encodeURIComponent(name)+'&pw='+encodeURIComponent(pw))
-    .then(r=>r.json()).then(d=>{ if(d&&d.ok&&d.pass)good(); else bad(); })
-    .catch(()=>{ if(pw===pwOf(t.no))good(); else bad(); });        // 連線失敗：退回預設密碼判斷
+  // 直接用 login 驗密碼（順便拿登入憑證）；每次最多等 12 秒、自動再試一次
+  const btn=document.querySelector('#login button.lgo')||null;
+  err.style.cssText='display:block;background:rgba(156,126,58,.10);border-left:3px solid #9c7e3a;color:#6b5a2a;border-radius:9px;padding:11px 14px;margin-top:10px;font-size:.88em';
+  err.textContent='登入中，請稍候…';
+  const slowT=setTimeout(function(){ err.textContent='網路比較慢，還在登入中…'; },6000);
+  secSet('sec_tok',''); secSet('sec_who','');
+  fetchJsonT(API_URL+'?action=login&name='+encodeURIComponent(name)+'&pw='+encodeURIComponent(pw),12000,2)
+    .then(d=>{ clearTimeout(slowT);
+      if(d&&d.ok&&d.pass){ if(d.token){ secSet('sec_tok',d.token); secSet('sec_who',name); } good(); }
+      else if(d&&d.error){ err.style.cssText='display:block;background:rgba(192,57,43,.12);border-left:3px solid var(--red);color:var(--red);border-radius:9px;padding:11px 14px;margin-top:10px;font-size:.88em'; err.textContent=d.error; }
+      else bad(); })
+    .catch(()=>{ clearTimeout(slowT);
+      if(pw===pwOf(t.no)){ good(); return; }
+      err.style.cssText='display:block;background:rgba(192,57,43,.12);border-left:3px solid var(--red);color:var(--red);border-radius:9px;padding:11px 14px;margin-top:10px;font-size:.88em';
+      err.textContent='系統太慢沒登入成功（不是密碼錯），請再按一次「進入」。'; });
 }
 function enterApp(name){
   TEACHER=name;const t=TBYNAME[name];
