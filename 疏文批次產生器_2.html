@@ -1523,16 +1523,18 @@ async function loadOnlineShu(){
       const books={}, failed=[]; let done=0, authErr='';
       const one=async function(t){
         for(let k=0;k<2;k++){
-          try{ const d=await (await fetch(SHU_API+'?action=raw&month='+encodeURIComponent(month)+'&teacher='+encodeURIComponent(t))).json();
+          try{ const d=await Promise.race([
+                 fetch(SHU_API+'?action=raw&month='+encodeURIComponent(month)+'&teacher='+encodeURIComponent(t)).then(function(r){return r.json();}),
+                 new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 40000); }) ]);
             if(d&&d.ok&&d.books){ Object.assign(books,d.books); return; }
             if(d&&d.error){ authErr=d.error; if(/登入|權限/.test(d.error)) return; }
-          }catch(e){}
+          }catch(e){ if(e&&e.message==='timeout') break; }
         }
         failed.push(t);
       };
       let idx=0;
       const worker=async function(){ while(idx<names.length){ const t=names[idx++]; await one(t); done++; st.textContent='讀取中…（全部老師 '+done+'／'+names.length+' 位）'; } };
-      await Promise.all([worker(),worker(),worker(),worker()]);
+      await Promise.all([worker(),worker(),worker(),worker(),worker(),worker()]);
       if(authErr&&/登入|權限/.test(authErr)&&!Object.keys(books).length){ st.textContent='讀取失敗：'+authErr; return; }
       data={ok:true,books:books,failed:failed};
     }else{
