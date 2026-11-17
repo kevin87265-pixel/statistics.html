@@ -1480,12 +1480,23 @@ let onlineBooks = null;      // { teacher: { sheetName: rows[] } }
 let onlineMonth = '';        // 目前載入的月份（推回簽章用）
 let onlineTeacher = '';      // 目前載入的老師（推回簽章用）
 // 載入老師清單到下拉
+const SHU_FALLBACK_TEACHERS=['陳捷容','羅文勳','陳彩綺','蕭竣方','湯雯莉','沈佳琪','周冠榮','蕭鎧峻','賴素貞','張簡玉靖','梁凱妍','鄭聖勳','謝欣諭','王宥心','熊卿妃','鐘宥涵','謝承殷','陳昕昀','林雅涵','康瑋齊','陳博隆','黃宇廷','公司內部','靈應壇'];
 async function loadShuTeacherList(){
-  try{ const d = await (await fetch(SHU_API + '?action=teachers')).json();
-    if(d && d.ok && d.teachers){ const sel=document.getElementById('shu-pick-teacher');
-      sel.innerHTML = '<option value="__ALL__">全部老師（總冊用）</option>' + d.teachers.map(t=>`<option value="${t.name}">${t.no}　${t.name}</option>`).join('');
-    }
-  }catch(e){}
+  const sel=document.getElementById('shu-pick-teacher');
+  const fill=function(ts){ const cur=sel.value;
+    sel.innerHTML = '<option value="__ALL__">全部老師（總冊用）</option>' + ts.map(t=>`<option value="${t.name}">${t.no}　${t.name}</option>`).join('');
+    if(cur && [...sel.options].some(o=>o.value===cur)) sel.value=cur; };
+  // 先用上次存下來的名單，馬上可以選；後台名單到了再更新
+  try{ const c=JSON.parse(localStorage.getItem('shu_teachers')||'null'); if(c&&c.length) fill(c); }catch(e){}
+  for(let k=0;k<2;k++){
+    try{ const d = await Promise.race([ fetch(SHU_API + '?action=teachers').then(r=>r.json()),
+                                        new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),10000)) ]);
+      if(d && d.ok && d.teachers && d.teachers.length){ const ts=d.teachers.map(t=>({name:t.name,no:t.no}));
+        fill(ts); try{ localStorage.setItem('shu_teachers',JSON.stringify(ts)); }catch(e){} return; }
+    }catch(e){}
+    await new Promise(r=>setTimeout(r,1500));
+  }
+  if(sel.options.length<=1) fill(SHU_FALLBACK_TEACHERS.map((n,i)=>({name:n,no:''})).map(t=>({name:t.name,no:''})));
 }
 // 合併後端共享的「已產簽章」，讓別人產過的也會跳過
 async function mergeSharedSigs(month){
@@ -1518,8 +1529,10 @@ async function loadOnlineShu(){
     let data;
     if(pick==='__ALL__'){
       // 全部老師：一位一位分開讀（一次全讀會超過後台時間上限而失敗）
-      const names=[...document.querySelectorAll('#shu-pick-teacher option')].map(o=>o.value).filter(v=>v&&v!=='__ALL__');
-      if(!names.length){ st.textContent='讀取失敗：老師名單還沒載入，請重新整理再試'; return; }
+      let names=[...document.querySelectorAll('#shu-pick-teacher option')].map(o=>o.value).filter(v=>v&&v!=='__ALL__');
+      if(!names.length){ st.textContent='讀取中…（先抓老師名單）'; await loadShuTeacherList();
+        names=[...document.querySelectorAll('#shu-pick-teacher option')].map(o=>o.value).filter(v=>v&&v!=='__ALL__'); }
+      if(!names.length) names=SHU_FALLBACK_TEACHERS.slice();   // 後台名單一直讀不到：用內建名單照樣讀
       const books={}, failed=[]; let done=0, authErr='';
       const one=async function(t){
         for(let k=0;k<2;k++){

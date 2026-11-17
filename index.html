@@ -1981,7 +1981,7 @@ function doLogin(){
   if(pw==='123123'){ err.style.display='none'; try{localStorage.removeItem('xlUser')}catch(e){} document.getElementById('login').style.display='none'; enterAdmin(); return; }
   const t=TBYNAME[name];
   if(!t)return;
-  if(!t.hasPw){ if(pw===pwOf(t.no))good(); else bad(); return; }   // 沒設自訂密碼：用預設 123+編號
+  if(!t.hasPw && (pw===pwOf(t.no) || !API_URL)){ if(pw===pwOf(t.no))good(); else bad(); return; }   // 預設密碼 123+編號 直接過；其他（名單還沒讀到時的自訂密碼）一律問後台
   if(!API_URL){ bad(); return; }
   // 直接用 login 驗密碼（順便拿登入憑證）；每次最多等 12 秒、自動再試一次
   const btn=document.querySelector('#login button.lgo')||null;
