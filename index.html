@@ -1910,14 +1910,30 @@ function fillMonths(){
   for(let i=1;i>=-17;i--){const dt=new Date(d.getFullYear(),d.getMonth()+i,1);const v=dt.getFullYear()+'.'+String(dt.getMonth()+1).padStart(2,'0');h+=`<option${i===0?' selected':''}>${v}</option>`;}
   sel.innerHTML=h;
 }
+/* 2026-11-17：連後台很慢時頁面不再整片空白——最多等 6 秒，先用內建名單顯示登入，後台名單晚到再自動更新 */
+function bootMsg(t){
+  let el=document.getElementById('bootMsg');
+  if(!el){ el=document.createElement('div'); el.id='bootMsg';
+    el.style.cssText='max-width:420px;margin:28px auto;padding:14px 16px;text-align:center;color:#8a7a4a;font-size:15px;line-height:1.7;background:#fffaf0;border:1px solid #eadfc4;border-radius:12px';
+    const lg=document.getElementById('login'); (lg&&lg.parentNode?lg.parentNode:document.body).insertBefore(el,lg||null); }
+  el.innerHTML=t; el.style.display=t?'':'none';
+}
 function loadTeachers(cb){
   if(!API_URL){cb();return;}
+  let done=false; const fin=function(keep){ if(done) return; done=true; if(!keep) bootMsg(''); cb(); };
+  bootMsg('連線中，請稍候…');
+  const slow=setTimeout(function(){ if(!done) bootMsg('後台回應比較慢，先顯示登入畫面。<br>如果登入後還是很慢，請換個網路（例如手機熱點）再試。'); fin(true); },6000);
   fetch(API_URL+'?action=teachers').then(r=>r.json()).then(d=>{
     if(d&&d.ok&&Array.isArray(d.teachers)&&d.teachers.length){
       TEACHERS=d.teachers.map(t=>({name:t.name,no:t.no,hasPw:!!t.hasPw,shoudan:t.shoudan||[]}));rebuildT();
       const sd={};d.teachers.forEach(t=>{if(t.shoudan&&t.shoudan.length)sd[t.name]=t.shoudan;});TEACHER_SHOUDAN=sd;
+      if(done){ /* 名單晚到：還在登入畫面就重畫名牌 */
+        try{ const lg=document.getElementById('login'); if(lg&&lg.style.display!=='none'){ fixTeachers(); renderLoginTiles();
+          document.getElementById('loginTeacher').innerHTML=TEACHERS.map(t=>`<option value="${t.name}">${t.no}　${t.name}</option>`).join(''); } }catch(e){}
+        bootMsg('');
+      }
     }
-  }).catch(()=>{}).then(()=>cb());
+  }).catch(()=>{}).then(()=>{ clearTimeout(slow); fin(); });
 }
 function init(){
   if(!API_URL)document.getElementById('setupNote').innerHTML='<div class="banner info">⚙ 尚未設定後端網址：請先部署 Code.gs，把 /exec 網址貼到本檔 API_URL。</div>';
