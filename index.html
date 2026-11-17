@@ -893,6 +893,17 @@ window.fetch=function(url,opt){
          if(_tk&&!_b.token)_b.token=_tk; if(_kk&&!_b.key)_b.key=_kk;
          opt=Object.assign({},opt,{body:JSON.stringify(_b)}); }catch(e){}
   }
+  /* 2026-11-17：後台請求加上等待上限（送單 25 秒、讀取 30 秒）。
+     網路慢時回覆可能卡在路上，原本會永遠停在「送出中…」；
+     逾時就當作連線失敗，交給 verifyAfterFail 去後台確認到底有沒有寫進去 */
+  if(!BETA&&isApiUrl&&!(opt&&opt.signal)&&typeof AbortController!=='undefined'){
+    const _ac=new AbortController();
+    const _tm=setTimeout(function(){ try{_ac.abort();}catch(e){} }, isPost?25000:30000);
+    return _realFetch(url,Object.assign({},opt||{},{signal:_ac.signal})).then(function(r){
+      clearTimeout(_tm);
+      return r.json().then(function(d){ return {json:function(){return Promise.resolve(secHandle(d));}}; },function(){ return r; });
+    },function(e){ clearTimeout(_tm); throw e; });
+  }
   const isApi=BETA&&isApiUrl;
   if(isApi&&/action=(teachers|sysConfig)(&|$)/.test(url)){
     return _realFetch(url,opt).then(r=>r.json()).then(d=>{ d=cleanDeep(d);

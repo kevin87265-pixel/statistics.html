@@ -1513,11 +1513,33 @@ async function loadOnlineShu(){
   let month = (mEl.value||'').trim();
   if(!month){ const d=new Date(); month = d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0'); mEl.value=month; }
   onlineMonth = month;
-  st.textContent = (pick==='__ALL__'?'讀取中…（全部老師，約需數十秒）':'讀取中…（'+pick+'）');
+  st.textContent = (pick==='__ALL__'?'讀取中…（全部老師，一位一位讀）':'讀取中…（'+pick+'）');
   try{
-    const url = SHU_API + '?action=raw&month=' + encodeURIComponent(month) + (pick==='__ALL__'?'':'&teacher='+encodeURIComponent(pick));
-    const res = await fetch(url);
-    const data = await res.json();
+    let data;
+    if(pick==='__ALL__'){
+      // 全部老師：一位一位分開讀（一次全讀會超過後台時間上限而失敗）
+      const names=[...document.querySelectorAll('#shu-pick-teacher option')].map(o=>o.value).filter(v=>v&&v!=='__ALL__');
+      if(!names.length){ st.textContent='讀取失敗：老師名單還沒載入，請重新整理再試'; return; }
+      const books={}, failed=[]; let done=0, authErr='';
+      const one=async function(t){
+        for(let k=0;k<2;k++){
+          try{ const d=await (await fetch(SHU_API+'?action=raw&month='+encodeURIComponent(month)+'&teacher='+encodeURIComponent(t))).json();
+            if(d&&d.ok&&d.books){ Object.assign(books,d.books); return; }
+            if(d&&d.error){ authErr=d.error; if(/登入|權限/.test(d.error)) return; }
+          }catch(e){}
+        }
+        failed.push(t);
+      };
+      let idx=0;
+      const worker=async function(){ while(idx<names.length){ const t=names[idx++]; await one(t); done++; st.textContent='讀取中…（全部老師 '+done+'／'+names.length+' 位）'; } };
+      await Promise.all([worker(),worker(),worker(),worker()]);
+      if(authErr&&/登入|權限/.test(authErr)&&!Object.keys(books).length){ st.textContent='讀取失敗：'+authErr; return; }
+      data={ok:true,books:books,failed:failed};
+    }else{
+      const url = SHU_API + '?action=raw&month=' + encodeURIComponent(month) + '&teacher='+encodeURIComponent(pick);
+      const res = await fetch(url);
+      data = await res.json();
+    }
     if(!data.ok || !data.books){ st.textContent='讀取失敗：'+(data.error||'請確認月份與後端部署'); return; }
     onlineBooks = data.books;
     const teachers = Object.keys(onlineBooks);
@@ -1530,7 +1552,7 @@ async function loadOnlineShu(){
     document.getElementById('shu-online-teacher-wrap').style.display = '';
     onlineTeacher = (pick==='__ALL__') ? teachers[0] : pick;
     pickOnlineTeacher();
-    st.textContent = '✓ 已載入 ' + teachers.length + ' 位（' + month + '）' + (sharedN?('・已同步 '+sharedN+' 筆他人已產記錄'):'');
+    st.textContent = '✓ 已載入 ' + teachers.length + ' 位（' + month + '）' + (sharedN?('・已同步 '+sharedN+' 筆他人已產記錄'):'') + ((data.failed&&data.failed.length)?('　⚠ 這幾位沒讀到，請再按一次：'+data.failed.join('、')):'');
   }catch(e){ st.textContent = '連線失敗：' + e; }
 }
 function pickOnlineTeacher(){
